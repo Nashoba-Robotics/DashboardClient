@@ -4,4 +4,10 @@
 *.jar
 *.war
 *.ear
-/commons-net-3.3-src/target/
+
+# Netbeans stuff
+Dist/*
+nbproject/*
+build/*
+*.mf
+*.xml
