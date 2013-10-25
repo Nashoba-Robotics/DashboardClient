@@ -6,7 +6,7 @@
 *.ear
 
 # Netbeans stuff
-Dist/*
+dist/*
 nbproject/*
 build/*
 *.mf
