@@ -1,12 +1,8 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package dashboardclient;
 
 import org.apache.commons.net.telnet.TelnetClient;
+import java.lang.Thread;
+import java.net.Socket;
 
 /**
  *
@@ -14,6 +10,8 @@ import org.apache.commons.net.telnet.TelnetClient;
  */
 public class DashboardClient {
     TelnetClient client = new TelnetClient();
+    Socket sock = new Socket();
+    Thread execThread = new Thread();
     /**
      * @param args the command line arguments
      */

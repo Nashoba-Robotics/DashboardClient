@@ -16,6 +16,6 @@
  */
 
 /**
- * TFTP cliemt implementation
+ * TFTP client implementation
  */
 package org.apache.commons.net.tftp;
