@@ -11,8 +11,3 @@ nbproject/*
 build/*
 *.mf
 *.xml
-
-#IntelliJ Stuff
-out/*
-.idea/*
-*.iml
