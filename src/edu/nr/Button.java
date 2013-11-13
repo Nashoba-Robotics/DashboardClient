@@ -1,4 +1,4 @@
-package com.nashobarobotics;
+package edu.nr;
 
 import javax.swing.*;
 import java.awt.*;
