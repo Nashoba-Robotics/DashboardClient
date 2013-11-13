@@ -2,10 +2,8 @@ package com.nashobarobotics;
 
 import java.awt.*;
 import java.awt.event.*;
-import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import javax.swing.*;
-import javax.swing.border.*;
 
 public class Main extends JFrame
 {
@@ -20,11 +18,16 @@ public class Main extends JFrame
         addMenuBar();
 
         panel = new JPanel();
+        panel.setLayout(null);
         add(panel);
 
         box = new JCheckBox();
         panel.add(box);
         box.setText("Movable Interface");
+
+        Dimension size = box.getPreferredSize();
+        box.setBounds(100, 5, size.width, size.height);
+
         box.addItemListener(new ItemListener()
         {
             @Override
