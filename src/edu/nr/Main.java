@@ -15,8 +15,7 @@ import java.awt.event.ActionEvent;
 public class Main extends JFrame
 {
     JPanel panel;
-    private OverlapChecker overlapChecker;
-    ArrayList<MovableComponent> components = new ArrayList<MovableComponent>();
+    private ArrayList<MovableComponent> components = new ArrayList<MovableComponent>();
     public Main()
     {
         super("Dashboard Client");
@@ -31,8 +30,6 @@ public class Main extends JFrame
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setVisible(true);
-
-        overlapChecker = new OverlapChecker(components);
     }
 
     public static void main(String[] args)
@@ -54,7 +51,7 @@ public class Main extends JFrame
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                Button temp = new Button(Main.this);
+                Button temp = new Button(components);
                 if(movableComponents.isSelected())
                     temp.setMovable(true);
                 else
@@ -90,19 +87,5 @@ public class Main extends JFrame
         menu.add(movableComponents);
         menu.add(addButtonItem);
         setJMenuBar(menuBar);
-    }
-
-    public boolean overlapsOtherWidgetX(JComponent caller, Point newLocation)
-    {
-        return overlapChecker.overlapsOtherWidgetX(caller, newLocation);
-    }
-    public boolean overlapsOtherWidgetY(JComponent caller, Point newLocation)
-    {
-        return overlapChecker.overlapsOtherWidgetY(caller, newLocation);
-    }
-
-    public boolean overlapsOtherWidget(JComponent caller, Point newLocation)
-    {
-        return overlapChecker.overlapsOtherWidget(caller, newLocation);
     }
 }
