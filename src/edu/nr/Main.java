@@ -1,18 +1,24 @@
 package edu.nr;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.util.ArrayList;
+import edu.nr.Components.Button;
+
 import javax.swing.*;
+
+import java.util.ArrayList;
+
+import java.awt.Dimension;
+import java.awt.event.ItemListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
 public class Main extends JFrame
 {
-    JCheckBox box;
     JPanel panel;
-    ArrayList<edu.nr.Button> buttons = new ArrayList<edu.nr.Button>();
+    ArrayList<MovableComponent> components = new ArrayList<MovableComponent>();
     public Main()
     {
-        super("Dashboard Client Example");
+        super("Dashboard Client");
         setSize(500, 500);
 
         addMenuBar();
@@ -20,31 +26,6 @@ public class Main extends JFrame
         panel = new JPanel();
         panel.setLayout(null);
         add(panel);
-
-        box = new JCheckBox();
-        panel.add(box);
-        box.setText("Movable Interface");
-
-        Dimension size = box.getPreferredSize();
-        box.setBounds(100, 5, size.width, size.height);
-
-        box.addItemListener(new ItemListener()
-        {
-            @Override
-            public void itemStateChanged(ItemEvent e)
-            {
-                if(box.isSelected())
-                {
-                    for(edu.nr.Button b : buttons)
-                        b.setEnabled(false);
-                }
-                else
-                {
-                    for(edu.nr.Button b: buttons)
-                        b.setEnabled(true);
-                }
-            }
-        });
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
@@ -56,6 +37,7 @@ public class Main extends JFrame
         new Main();
     }
 
+    private JCheckBoxMenuItem movableComponents;
     private void addMenuBar()
     {
         JMenuBar menuBar = new JMenuBar();
@@ -64,19 +46,45 @@ public class Main extends JFrame
         menuBar.add(menu);
 
         JMenuItem addButtonItem = new JMenuItem("Add Button");
-        addButtonItem.addActionListener(new ActionListener() {
+        addButtonItem.addActionListener(new ActionListener()
+        {
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                edu.nr.Button temp = new edu.nr.Button();
-                if(box.isSelected())
-                    temp.setEnabled(false);
-                buttons.add(temp);
+                Button temp = new Button();
+                if(movableComponents.isSelected())
+                    temp.setMovable(true);
+                else
+                    temp.setMovable(false);
+                components.add(temp);
                 temp.setSize(100,30);
                 panel.add(temp);
                 repaint();
             }
         });
+
+
+        movableComponents = new JCheckBoxMenuItem();
+        movableComponents.setText("Edit Interface");
+        movableComponents.addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                if(movableComponents.isSelected())
+                {
+                    for(MovableComponent b : components)
+                        b.setMovable(true);
+                }
+                else
+                {
+                    for(MovableComponent b : components)
+                        b.setMovable(false);
+                }
+            }
+        });
+
+        menu.add(movableComponents);
         menu.add(addButtonItem);
         setJMenuBar(menuBar);
     }
