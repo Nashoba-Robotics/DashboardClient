@@ -4,9 +4,9 @@ import edu.nr.Components.Button;
 
 import javax.swing.*;
 
+import java.awt.*;
 import java.util.ArrayList;
 
-import java.awt.Dimension;
 import java.awt.event.ItemListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ActionListener;
@@ -51,7 +51,7 @@ public class Main extends JFrame
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                Button temp = new Button();
+                Button temp = new Button(Main.this);
                 if(movableComponents.isSelected())
                     temp.setMovable(true);
                 else
@@ -87,5 +87,33 @@ public class Main extends JFrame
         menu.add(movableComponents);
         menu.add(addButtonItem);
         setJMenuBar(menuBar);
+    }
+
+    public boolean overlapsOtherWidget(JComponent caller)
+    {
+        for(Object c : components)
+        {
+            if(c != caller) //Make sure we aren't comparing this widget to itself
+            {
+                Point l1 = caller.getLocation();
+                Dimension d1 = caller.getSize();
+
+                JComponent t2 = (JComponent)c;
+                Point l2 = t2.getLocation();
+                Dimension d2 = t2.getSize();
+
+                //Prove no overlap of both rectangle widgets by contradiction. For an explanation, ask co1in
+                if(l1.x > (l2.x + d2.width) || (l1.x+d1.width) < l2.x || (l1.y + d1.height) < l2.y || l1.y > (l2.y + d2.height))
+                {
+                    //There is no overlap
+                }
+                else
+                {
+                    //There is overlap
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }
