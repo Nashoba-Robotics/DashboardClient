@@ -15,6 +15,7 @@ import java.awt.event.ActionEvent;
 public class Main extends JFrame
 {
     JPanel panel;
+    private OverlapChecker overlapChecker;
     ArrayList<MovableComponent> components = new ArrayList<MovableComponent>();
     public Main()
     {
@@ -30,6 +31,8 @@ public class Main extends JFrame
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setVisible(true);
+
+        overlapChecker = new OverlapChecker(components);
     }
 
     public static void main(String[] args)
@@ -89,31 +92,17 @@ public class Main extends JFrame
         setJMenuBar(menuBar);
     }
 
-    public boolean overlapsOtherWidget(JComponent caller)
+    public boolean overlapsOtherWidgetX(JComponent caller, Point newLocation)
     {
-        for(Object c : components)
-        {
-            if(c != caller) //Make sure we aren't comparing this widget to itself
-            {
-                Point l1 = caller.getLocation();
-                Dimension d1 = caller.getSize();
+        return overlapChecker.overlapsOtherWidgetX(caller, newLocation);
+    }
+    public boolean overlapsOtherWidgetY(JComponent caller, Point newLocation)
+    {
+        return overlapChecker.overlapsOtherWidgetY(caller, newLocation);
+    }
 
-                JComponent t2 = (JComponent)c;
-                Point l2 = t2.getLocation();
-                Dimension d2 = t2.getSize();
-
-                //Prove no overlap of both rectangle widgets by contradiction. For an explanation, ask co1in
-                if(l1.x > (l2.x + d2.width) || (l1.x+d1.width) < l2.x || (l1.y + d1.height) < l2.y || l1.y > (l2.y + d2.height))
-                {
-                    //There is no overlap
-                }
-                else
-                {
-                    //There is overlap
-                    return true;
-                }
-            }
-        }
-        return false;
+    public boolean overlapsOtherWidget(JComponent caller, Point newLocation)
+    {
+        return overlapChecker.overlapsOtherWidget(caller, newLocation);
     }
 }
