@@ -5,11 +5,12 @@ import java.awt.*;
 import java.util.ArrayList;
 
 /**
- * Created with IntelliJ IDEA.
- * User: colin
+ * @author co1in
  * Date: 11/13/13
  * Time: 7:39 PM
- * To change this template use File | Settings | File Templates.
+ *
+ * This class is a utility for the widgets to make sure they do not overlap another widget.
+ * They call this class's methods statically when they are being dragged by the mouse
  */
 public class OverlapChecker
 {
@@ -85,6 +86,31 @@ public class OverlapChecker
             }
         }
         return false;
+    }
+
+    public static void checkForCollision(JComponent caller, ArrayList<MovableComponent> components, Point myNewLocation, Point oldLocation)
+    {
+        for(int i = 0; i < components.size(); i++)
+        {
+            JComponent component = (JComponent)components.get(i);
+            //Check for overlap and, if they overlap, allow the mouse to still slide in the direction where the button has space
+            if(OverlapChecker.overlapsOtherWidget(caller, component, myNewLocation))
+            {
+                if(OverlapChecker.overlapsOtherWidgetX(caller, component, myNewLocation) && !OverlapChecker.overlapsOtherWidgetX(caller, component, oldLocation))
+                {
+                    //Overlaps, and it came from a side
+                    myNewLocation = new Point(oldLocation.x, myNewLocation.y);
+                    i = -1;
+                }
+                else if(OverlapChecker.overlapsOtherWidgetY(caller, component, myNewLocation) && !OverlapChecker.overlapsOtherWidgetY(caller, component, oldLocation))
+                {
+                    //Overlaps, and it came from a top or bottom
+                    myNewLocation = new Point(myNewLocation.x, oldLocation.y);
+                    i = -1;
+                }
+            }
+        }
+        caller.setLocation(myNewLocation);
     }
 
     /*NOT FULLY IMPLEMENTED YET/ BUGGY
