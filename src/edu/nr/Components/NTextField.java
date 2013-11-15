@@ -29,7 +29,6 @@ public class NTextField extends JPanel implements MovableComponent
         setBorder(new LineBorder(Color.BLACK, 1));
         //setBackground(Color.WHITE);
 
-        label = new JLabel(title);
         field.setText("Text");
 
         add(label);

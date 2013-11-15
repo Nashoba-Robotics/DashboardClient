@@ -101,13 +101,33 @@ public class OverlapChecker
                 if(OverlapChecker.overlapsOtherWidgetX(caller, component, myNewLocation) && !OverlapChecker.overlapsOtherWidgetX(caller, component, oldLocation))
                 {
                     //Overlaps, and it came from a side
-                    myNewLocation = new Point(oldLocation.x, myNewLocation.y);
+
+                    //Instead of moving the component back to where it was, put it exactly to the left or right of the colliding component
+                    if(oldLocation.x > component.getLocation().x + component.getSize().width)
+                    {
+                        myNewLocation = new Point(component.getLocation().x + component.getSize().width + 1, myNewLocation.y);
+                    }
+                    else
+                    {
+                        myNewLocation = new Point(component.getLocation().x - caller.getSize().width - 1, myNewLocation.y);
+                    }
+
                     i = -1;
                 }
                 else if(OverlapChecker.overlapsOtherWidgetY(caller, component, myNewLocation) && !OverlapChecker.overlapsOtherWidgetY(caller, component, oldLocation))
                 {
                     //Overlaps, and it came from a top or bottom
-                    myNewLocation = new Point(myNewLocation.x, oldLocation.y);
+
+                    //Instead of moving the component back to where it was, move it exactly above or below the colliding component
+                    if(oldLocation.y + caller.getSize().height < component.getLocation().y)
+                    {
+                        myNewLocation = new Point(myNewLocation.x, component.getLocation().y - caller.getSize().height - 1);
+                    }
+                    else
+                    {
+                        myNewLocation = new Point(myNewLocation.x, component.getLocation().y + component.getSize().height + 1);
+                    }
+
                     i = -1;
                 }
             }
