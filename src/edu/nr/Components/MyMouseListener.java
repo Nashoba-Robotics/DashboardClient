@@ -1,7 +1,7 @@
 package edu.nr.Components;
 
 import edu.nr.MovableComponent;
-import edu.nr.OverlapChecker;
+import edu.nr.util.OverlapChecker;
 
 import javax.swing.*;
 import java.awt.*;

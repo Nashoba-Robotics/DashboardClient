@@ -19,13 +19,13 @@ public class NTextField extends JPanel implements MovableComponent
     private JTextField field = new JTextField();
     private JLabel label;
 
-    public NTextField(ArrayList<MovableComponent> components, int id, String title)
+    //TODO implement loadfromproperties
+    public NTextField(ArrayList<MovableComponent> components, ArrayList<Property> properties)
     {
         this.id = id;
         this.components = components;
 
         setLayout(new GridLayout(2,1));
-        setBounds(0, 0, 100, 100);
         setBorder(new LineBorder(Color.BLACK, 1));
         //setBackground(Color.WHITE);
 

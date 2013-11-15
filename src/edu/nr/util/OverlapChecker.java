@@ -1,4 +1,6 @@
-package edu.nr;
+package edu.nr.util;
+
+import edu.nr.MovableComponent;
 
 import javax.swing.*;
 import java.awt.*;
