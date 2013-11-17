@@ -2,6 +2,8 @@ package edu.nr.Components;
 
 import edu.nr.Main;
 import edu.nr.MovableComponent;
+import edu.nr.properties.Property;
+import edu.nr.properties.Property.Type;
 
 import javax.swing.*;
 import javax.swing.border.LineBorder;
@@ -65,7 +67,7 @@ public class NButton extends JButton implements MovableComponent
             {
                 for(int i = 0; i < properties.size(); i++)
                 {
-                    if(p.getTitle().equals(properties.get(i).getTitle()))
+                    if(p.getType().equals(properties.get(i).getType()))
                     {
                         properties.set(i, p);
                     }
@@ -78,28 +80,28 @@ public class NButton extends JButton implements MovableComponent
     {
         for(Property p : properties)
         {
-            String name = p.getTitle();
-            if(name.equals("size"))
+            Type type = p.getType();
+            if(type == Type.SIZE)
             {
                 setSize((Dimension)p.getData());
             }
-            else if(name.equals("location"))
+            else if(type == Type.LOCATION)
             {
                 setLocation((Point)p.getData());
             }
-            else if(name.equals("foreground"))
+            else if(type == Type.FOREGROUND)
             {
                 setForeground((Color)p.getData());
             }
-            else if(name.equals("background"))
+            else if(type == Type.BACKGROUND)
             {
                 setBackground((Color)p.getData());
             }
-            else if(name.equals("id"))
+            else if(type == Type.ID)
             {
                 this.id = (Integer)p.getData();
             }
-            else if(name.equals("name"))
+            else if(type == Type.NAME)
             {
                 setText((String)p.getData());
             }
@@ -109,14 +111,20 @@ public class NButton extends JButton implements MovableComponent
     private ArrayList<Property> getDefaultProperties()
     {
         ArrayList<Property> tempProperties = new ArrayList<Property>();
-        tempProperties.add(new Property("size", new Dimension(100,30)));
-        tempProperties.add(new Property("location", new Point(0,0)));
-        tempProperties.add(new Property("foreground", Color.BLACK));
-        tempProperties.add(new Property("background", Color.WHITE));
-        tempProperties.add(new Property("name", "Button"));
-        tempProperties.add(new Property("id", -1));
+        tempProperties.add(new Property(Type.SIZE, new Dimension(100,30)));
+        tempProperties.add(new Property(Type.LOCATION, new Point(0,0)));
+        tempProperties.add(new Property(Type.FOREGROUND, Color.BLACK));
+        tempProperties.add(new Property(Type.BACKGROUND, Color.WHITE));
+        tempProperties.add(new Property(Type.NAME, "Button"));
+        tempProperties.add(new Property(Type.ID, -1));
+        tempProperties.add(new Property(Type.WIDGET_TYPE, 1));
 
         return tempProperties;
+    }
+
+    public ArrayList<Property> getProperties()
+    {
+        return properties;
     }
 
     @Override
@@ -135,5 +143,10 @@ public class NButton extends JButton implements MovableComponent
     public void setMovable(boolean movable)
     {
         setEnabled(!movable);
+    }
+
+    public String getWidgetName()
+    {
+        return "button";
     }
 }

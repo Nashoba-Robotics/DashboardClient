@@ -1,6 +1,7 @@
 package edu.nr.Components;
 
 import edu.nr.MovableComponent;
+import edu.nr.properties.Property;
 
 import javax.swing.*;
 import javax.swing.border.LineBorder;
@@ -52,6 +53,8 @@ public class NTextField extends JPanel implements MovableComponent
     {
         return id;
     }
+
+
 
     @Override
     public void setMovable(boolean movable)

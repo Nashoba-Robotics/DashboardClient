@@ -2,7 +2,7 @@ package edu.nr;
 
 import edu.nr.Components.NButton;
 import edu.nr.Components.NTextField;
-import edu.nr.Components.Property;
+import edu.nr.properties.Property;
 
 import javax.swing.*;
 
@@ -66,7 +66,7 @@ public class Main extends JFrame
             public void actionPerformed(ActionEvent e)
             {
                 ArrayList<Property> properties = new ArrayList<Property>();
-                properties.add(new Property("size", new Dimension(200,200)));
+                properties.add(new Property(Property.Type.SIZE, new Dimension(200,200)));
                 NButton temp = new NButton(components, null);
                 if(movableComponents.isSelected())
                     temp.setMovable(true);
