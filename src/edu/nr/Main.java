@@ -29,7 +29,7 @@ public class Main extends JFrame
     public Main()
     {
         super("Dashboard Client");
-        setSize(500, 500);
+        setSize(1000, 700);
 
         addMenuBar();
 
@@ -90,7 +90,6 @@ public class Main extends JFrame
                 else
                     temp.setMovable(false);
                 components.add(temp);
-                temp.setSize(150,50);
                 panel.add(temp);
                 repaint();
                 revalidate();
@@ -107,11 +106,13 @@ public class Main extends JFrame
             {
                 if(movableComponents.isSelected())
                 {
+                    setTitle("Dashboard Client (Editable)");
                     for(MovableComponent b : components)
                         b.setMovable(true);
                 }
                 else
                 {
+                    setTitle("Dashboard Client");
                     for(MovableComponent b : components)
                         b.setMovable(false);
                 }

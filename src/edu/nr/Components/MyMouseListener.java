@@ -5,9 +5,7 @@ import edu.nr.util.OverlapChecker;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
+import java.awt.event.*;
 import java.util.ArrayList;
 
 /**
@@ -36,9 +34,11 @@ public class MyMouseListener implements MouseListener, MouseMotionListener
     @Override
     public void mousePressed(MouseEvent e)
     {
-        if(e.isPopupTrigger() && !caller.isEnabled())
+        if(e.isMetaDown() || e.isPopupTrigger())
         {
-            doPop(e);
+            //Only show popup menu if the items are editable
+            if(!caller.isEnabled())
+                doPop(e);
         }
 
         if(!caller.isEnabled())
@@ -54,8 +54,26 @@ public class MyMouseListener implements MouseListener, MouseMotionListener
     private void doPop(MouseEvent e)
     {
         JPopupMenu menu = new JPopupMenu();
-        menu.add(new JMenuItem("Properties"));
-        menu.add(new JMenuItem("Remove Item"));
+        JMenuItem propertiesItem = new JMenuItem("Properties");
+        propertiesItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                System.out.println("Properties not Implemented Yet");
+            }
+        });
+        menu.add(propertiesItem);
+
+        JMenuItem removeItem = new JMenuItem("Remove Item");
+        removeItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                System.out.println("Removing Items not Implemented Yet");
+            }
+        });
+
+        menu.add(removeItem);
         menu.show(e.getComponent(), e.getX(), e.getY());
     }
 

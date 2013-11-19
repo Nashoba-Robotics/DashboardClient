@@ -11,4 +11,5 @@ public interface MovableComponent
     public void setMovable(boolean movable);
     public ArrayList<Property> getProperties();
     public String getWidgetName();
+    public void applyWidgetType();
 }

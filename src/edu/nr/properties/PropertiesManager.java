@@ -37,8 +37,26 @@ public class PropertiesManager
         return properties;
     }
 
+    public static void loadPropertiesIntoArray(ArrayList<Property> defaultProperties, ArrayList<Property> loadingProperties)
+    {
+        if(loadingProperties != null)
+        {
+            for(Property p : loadingProperties)
+            {
+                for(int i = 0; i < defaultProperties.size(); i++)
+                {
+                    if(p.getType().equals(defaultProperties.get(i).getType()))
+                    {
+                        defaultProperties.set(i, p);
+                    }
+                }
+            }
+        }
+    }
+
     public boolean writeAllPropertiesToFile(String path, ArrayList<MovableComponent> components)
     {
+        //TODO Add saving of VALUE and FONT_SIZE
         try
         {
             DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();

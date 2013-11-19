@@ -2,6 +2,7 @@ package edu.nr.Components;
 
 import edu.nr.Main;
 import edu.nr.MovableComponent;
+import edu.nr.properties.PropertiesManager;
 import edu.nr.properties.Property;
 import edu.nr.properties.Property.Type;
 
@@ -50,34 +51,20 @@ public class NButton extends JButton implements MovableComponent
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                //Talk to network here
+                //TODO Talk to network here
             }
         });
     }
 
     private void loadProperties(ArrayList<Property> loadedProperties)
     {
-        for(Property p : getDefaultProperties())
-        {
-            properties.add(p);
-        }
-        if(loadedProperties != null)
-        {
-            for(Property p : loadedProperties)
-            {
-                for(int i = 0; i < properties.size(); i++)
-                {
-                    if(p.getType().equals(properties.get(i).getType()))
-                    {
-                        properties.set(i, p);
-                    }
-                }
-            }
-        }
+        properties = getDefaultProperties();
+        PropertiesManager.loadPropertiesIntoArray(properties, loadedProperties);
     }
 
     private void applyProperties()
     {
+        //TODO Change this way of getting values to match that of NTextField
         for(Property p : properties)
         {
             Type type = p.getType();
@@ -105,6 +92,10 @@ public class NButton extends JButton implements MovableComponent
             {
                 setText((String)p.getData());
             }
+            else if(type == Type.FONT_SIZE)
+            {
+                setFont(new Font("Arial",Font.PLAIN, ((Integer)p.getData())));
+            }
         }
     }
 
@@ -118,7 +109,8 @@ public class NButton extends JButton implements MovableComponent
         tempProperties.add(new Property(Type.NAME, "Button"));
         tempProperties.add(new Property(Type.ID, -1));
         tempProperties.add(new Property(Type.WIDGET_TYPE, 1));
-
+        tempProperties.add(new Property(Type.VALUE, null));
+        tempProperties.add(new Property(Type.FONT_SIZE, 12));
         return tempProperties;
     }
 
@@ -148,5 +140,11 @@ public class NButton extends JButton implements MovableComponent
     public String getWidgetName()
     {
         return "button";
+    }
+
+    @Override
+    public void applyWidgetType()
+    {
+        //TODO Implement me!
     }
 }
