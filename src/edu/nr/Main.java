@@ -2,6 +2,7 @@ package edu.nr;
 
 import edu.nr.Components.NButton;
 import edu.nr.Components.NTextField;
+import edu.nr.properties.PropertiesManager;
 import edu.nr.properties.Property;
 
 import javax.swing.*;
@@ -25,15 +26,17 @@ import java.awt.event.ActionEvent;
 public class Main extends JFrame
 {
     JPanel panel;
+    JFileChooser fc;
     private ArrayList<MovableComponent> components = new ArrayList<MovableComponent>();
     public Main()
     {
         super("Dashboard Client");
+        panel = new JPanel();
+        fc = new JFileChooser();
         setSize(1000, 700);
 
         addMenuBar();
 
-        panel = new JPanel();
         panel.setLayout(null);
         panel.setDoubleBuffered(true);
         add(panel);
@@ -65,16 +68,7 @@ public class Main extends JFrame
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                ArrayList<Property> properties = new ArrayList<Property>();
-                properties.add(new Property(Property.Type.SIZE, new Dimension(200,200)));
-                NButton temp = new NButton(components, null);
-                if(movableComponents.isSelected())
-                    temp.setMovable(true);
-                else
-                    temp.setMovable(false);
-                components.add(temp);
-                panel.add(temp);
-                repaint();
+                addButton();
             }
         });
 
@@ -84,15 +78,17 @@ public class Main extends JFrame
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                NTextField temp = new NTextField(components, null);
-                if(movableComponents.isSelected())
-                    temp.setMovable(true);
-                else
-                    temp.setMovable(false);
-                components.add(temp);
-                panel.add(temp);
-                repaint();
-                revalidate();
+                addTextField();
+            }
+        });
+
+        JMenuItem saveFile = new JMenuItem(("Save Layout"));
+        saveFile.addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                showSaveDialog();
             }
         });
 
@@ -124,5 +120,39 @@ public class Main extends JFrame
         menu.add(addFieldItem);
         menu.add(addButtonItem);
         setJMenuBar(menuBar);
+    }
+
+    private void addTextField()
+    {
+        NTextField temp = new NTextField(components, null);
+        if(movableComponents.isSelected())
+            temp.setMovable(true);
+        else
+            temp.setMovable(false);
+        components.add(temp);
+        panel.add(temp);
+        repaint();
+        revalidate();
+    }
+
+    private void addButton()
+    {
+        ArrayList<Property> properties = new ArrayList<Property>();
+        properties.add(new Property(Property.Type.SIZE, new Dimension(200,200)));
+        NButton temp = new NButton(components, null);
+        if(movableComponents.isSelected())
+            temp.setMovable(true);
+        else
+            temp.setMovable(false);
+        components.add(temp);
+        panel.add(temp);
+        repaint();
+    }
+
+    private void showSaveDialog()
+    {
+        //TODO Finish implementing this
+        fc.setDialogTitle("Choose a save file");
+        int returnValue = fc.showSaveDialog(this);
     }
 }

@@ -36,8 +36,8 @@ public class NButton extends JButton implements MovableComponent
         applyProperties();
 
         setBorder(new LineBorder(Color.BLACK, 1));
-        setBackground(Color.WHITE);
-        setOpaque(true);
+        //setBackground(Color.WHITE);
+        //setOpaque(true);
         setSize(100, 30);
         setFocusable(false);
         setForeground(Color.BLACK);
@@ -62,10 +62,15 @@ public class NButton extends JButton implements MovableComponent
         PropertiesManager.loadPropertiesIntoArray(properties, loadedProperties);
     }
 
-    private void applyProperties()
+    public void applyProperties()
+    {
+        applyProperties(properties);
+    }
+
+    public void applyProperties(ArrayList<Property> applyingProperties)
     {
         //TODO Change this way of getting values to match that of NTextField
-        for(Property p : properties)
+        for(Property p : applyingProperties)
         {
             Type type = p.getType();
             if(type == Type.SIZE)
@@ -105,7 +110,7 @@ public class NButton extends JButton implements MovableComponent
         tempProperties.add(new Property(Type.SIZE, new Dimension(100,30)));
         tempProperties.add(new Property(Type.LOCATION, new Point(0,0)));
         tempProperties.add(new Property(Type.FOREGROUND, Color.BLACK));
-        tempProperties.add(new Property(Type.BACKGROUND, Color.WHITE));
+        tempProperties.add(new Property(Type.BACKGROUND, new Color(220,220,220)));
         tempProperties.add(new Property(Type.NAME, "Button"));
         tempProperties.add(new Property(Type.ID, -1));
         tempProperties.add(new Property(Type.WIDGET_TYPE, 1));
@@ -145,6 +150,6 @@ public class NButton extends JButton implements MovableComponent
     @Override
     public void applyWidgetType()
     {
-        //TODO Implement me!
+        //Nothing to do here because button only has one type
     }
 }

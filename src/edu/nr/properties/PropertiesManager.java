@@ -2,9 +2,8 @@ package edu.nr.properties;
 
 import edu.nr.Components.NButton;
 import edu.nr.MovableComponent;
-import org.w3c.dom.Attr;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
+import org.w3c.dom.*;
+import org.xml.sax.SAXException;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -16,6 +15,7 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import java.awt.*;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 
 /**
@@ -28,33 +28,52 @@ import java.awt.Point;
 
 public class PropertiesManager
 {
-    public ArrayList<Property> loadElementsFromFile(String path, ArrayList<MovableComponent> components)
+    public ArrayList<Property> loadElementsFromFile(String path)
     {
         ArrayList<Property> properties = new ArrayList<Property>();
 
-        //TODO Read the properties from the xml file for all widgets in the file
+        try
+        {
+            File xmlFile = new File(path);
+            DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+            Document doc = dBuilder.parse(xmlFile);
+            System.out.println("Reading from: " + path);
+            doc.getDocumentElement().normalize();
+
+            Element root = doc.getDocumentElement();
+            NodeList nodeList = root.getChildNodes();
+            for(int i = 0; i < nodeList.getLength(); i++)
+            {
+                Node node = nodeList.item(0);
+                if(node.getNodeType() == Node.ELEMENT_NODE)
+                {
+                    Element element = (Element)node;
+                    String name = element.getTagName();
+
+                    properties.add(new Property(Property.Type.ID, (Integer.parseInt(element.getAttribute("id")))));
+                    properties.add(new Property(Property.Type.NAME, element.getElementsByTagName("")));
+                }
+            }
+        }
+        catch (ParserConfigurationException e)
+        {
+            e.printStackTrace();
+        }
+        catch (SAXException e)
+        {
+            e.printStackTrace();
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+
 
         return properties;
     }
 
-    public static void loadPropertiesIntoArray(ArrayList<Property> defaultProperties, ArrayList<Property> loadingProperties)
-    {
-        if(loadingProperties != null)
-        {
-            for(Property p : loadingProperties)
-            {
-                for(int i = 0; i < defaultProperties.size(); i++)
-                {
-                    if(p.getType().equals(defaultProperties.get(i).getType()))
-                    {
-                        defaultProperties.set(i, p);
-                    }
-                }
-            }
-        }
-    }
-
-    public boolean writeAllPropertiesToFile(String path, ArrayList<MovableComponent> components)
+    public static boolean writeAllPropertiesToFile(String path, ArrayList<MovableComponent> components)
     {
         //TODO Add saving of VALUE and FONT_SIZE
         try
@@ -131,13 +150,24 @@ public class PropertiesManager
                 p = Property.getPropertyFromType(Property.Type.WIDGET_TYPE, properties);
                 Element type = doc.createElement("type");
                 type.setAttribute("value", String.valueOf(p.getData()));
+
+                //Add the value
+                p = Property.getPropertyFromType(Property.Type.VALUE, properties);
+                Element value = doc.createElement("value");
+                type.setAttribute("val", String.valueOf(p.getData()));
+
+                //Add the Font size
+                //Add the type of widget
+                p = Property.getPropertyFromType(Property.Type.FONT_SIZE, properties);
+                Element fontSize = doc.createElement("fontSize");
+                type.setAttribute("size", String.valueOf(p.getData()));
             }
 
             // write the content into xml file
             TransformerFactory transformerFactory = TransformerFactory.newInstance();
             Transformer transformer = transformerFactory.newTransformer();
             DOMSource source = new DOMSource(doc);
-            StreamResult result = new StreamResult(new File(path + "save.xml"));
+            StreamResult result = new StreamResult(new File(path));
 
             // Output to console for testing
             // StreamResult result = new StreamResult(System.out);
@@ -158,6 +188,23 @@ public class PropertiesManager
         {
             e.printStackTrace();
             return false;
+        }
+    }
+
+    public static void loadPropertiesIntoArray(ArrayList<Property> defaultProperties, ArrayList<Property> loadingProperties)
+    {
+        if(loadingProperties != null)
+        {
+            for(Property p : loadingProperties)
+            {
+                for(int i = 0; i < defaultProperties.size(); i++)
+                {
+                    if(p.getType().equals(defaultProperties.get(i).getType()))
+                    {
+                        defaultProperties.set(i, p);
+                    }
+                }
+            }
         }
     }
 }

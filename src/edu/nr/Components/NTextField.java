@@ -38,7 +38,7 @@ public class NTextField extends JPanel implements MovableComponent
         applyProperties();
 
         setLayout(new GridLayout(2,1));
-        setBorder(new EmptyBorder(0,0,0,0));
+        setBorder(new LineBorder(Color.BLACK, 1));
         setBackground(new Color(200,200,200));
 
         add(label);
@@ -111,12 +111,12 @@ public class NTextField extends JPanel implements MovableComponent
 
     @Override
     public ArrayList<Property> getProperties() {
-        return null;
+        return properties;
     }
 
     @Override
     public String getWidgetName() {
-        return null;
+        return "text-field";
     }
 
     @Override
