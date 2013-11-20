@@ -1,6 +1,8 @@
 package edu.nr.Components;
 
 import edu.nr.MovableComponent;
+import edu.nr.properties.PropertiesManager;
+import edu.nr.properties.Property;
 import edu.nr.util.OverlapChecker;
 
 import javax.swing.*;
@@ -103,6 +105,9 @@ public class MyMouseListener implements MouseListener, MouseMotionListener
 
             //Check to see if we were dragged
             OverlapChecker.checkForCollision(caller, components, myNewLocation, oldLocation);
+            caller.repaint();
+            caller.invalidate();
+            Property.getPropertyFromType(Property.Type.LOCATION, ((MovableComponent)caller).getProperties()).setData(caller.getLocation());
         }
     }
 

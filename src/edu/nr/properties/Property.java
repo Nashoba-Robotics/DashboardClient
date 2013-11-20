@@ -12,7 +12,7 @@ public class Property<T>
     private T data;
     private Type type;
 
-    public enum Type{NAME, SIZE, LOCATION, FOREGROUND, BACKGROUND, ID, WIDGET_TYPE, VALUE, FONT_SIZE}
+    public enum Type{NAME, SIZE, LOCATION, FOREGROUND, BACKGROUND, WIDGET_TYPE, VALUE, FONT_SIZE}
 
     public Property(Type propertyType, T propertyData)
     {

@@ -119,6 +119,7 @@ public class Main extends JFrame
 
         menu.add(addFieldItem);
         menu.add(addButtonItem);
+        menu.add(saveFile);
         setJMenuBar(menuBar);
     }
 
@@ -151,8 +152,15 @@ public class Main extends JFrame
 
     private void showSaveDialog()
     {
-        //TODO Finish implementing this
         fc.setDialogTitle("Choose a save file");
         int returnValue = fc.showSaveDialog(this);
+        if(returnValue == JFileChooser.APPROVE_OPTION)
+        {
+            PropertiesManager.writeAllPropertiesToFile(fc.getSelectedFile().getPath(), components);
+        }
+        else
+        {
+            System.out.println("save aborted");
+        }
     }
 }

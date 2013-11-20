@@ -49,10 +49,9 @@ public class PropertiesManager
                 if(node.getNodeType() == Node.ELEMENT_NODE)
                 {
                     Element element = (Element)node;
-                    String name = element.getTagName();
+                    String widgetName = element.getTagName();
 
-                    properties.add(new Property(Property.Type.ID, (Integer.parseInt(element.getAttribute("id")))));
-                    properties.add(new Property(Property.Type.NAME, element.getElementsByTagName("")));
+                    properties.add(new Property(Property.Type.NAME, element.getAttribute("name")));
                 }
             }
         }
@@ -91,10 +90,10 @@ public class PropertiesManager
                 rootElement.appendChild(widget);
                 ArrayList<Property> properties = movableComponent.getProperties();
 
-                //Write ID
-                Property p = Property.getPropertyFromType(Property.Type.ID, properties);
+                //Write Name
+                Property p = Property.getPropertyFromType(Property.Type.NAME, properties);
                 assert p != null;
-                Attr attr = doc.createAttribute("id");
+                Attr attr = doc.createAttribute("name");
                 attr.setValue(String.valueOf(p.getData()));
                 widget.setAttributeNode(attr);
 
@@ -120,14 +119,6 @@ public class PropertiesManager
                 size.setAttributeNode(height);
                 widget.appendChild(size);
 
-                //Add the Name
-                p = Property.getPropertyFromType(Property.Type.NAME, properties);
-                Element name = doc.createElement("name");
-                Attr nameValue = doc.createAttribute("value");
-                nameValue.setValue((String)p.getData());
-                name.setAttributeNode(nameValue);
-                widget.appendChild(name);
-
                 //Add a background Color
                 p = Property.getPropertyFromType(Property.Type.BACKGROUND, properties);
                 Element background = doc.createElement("background");
@@ -150,17 +141,20 @@ public class PropertiesManager
                 p = Property.getPropertyFromType(Property.Type.WIDGET_TYPE, properties);
                 Element type = doc.createElement("type");
                 type.setAttribute("value", String.valueOf(p.getData()));
+                widget.appendChild(type);
 
                 //Add the value
                 p = Property.getPropertyFromType(Property.Type.VALUE, properties);
                 Element value = doc.createElement("value");
-                type.setAttribute("val", String.valueOf(p.getData()));
+                value.setAttribute("val", String.valueOf(p.getData()));
+                widget.appendChild(value);
 
                 //Add the Font size
                 //Add the type of widget
                 p = Property.getPropertyFromType(Property.Type.FONT_SIZE, properties);
                 Element fontSize = doc.createElement("fontSize");
-                type.setAttribute("size", String.valueOf(p.getData()));
+                fontSize.setAttribute("size", String.valueOf(p.getData()));
+                widget.appendChild(fontSize);
             }
 
             // write the content into xml file

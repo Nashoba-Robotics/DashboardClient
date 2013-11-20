@@ -17,7 +17,6 @@ import java.util.ArrayList;
  */
 public class NTextField extends JPanel implements MovableComponent
 {
-    private int id = -1;
     private ArrayList<MovableComponent> components;
     private JTextField field;
     private JLabel label;
@@ -26,7 +25,6 @@ public class NTextField extends JPanel implements MovableComponent
 
     public NTextField(ArrayList<MovableComponent> components, ArrayList<Property> loadedProperties)
     {
-        this.id = id;
         this.components = components;
 
         label = new JLabel();
@@ -65,25 +63,11 @@ public class NTextField extends JPanel implements MovableComponent
         setBackground((Color)Property.getPropertyFromType(Property.Type.BACKGROUND, properties).getData());
         setSize((Dimension) Property.getPropertyFromType(Property.Type.SIZE, properties).getData());
         setLocation((Point)Property.getPropertyFromType(Property.Type.LOCATION, properties).getData());
-        id = (Integer)Property.getPropertyFromType(Property.Type.ID, properties).getData();
         widgetType = (Integer)Property.getPropertyFromType(Property.Type.WIDGET_TYPE, properties).getData();
 
         //Load the font size
         label.setFont(new Font("Arial", Font.PLAIN, (Integer)Property.getPropertyFromType(Property.Type.FONT_SIZE, properties).getData()-4));
         field.setFont(new Font("Arial", Font.PLAIN, (Integer)Property.getPropertyFromType(Property.Type.FONT_SIZE, properties).getData()));
-    }
-
-
-    @Override
-    public void setId(int id)
-    {
-        this.id = id;
-    }
-
-    @Override
-    public int getId()
-    {
-        return id;
     }
 
     private ArrayList<Property> getDefaultProperties()
@@ -94,7 +78,6 @@ public class NTextField extends JPanel implements MovableComponent
         tempProperties.add(new Property(Property.Type.FOREGROUND, Color.BLACK));
         tempProperties.add(new Property(Property.Type.BACKGROUND, Color.WHITE));
         tempProperties.add(new Property(Property.Type.NAME, "Text Name"));
-        tempProperties.add(new Property(Property.Type.ID, -1));
         tempProperties.add(new Property(Property.Type.WIDGET_TYPE, 1));
         tempProperties.add(new Property(Property.Type.VALUE, "Example Text"));
         tempProperties.add(new Property(Property.Type.FONT_SIZE, 15));

@@ -89,10 +89,6 @@ public class NButton extends JButton implements MovableComponent
             {
                 setBackground((Color)p.getData());
             }
-            else if(type == Type.ID)
-            {
-                this.id = (Integer)p.getData();
-            }
             else if(type == Type.NAME)
             {
                 setText((String)p.getData());
@@ -112,7 +108,6 @@ public class NButton extends JButton implements MovableComponent
         tempProperties.add(new Property(Type.FOREGROUND, Color.BLACK));
         tempProperties.add(new Property(Type.BACKGROUND, new Color(220,220,220)));
         tempProperties.add(new Property(Type.NAME, "Button"));
-        tempProperties.add(new Property(Type.ID, -1));
         tempProperties.add(new Property(Type.WIDGET_TYPE, 1));
         tempProperties.add(new Property(Type.VALUE, null));
         tempProperties.add(new Property(Type.FONT_SIZE, 12));
@@ -122,18 +117,6 @@ public class NButton extends JButton implements MovableComponent
     public ArrayList<Property> getProperties()
     {
         return properties;
-    }
-
-    @Override
-    public void setId(int id)
-    {
-        this.id = id;
-    }
-
-    @Override
-    public int getId()
-    {
-        return id;
     }
 
     @Override
