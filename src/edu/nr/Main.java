@@ -13,6 +13,7 @@ import java.awt.*;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
+//TODO Need to change buttons and textfields to jpanels, change movablecomponent to abstract class
 //TODO Add a properties right click menu to widgets
 //TODO Add remove widget functionality to right click menu
 //TODO When many widgets are being added, don't add them on top of each other

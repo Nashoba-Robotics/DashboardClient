@@ -1,5 +1,6 @@
 package edu.nr.Components;
 
+import edu.nr.Components.mouse_listeners.MyMouseListener;
 import edu.nr.Main;
 import edu.nr.MovableComponent;
 import edu.nr.properties.PropertiesManager;
@@ -41,6 +42,8 @@ public class NButton extends JButton implements MovableComponent
         setSize(100, 30);
         setFocusable(false);
         setForeground(Color.BLACK);
+
+        //putClientProperty("JComponent.sizeVariant", "small");
 
         MyMouseListener listener = new MyMouseListener(NButton.this, components);
         addMouseListener(listener);
@@ -119,9 +122,11 @@ public class NButton extends JButton implements MovableComponent
         return properties;
     }
 
+    private boolean isMovable = false;
     @Override
     public void setMovable(boolean movable)
     {
+        isMovable = movable;
         setEnabled(!movable);
     }
 
@@ -134,5 +139,11 @@ public class NButton extends JButton implements MovableComponent
     public void applyWidgetType()
     {
         //Nothing to do here because button only has one type
+    }
+
+    @Override
+    public boolean isMovable()
+    {
+        return isMovable;
     }
 }

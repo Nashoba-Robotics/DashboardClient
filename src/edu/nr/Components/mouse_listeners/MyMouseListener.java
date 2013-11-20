@@ -1,4 +1,4 @@
-package edu.nr.Components;
+package edu.nr.Components.mouse_listeners;
 
 import edu.nr.MovableComponent;
 import edu.nr.properties.PropertiesManager;
@@ -39,11 +39,10 @@ public class MyMouseListener implements MouseListener, MouseMotionListener
         if(e.isMetaDown() || e.isPopupTrigger())
         {
             //Only show popup menu if the items are editable
-            if(!caller.isEnabled())
+            if(((MovableComponent)caller).isMovable())
                 doPop(e);
         }
-
-        if(!caller.isEnabled())
+        else if(!caller.isEnabled())
         {
             screenX = e.getXOnScreen();
             screenY = e.getYOnScreen();

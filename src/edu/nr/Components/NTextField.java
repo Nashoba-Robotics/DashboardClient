@@ -1,5 +1,6 @@
 package edu.nr.Components;
 
+import edu.nr.Components.mouse_listeners.MyMouseListener;
 import edu.nr.MovableComponent;
 import edu.nr.properties.PropertiesManager;
 import edu.nr.properties.Property;
@@ -86,8 +87,15 @@ public class NTextField extends JPanel implements MovableComponent
     }
 
     @Override
+    public boolean isMovable() {
+        return isMovable;
+    }
+
+    private boolean isMovable = false;
+    @Override
     public void setMovable(boolean movable)
     {
+        isMovable = movable;
         setEnabled(!movable);
         field.setEnabled(!movable);
     }
