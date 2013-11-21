@@ -1,11 +1,15 @@
 package edu.nr.Components.mouse_listeners;
 
+import edu.nr.Components.NButton;
+import edu.nr.Main;
 import edu.nr.MovableComponent;
 import edu.nr.properties.PropertiesManager;
 import edu.nr.properties.Property;
 import edu.nr.util.OverlapChecker;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
@@ -23,32 +27,47 @@ public class MyMouseListener implements MouseListener, MouseMotionListener
     private volatile int myY = 0;
 
     private JComponent caller;
+    private Color oldButtonColor;
+    private boolean callerIsButton = false;
     private ArrayList<MovableComponent> components;
     public MyMouseListener(JComponent caller, ArrayList<MovableComponent> components)
     {
         this.caller = caller;
+        callerIsButton = (caller.getClass() == NButton.class);
+        System.out.println("Caller is button");
         this.components = components;
     }
     @Override
-    public void mouseClicked(MouseEvent e) {
+    public void mouseClicked(MouseEvent e)
+    {
+
     }
 
     @Override
     public void mousePressed(MouseEvent e)
     {
-        if(e.isMetaDown() || e.isPopupTrigger())
+        if(((MovableComponent)caller).isMovable())
         {
-            //Only show popup menu if the items are editable
-            if(((MovableComponent)caller).isMovable())
+            if(e.isMetaDown() || e.isPopupTrigger())
+            {
                 doPop(e);
-        }
-        else if(!caller.isEnabled())
-        {
-            screenX = e.getXOnScreen();
-            screenY = e.getYOnScreen();
+            }
+            else if(((MovableComponent)caller).isMovable())
+            {
+                screenX = e.getXOnScreen();
+                screenY = e.getYOnScreen();
 
-            myX = caller.getX();
-            myY = caller.getY();
+                myX = caller.getX();
+                myY = caller.getY();
+            }
+        }
+        else
+        {
+            if(callerIsButton)
+            {
+                oldButtonColor = caller.getBackground();
+                caller.setBackground(Color.blue);
+            }
         }
     }
 
@@ -79,21 +98,39 @@ public class MyMouseListener implements MouseListener, MouseMotionListener
     }
 
     @Override
-    public void mouseReleased(MouseEvent e) {
+    public void mouseReleased(MouseEvent e)
+    {
+        Main.main.getContentPane().invalidate();
+        Main.main.repaint();
+
+        if(callerIsButton && ((MovableComponent)caller).isMovable())
+        {
+            caller.setBackground(oldButtonColor);
+        }
     }
 
     @Override
-    public void mouseEntered(MouseEvent e) {
+    public void mouseEntered(MouseEvent e)
+    {
+        if(((MovableComponent)caller).isMovable())
+        {
+            caller.setBorder(new LineBorder(Color.WHITE, 1, false));
+        }
     }
 
     @Override
-    public void mouseExited(MouseEvent e) {
+    public void mouseExited(MouseEvent e)
+    {
+        if(((MovableComponent)caller).isMovable())
+        {
+            caller.setBorder(new EmptyBorder(0,0,0,0));
+        }
     }
 
     @Override
     public void mouseDragged(MouseEvent e)
     {
-        if(!caller.isEnabled())
+        if(((MovableComponent)caller).isMovable())
         {
             int deltaX = e.getXOnScreen() - screenX;
             int deltaY = e.getYOnScreen() - screenY;
@@ -104,13 +141,15 @@ public class MyMouseListener implements MouseListener, MouseMotionListener
 
             //Check to see if we were dragged
             OverlapChecker.checkForCollision(caller, components, myNewLocation, oldLocation);
-            caller.repaint();
-            caller.invalidate();
+            Main.main.repaint();
+            Main.main.invalidate();
             Property.getPropertyFromType(Property.Type.LOCATION, ((MovableComponent)caller).getProperties()).setData(caller.getLocation());
         }
     }
 
     @Override
-    public void mouseMoved(MouseEvent e) {
+    public void mouseMoved(MouseEvent e)
+    {
+
     }
 }

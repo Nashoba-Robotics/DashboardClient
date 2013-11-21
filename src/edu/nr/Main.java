@@ -6,6 +6,7 @@ import edu.nr.properties.PropertiesManager;
 import edu.nr.properties.Property;
 
 import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 import java.util.ArrayList;
 
@@ -13,7 +14,6 @@ import java.awt.*;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
-//TODO Need to change buttons and textfields to jpanels, change movablecomponent to abstract class
 //TODO Add a properties right click menu to widgets
 //TODO Add remove widget functionality to right click menu
 //TODO When many widgets are being added, don't add them on top of each other
@@ -27,13 +27,15 @@ import java.awt.event.ActionEvent;
 public class Main extends JFrame
 {
     JPanel panel;
-    JFileChooser fc;
+    JFileChooser saveChooser, openChooser;
     private ArrayList<MovableComponent> components = new ArrayList<MovableComponent>();
     public Main()
     {
         super("Dashboard Client");
         panel = new JPanel();
-        fc = new JFileChooser();
+        panel.setBackground(new Color(50,50,50));
+        saveChooser = new JFileChooser();
+        openChooser = new JFileChooser();
         setSize(1000, 700);
 
         addMenuBar();
@@ -47,9 +49,22 @@ public class Main extends JFrame
         setVisible(true);
     }
 
+
+    public static Main main;
     public static void main(String[] args)
     {
-        new Main();
+        try {
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (UnsupportedLookAndFeelException e) {
+            e.printStackTrace();
+        }
+        main = new Main();
     }
 
     private JCheckBoxMenuItem movableComponents;
@@ -116,11 +131,22 @@ public class Main extends JFrame
             }
         });
 
+        JMenuItem openFile = new JMenuItem("Open...");
+        openFile.addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                showOpenDialog();
+            }
+        });
+
         viewMenu.add(movableComponents);
 
+        menu.add(openFile);
+        menu.add(saveFile);
         menu.add(addFieldItem);
         menu.add(addButtonItem);
-        menu.add(saveFile);
         setJMenuBar(menuBar);
     }
 
@@ -153,15 +179,32 @@ public class Main extends JFrame
 
     private void showSaveDialog()
     {
-        fc.setDialogTitle("Choose a save file");
-        int returnValue = fc.showSaveDialog(this);
+        saveChooser.setDialogTitle("Choose a save file");
+        int returnValue = saveChooser.showSaveDialog(this);
         if(returnValue == JFileChooser.APPROVE_OPTION)
         {
-            PropertiesManager.writeAllPropertiesToFile(fc.getSelectedFile().getPath(), components);
+            PropertiesManager.writeAllPropertiesToFile(saveChooser.getSelectedFile().getPath(), components);
         }
         else
         {
             System.out.println("save aborted");
         }
+    }
+
+    private void showOpenDialog()
+    {
+        FileNameExtensionFilter xmlfilter = new FileNameExtensionFilter("xml files (*.xml)", "xml");
+        openChooser.setFileFilter(xmlfilter);
+        openChooser.setDialogTitle("Select a file to open");
+        int returnValue = openChooser.showOpenDialog(this);
+        if(returnValue == JFileChooser.APPROVE_OPTION)
+        {
+            PropertiesManager.loadElementsFromFile(openChooser.getSelectedFile().getPath());
+        }
+        else
+        {
+            System.out.println("Open aborted");
+        }
+
     }
 }

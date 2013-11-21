@@ -28,10 +28,8 @@ import java.awt.Point;
 
 public class PropertiesManager
 {
-    public ArrayList<Property> loadElementsFromFile(String path)
+    public static ArrayList<MovableComponent> loadElementsFromFile(String path)
     {
-        ArrayList<Property> properties = new ArrayList<Property>();
-
         try
         {
             File xmlFile = new File(path);
@@ -42,16 +40,24 @@ public class PropertiesManager
             doc.getDocumentElement().normalize();
 
             Element root = doc.getDocumentElement();
-            NodeList nodeList = root.getChildNodes();
-            for(int i = 0; i < nodeList.getLength(); i++)
+            NodeList widgetList = root.getChildNodes();
+            for(int i = 0; i < widgetList.getLength(); i++)
             {
-                Node node = nodeList.item(0);
+                ArrayList<Property> properties = new ArrayList<Property>();
+                Node node = widgetList.item(i);
                 if(node.getNodeType() == Node.ELEMENT_NODE)
                 {
                     Element element = (Element)node;
-                    String widgetName = element.getTagName();
+                    String widgetClasstName = element.getTagName();
 
                     properties.add(new Property(Property.Type.NAME, element.getAttribute("name")));
+
+                    //My apologies for the intensively large amount of method calls that happen on each line in the following block of code :(
+                    //I will try to document these lines more thoroughly to make up for it :D
+
+                    //This line gets the location element from our widget, gets the x and y values, and plugs them into a new Point object that we will add to our properties list
+                    Point locationPoint = new Point(Integer.parseInt(((Element)element.getElementsByTagName("location").item(0)).getAttribute("x")), Integer.parseInt(((Element)element.getElementsByTagName("location").item(0)).getAttribute("y")));
+                    properties.add(new Property(Property.Type.LOCATION, new Point()));
                 }
             }
         }
@@ -69,7 +75,7 @@ public class PropertiesManager
         }
 
 
-        return properties;
+        return null;//FIXME CHANGE THIS TO PROPERTIES
     }
 
     public static boolean writeAllPropertiesToFile(String path, ArrayList<MovableComponent> components)
