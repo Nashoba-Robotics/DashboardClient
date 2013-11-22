@@ -7,7 +7,7 @@ import java.util.ArrayList;
 
 public abstract class MovableComponent extends JPanel
 {
-    ArrayList<Property> properties;
+    ArrayList<Property> properties = null;
     protected void initPropertiesArray()
     {
         properties = new ArrayList<Property>();
@@ -23,6 +23,7 @@ public abstract class MovableComponent extends JPanel
     {
         this.properties = properties;
     }
+    public abstract void applyProperties();
     public abstract String getWidgetName();
     public abstract void applyWidgetType();
 }

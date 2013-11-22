@@ -90,6 +90,37 @@ public class OverlapChecker
         return false;
     }
 
+    public static Point getOpenAddingLocation(JComponent caller, ArrayList<MovableComponent> components)
+    {
+
+        Point point = new Point(0,0);
+        int parentHeight = caller.getParent().getHeight(), parentWidth = caller.getParent().getWidth();
+        int callerHeight = caller.getHeight(), callerWidth = caller.getWidth();
+
+
+        for(int i = 0; i < components.size(); i++)
+        {
+            if(overlapsOtherWidget(caller, components.get(i), point))
+            {
+                if(point.y + callerHeight + 1 > parentHeight)
+                {
+                    if(point.x + callerWidth + 1 > parentWidth)
+                    {
+                        return new Point(0,0);
+                    }
+                    point = new Point(point.x + callerWidth +1, 0);
+                    i = -1;
+                }
+                else
+                {
+                    point = new Point(point.x, components.get(i).getY() + components.get(i).getHeight() + 1);
+                    i = -1;
+                }
+            }
+        }
+        return point;
+    }
+
     public static void checkForCollision(JComponent caller, ArrayList<MovableComponent> components, Point myNewLocation, Point oldLocation)
     {
         for(int i = 0; i < components.size(); i++)

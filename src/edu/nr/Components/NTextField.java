@@ -38,16 +38,20 @@ public class NTextField extends MovableComponent
         loadProperties(loadedProperties);
         applyProperties();
 
-        setLayout(new GridLayout(2,1));
-        setBorder(new LineBorder(Color.BLACK, 1));
+        GridLayout gridLayout = new GridLayout(2,1);
+        gridLayout.setHgap(0);
+        setLayout(new BorderLayout());
+        setBorder(new EmptyBorder(1,1,1,1));
         setBackground(new Color(200,200,200));
 
-        add(label);
-        add(field);
+        add(label, BorderLayout.NORTH);
+        add(field, BorderLayout.SOUTH);
 
         MyMouseListener listener = new MyMouseListener(NTextField.this, components);
         addMouseListener(listener);
         addMouseMotionListener(listener);
+        field.addMouseListener(listener);
+        field.addMouseMotionListener(listener);
     }
 
     private void loadProperties(ArrayList<Property> loaded)
@@ -56,7 +60,7 @@ public class NTextField extends MovableComponent
         PropertiesManager.loadPropertiesIntoArray(getProperties(), loaded);
     }
 
-    private void applyProperties()
+    public void applyProperties()
     {
         //Load the properties by using the Property classes function for getting a specific property out of our array by finding it's type,
         //Then set our values to the correctly casted version of the data from that property
@@ -76,7 +80,7 @@ public class NTextField extends MovableComponent
     private ArrayList<Property> getDefaultProperties()
     {
         ArrayList<Property> tempProperties = new ArrayList<Property>();
-        tempProperties.add(new Property(Property.Type.SIZE, new Dimension(130,50)));
+        tempProperties.add(new Property(Property.Type.SIZE, new Dimension(130,45)));
         tempProperties.add(new Property(Property.Type.LOCATION, new Point(0,0)));
         tempProperties.add(new Property(Property.Type.FOREGROUND, Color.BLACK));
         tempProperties.add(new Property(Property.Type.BACKGROUND, Color.WHITE));

@@ -27,14 +27,12 @@ public class MyMouseListener implements MouseListener, MouseMotionListener
     private volatile int myY = 0;
 
     private JComponent caller;
-    private Color oldButtonColor;
     private boolean callerIsButton = false;
     private ArrayList<MovableComponent> components;
     public MyMouseListener(JComponent caller, ArrayList<MovableComponent> components)
     {
         this.caller = caller;
         callerIsButton = (caller.getClass() == NButton.class);
-        System.out.println("Caller is button");
         this.components = components;
     }
     @Override
@@ -42,6 +40,9 @@ public class MyMouseListener implements MouseListener, MouseMotionListener
     {
 
     }
+
+    private boolean isPressed = false;
+    private boolean mouseIsIn = false;
 
     @Override
     public void mousePressed(MouseEvent e)
@@ -61,14 +62,8 @@ public class MyMouseListener implements MouseListener, MouseMotionListener
                 myY = caller.getY();
             }
         }
-        else
-        {
-            if(callerIsButton)
-            {
-                oldButtonColor = caller.getBackground();
-                caller.setBackground(Color.blue);
-            }
-        }
+        Main.somethingIsBeingPressed = true;
+        isPressed = true;
     }
 
     private void doPop(MouseEvent e)
@@ -102,28 +97,31 @@ public class MyMouseListener implements MouseListener, MouseMotionListener
     {
         Main.main.getContentPane().invalidate();
         Main.main.repaint();
-
-        if(callerIsButton && ((MovableComponent)caller).isMovable())
+        isPressed = false;
+        Main.somethingIsBeingPressed = false;
+        if(!mouseIsIn)
         {
-            caller.setBackground(oldButtonColor);
+            caller.setBorder(new EmptyBorder(1,1,1,1));
         }
     }
 
     @Override
     public void mouseEntered(MouseEvent e)
     {
-        if(((MovableComponent)caller).isMovable())
+        mouseIsIn = true;
+        if(((MovableComponent)caller).isMovable() && !Main.somethingIsBeingPressed)
         {
-            caller.setBorder(new LineBorder(Color.WHITE, 1, false));
+            caller.setBorder(new LineBorder(Color.GREEN, 1, false));
         }
     }
 
     @Override
     public void mouseExited(MouseEvent e)
     {
-        if(((MovableComponent)caller).isMovable())
+        mouseIsIn = false;
+        if(((MovableComponent)caller).isMovable() && !isPressed)
         {
-            caller.setBorder(new EmptyBorder(0,0,0,0));
+            caller.setBorder(new EmptyBorder(1,1,1,1));
         }
     }
 
@@ -150,6 +148,9 @@ public class MyMouseListener implements MouseListener, MouseMotionListener
     @Override
     public void mouseMoved(MouseEvent e)
     {
-
+        if(((MovableComponent)caller).isMovable() && !Main.somethingIsBeingPressed)
+        {
+            caller.setBorder(new LineBorder(Color.GREEN, 1, false));
+        }
     }
 }

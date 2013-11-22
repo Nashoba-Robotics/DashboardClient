@@ -4,6 +4,7 @@ import edu.nr.Components.NButton;
 import edu.nr.Components.NTextField;
 import edu.nr.properties.PropertiesManager;
 import edu.nr.properties.Property;
+import edu.nr.util.OverlapChecker;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -14,12 +15,12 @@ import java.awt.*;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
-//TODO Add a properties right click menu to widgets
+//TODO Implement properties right click menu
 //TODO Add remove widget functionality to right click menu
-//TODO When many widgets are being added, don't add them on top of each other
 //TODO Add widgets for: Boolean, Numbers, Graphs, Camera
 //TODO Talk to Brandon about how he is sending data over bytes (for use in the Network class)
-//TODO Finish XML Loading and Writing in PropertiesManager class
+//TODO Finish XML Loading in PropertiesManager class
+//TODO Test out using JSCrollPane to handle items out of bounds
 
 /**
  * @author co1in
@@ -29,6 +30,9 @@ public class Main extends JFrame
     JPanel panel;
     JFileChooser saveChooser, openChooser;
     private ArrayList<MovableComponent> components = new ArrayList<MovableComponent>();
+
+    public static boolean somethingIsBeingPressed = false;
+
     public Main()
     {
         super("Dashboard Client");
@@ -84,7 +88,7 @@ public class Main extends JFrame
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                addButton();
+                addButton(null, true);
             }
         });
 
@@ -94,7 +98,7 @@ public class Main extends JFrame
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                addTextField();
+                addTextField(null, true);
             }
         });
 
@@ -150,30 +154,53 @@ public class Main extends JFrame
         setJMenuBar(menuBar);
     }
 
-    private void addTextField()
+    private void addTextField(ArrayList<Property> properties, boolean checkForOverlaps)
     {
-        NTextField temp = new NTextField(components, null);
+        NTextField temp = new NTextField(components, properties);
         if(movableComponents.isSelected())
             temp.setMovable(true);
         else
             temp.setMovable(false);
         components.add(temp);
-        panel.add(temp);
-        repaint();
-        revalidate();
+
+        if(checkForOverlaps)
+        {
+            addWithOverlapChecking(temp, components);
+        }
+        else
+        {
+            panel.add(temp);
+            repaint();
+            revalidate();
+        }
     }
 
-    private void addButton()
+    private void addButton(ArrayList<Property> properties, boolean checkForOverlaps)
     {
-        ArrayList<Property> properties = new ArrayList<Property>();
-        properties.add(new Property(Property.Type.SIZE, new Dimension(200,200)));
-        NButton temp = new NButton(components, null);
+        NButton temp = new NButton(components, properties);
         if(movableComponents.isSelected())
             temp.setMovable(true);
         else
             temp.setMovable(false);
         components.add(temp);
-        panel.add(temp);
+
+        if(checkForOverlaps)
+        {
+            addWithOverlapChecking(temp, components);
+        }
+        else
+        {
+            panel.add(temp);
+            repaint();
+            revalidate();
+        }
+    }
+
+    private void addWithOverlapChecking(MovableComponent adding, ArrayList<MovableComponent> components)
+    {
+        panel.add(adding);
+        Property.getPropertyFromType(Property.Type.LOCATION, adding.getProperties()).setData(OverlapChecker.getOpenAddingLocation(adding, components));
+        adding.applyProperties();
         repaint();
     }
 

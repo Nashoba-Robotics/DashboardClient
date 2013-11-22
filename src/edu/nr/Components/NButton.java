@@ -36,10 +36,14 @@ public class NButton extends MovableComponent
         loadProperties(properties);
         applyProperties();
 
+        setBorder(new EmptyBorder(1,1,1,1));
         setLayout(new BorderLayout());
         add(button, BorderLayout.CENTER);
         button.setFocusable(false);
-        //button.setOpaque(false);
+        setBackground(Color.WHITE);
+
+        setOpaque(false);
+
         setFocusable(false);
 
         MyMouseListener listener = new MyMouseListener(NButton.this, components);
@@ -56,7 +60,7 @@ public class NButton extends MovableComponent
         });
     }
 
-    private void loadProperties(ArrayList<Property> loadedProperties)
+    protected void loadProperties(ArrayList<Property> loadedProperties)
     {
         this.setProperties(getDefaultProperties());
         PropertiesManager.loadPropertiesIntoArray(getProperties(), loadedProperties);
@@ -67,7 +71,7 @@ public class NButton extends MovableComponent
         applyProperties(getProperties());
     }
 
-    public void applyProperties(ArrayList<Property> applyingProperties)
+    private void applyProperties(ArrayList<Property> applyingProperties)
     {
         //TODO Change this way of getting values to match that of NTextField
         for(Property p : applyingProperties)
@@ -75,8 +79,10 @@ public class NButton extends MovableComponent
             Type type = p.getType();
             if(type == Type.SIZE)
             {
-                setSize((Dimension) p.getData());
-                button.setSize((Dimension) p.getData());
+                Dimension d = (Dimension) p.getData();
+                button.setSize(d);
+                setSize(new Dimension((int)d.getWidth()-1, (int)d.getHeight()-1));
+                validate();
             }
             else if(type == Type.LOCATION)
             {
@@ -104,7 +110,7 @@ public class NButton extends MovableComponent
     private ArrayList<Property> getDefaultProperties()
     {
         ArrayList<Property> tempProperties = new ArrayList<Property>();
-        tempProperties.add(new Property(Type.SIZE, new Dimension(100,30)));
+        tempProperties.add(new Property(Type.SIZE, new Dimension(100,32)));
         tempProperties.add(new Property(Type.LOCATION, new Point(0,0)));
         tempProperties.add(new Property(Type.FOREGROUND, Color.BLACK));
         tempProperties.add(new Property(Type.BACKGROUND, new Color(220,220,220)));
