@@ -57,7 +57,19 @@ public class PropertiesManager
 
                     //This line gets the location element from our widget, gets the x and y values, and plugs them into a new Point object that we will add to our properties list
                     Point locationPoint = new Point(Integer.parseInt(((Element)element.getElementsByTagName("location").item(0)).getAttribute("x")), Integer.parseInt(((Element)element.getElementsByTagName("location").item(0)).getAttribute("y")));
-                    properties.add(new Property(Property.Type.LOCATION, new Point()));
+                    properties.add(new Property(Property.Type.LOCATION, locationPoint));
+
+                    //get the width and height attributes from the element labeled "size" and put those values into a new dimension object for adding to a new property
+                    Dimension dimensions = new Dimension(Integer.parseInt(((Element)element.getElementsByTagName("size").item(0)).getAttribute("width")), Integer.parseInt(((Element)element.getElementsByTagName("size").item(0)).getAttribute("height")));
+                    properties.add(new Property(Property.Type.SIZE, dimensions));
+
+                    //Load the three colors from the red gre
+                    int backRed = Integer.parseInt(((Element)element.getElementsByTagName("background").item(0)).getAttribute("red"));
+                    int backBlue = Integer.parseInt(((Element)element.getElementsByTagName("background").item(0)).getAttribute("red"));
+                    int backGreen = Integer.parseInt(((Element)element.getElementsByTagName("background").item(0)).getAttribute("red"));
+                    properties.add(new Property(Property.Type.BACKGROUND, new Color(backRed, backGreen, backBlue)));
+
+
                 }
             }
         }
@@ -80,7 +92,6 @@ public class PropertiesManager
 
     public static boolean writeAllPropertiesToFile(String path, ArrayList<MovableComponent> components)
     {
-        //TODO Add saving of VALUE and FONT_SIZE
         try
         {
             DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
