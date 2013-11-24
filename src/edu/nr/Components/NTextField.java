@@ -26,7 +26,6 @@ public class NTextField extends MovableComponent
     public NTextField(ArrayList<MovableComponent> components, ArrayList<Property> loadedProperties)
     {
         this.components = components;
-        initPropertiesArray();
 
         label = new JLabel();
         label.setBorder(new EmptyBorder(0,0,0,0));
@@ -38,8 +37,6 @@ public class NTextField extends MovableComponent
         loadProperties(loadedProperties);
         applyProperties();
 
-        GridLayout gridLayout = new GridLayout(2,1);
-        gridLayout.setHgap(0);
         setLayout(new BorderLayout());
         setBorder(new EmptyBorder(1,1,1,1));
         setBackground(new Color(200,200,200));
@@ -56,25 +53,27 @@ public class NTextField extends MovableComponent
 
     private void loadProperties(ArrayList<Property> loaded)
     {
-        setProperties(getDefaultProperties());
-        PropertiesManager.loadPropertiesIntoArray(getProperties(), loaded);
+        if(properties == null)
+        {
+            this.properties = (getDefaultProperties());
+        }
+        PropertiesManager.loadPropertiesIntoArray(properties, loaded);
     }
 
     public void applyProperties()
     {
         //Load the properties by using the Property classes function for getting a specific property out of our array by finding it's type,
         //Then set our values to the correctly casted version of the data from that property
-        label.setText((String)Property.getPropertyFromType(Property.Type.NAME, getProperties()).getData());
-        field.setText((String)Property.getPropertyFromType(Property.Type.VALUE, getProperties()).getData());
-        field.setForeground((Color)Property.getPropertyFromType(Property.Type.FOREGROUND, getProperties()).getData());
-        setBackground((Color)Property.getPropertyFromType(Property.Type.BACKGROUND, getProperties()).getData());
-        setSize((Dimension) Property.getPropertyFromType(Property.Type.SIZE, getProperties()).getData());
-        setLocation((Point)Property.getPropertyFromType(Property.Type.LOCATION, getProperties()).getData());
-        widgetType = (Integer)Property.getPropertyFromType(Property.Type.WIDGET_TYPE, getProperties()).getData();
+        label.setText((String)Property.getPropertyFromType(Property.Type.NAME, properties).getData());
+        field.setForeground((Color)Property.getPropertyFromType(Property.Type.FOREGROUND, properties).getData());
+        setBackground((Color)Property.getPropertyFromType(Property.Type.BACKGROUND, properties).getData());
+        setSize((Dimension) Property.getPropertyFromType(Property.Type.SIZE, properties).getData());
+        setLocation((Point)Property.getPropertyFromType(Property.Type.LOCATION, properties).getData());
+        widgetType = (Integer)Property.getPropertyFromType(Property.Type.WIDGET_TYPE, properties).getData();
 
         //Load the font size
-        label.setFont(new Font("Arial", Font.BOLD, (Integer)Property.getPropertyFromType(Property.Type.FONT_SIZE, getProperties()).getData()-1));
-        field.setFont(new Font("Arial", Font.PLAIN, (Integer)Property.getPropertyFromType(Property.Type.FONT_SIZE, getProperties()).getData()));
+        label.setFont(new Font("Arial", Font.BOLD, (Integer)Property.getPropertyFromType(Property.Type.FONT_SIZE, properties).getData()-1));
+        field.setFont(new Font("Arial", Font.PLAIN, (Integer)Property.getPropertyFromType(Property.Type.FONT_SIZE, properties).getData()));
     }
 
     private ArrayList<Property> getDefaultProperties()
@@ -86,18 +85,11 @@ public class NTextField extends MovableComponent
         tempProperties.add(new Property(Property.Type.BACKGROUND, Color.WHITE));
         tempProperties.add(new Property(Property.Type.NAME, "Text Name"));
         tempProperties.add(new Property(Property.Type.WIDGET_TYPE, 1));
-        tempProperties.add(new Property(Property.Type.VALUE, "Example Text"));
         tempProperties.add(new Property(Property.Type.FONT_SIZE, 14));
 
         return tempProperties;
     }
 
-    @Override
-    public boolean isMovable() {
-        return isMovable;
-    }
-
-    private boolean isMovable = false;
     @Override
     public void setMovable(boolean movable)
     {
@@ -114,5 +106,11 @@ public class NTextField extends MovableComponent
     public void applyWidgetType()
     {
 
+    }
+
+    @Override
+    public void setValue(Object o)
+    {
+        field.setText((String)o);
     }
 }

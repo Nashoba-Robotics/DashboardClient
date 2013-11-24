@@ -1,6 +1,7 @@
 package edu.nr.properties;
 
 import edu.nr.Components.NButton;
+import edu.nr.Components.NTextField;
 import edu.nr.MovableComponent;
 import org.w3c.dom.*;
 import org.xml.sax.SAXException;
@@ -30,6 +31,7 @@ public class PropertiesManager
 {
     public static ArrayList<MovableComponent> loadElementsFromFile(String path)
     {
+        ArrayList<MovableComponent> movableComponents = new ArrayList<MovableComponent>();
         try
         {
             File xmlFile = new File(path);
@@ -64,11 +66,30 @@ public class PropertiesManager
                     properties.add(new Property(Property.Type.SIZE, dimensions));
 
                     //Load the three colors from the red gre
-                    int backRed = Integer.parseInt(((Element)element.getElementsByTagName("background").item(0)).getAttribute("red"));
+                    int red = Integer.parseInt(((Element)element.getElementsByTagName("background").item(0)).getAttribute("red"));
                     int backBlue = Integer.parseInt(((Element)element.getElementsByTagName("background").item(0)).getAttribute("red"));
                     int backGreen = Integer.parseInt(((Element)element.getElementsByTagName("background").item(0)).getAttribute("red"));
-                    properties.add(new Property(Property.Type.BACKGROUND, new Color(backRed, backGreen, backBlue)));
+                    properties.add(new Property(Property.Type.BACKGROUND, new Color(red, backGreen, backBlue)));
 
+                    //Load the three colors from the red gre
+                    red = Integer.parseInt(((Element)element.getElementsByTagName("foreground").item(0)).getAttribute("red"));
+                    backBlue = Integer.parseInt(((Element)element.getElementsByTagName("foreground").item(0)).getAttribute("red"));
+                    backGreen = Integer.parseInt(((Element)element.getElementsByTagName("foreground").item(0)).getAttribute("red"));
+                    properties.add(new Property(Property.Type.FOREGROUND, new Color(red, backGreen, backBlue)));
+
+                    Element typeElement = ((Element)element.getElementsByTagName("type").item(0));
+                    Property typeProperty = null;
+                    try
+                    {
+                        int type = Integer.parseInt(typeElement.getAttribute("value"));
+                        typeProperty = new Property(Property.Type.WIDGET_TYPE, type);
+                    }
+                    catch(NumberFormatException e)
+                    {
+                    }
+                    properties.add(typeProperty);
+
+                    Class addingClass = null;
 
                 }
             }
@@ -87,7 +108,7 @@ public class PropertiesManager
         }
 
 
-        return null;//FIXME CHANGE THIS TO PROPERTIES
+        return movableComponents;
     }
 
     public static boolean writeAllPropertiesToFile(String path, ArrayList<MovableComponent> components)
@@ -160,14 +181,7 @@ public class PropertiesManager
                 type.setAttribute("value", String.valueOf(p.getData()));
                 widget.appendChild(type);
 
-                //Add the value
-                p = Property.getPropertyFromType(Property.Type.VALUE, properties);
-                Element value = doc.createElement("value");
-                value.setAttribute("val", String.valueOf(p.getData()));
-                widget.appendChild(value);
-
                 //Add the Font size
-                //Add the type of widget
                 p = Property.getPropertyFromType(Property.Type.FONT_SIZE, properties);
                 Element fontSize = doc.createElement("fontSize");
                 fontSize.setAttribute("size", String.valueOf(p.getData()));
