@@ -2,6 +2,7 @@ package edu.nr;
 
 import edu.nr.Components.NButton;
 import edu.nr.Components.NTextField;
+import edu.nr.Network.Network;
 import edu.nr.properties.PropertiesManager;
 import edu.nr.properties.Property;
 import edu.nr.util.OverlapChecker;
@@ -33,6 +34,8 @@ public class Main extends JFrame
 
     public static boolean somethingIsBeingPressed = false;
 
+    private Network.OnMessageReceivedListener messageListener;
+
     public Main()
     {
         super("Dashboard Client");
@@ -51,8 +54,22 @@ public class Main extends JFrame
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setVisible(true);
+
+        createMessageReceivedListener();
     }
 
+    private void createMessageReceivedListener()
+    {
+        messageListener = new Network.OnMessageReceivedListener()
+        {
+            @Override
+            public void onMessageReceived(byte[] data)
+            {
+                String input = new String(data);
+                //TODO Finish this
+            }
+        };
+    }
 
     public static Main main;
     public static void main(String[] args)
