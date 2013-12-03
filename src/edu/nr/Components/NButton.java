@@ -29,7 +29,7 @@ public class NButton extends MovableComponent
     public NButton(ArrayList<MovableComponent> components, ArrayList<Property> properties)
     {
         this.components = components;
-        initPropertiesArray();
+        properties = new ArrayList<Property>();
         button = new JButton();
 
         setBackground(null);
@@ -63,18 +63,19 @@ public class NButton extends MovableComponent
     protected void loadProperties(ArrayList<Property> loadedProperties)
     {
         this.setProperties(getDefaultProperties());
-        PropertiesManager.loadPropertiesIntoArray(getProperties(), loadedProperties);
+        PropertiesManager.loadPropertiesIntoArray(this.properties, loadedProperties);
     }
 
     public void applyProperties()
     {
-        applyProperties(getProperties());
+        applyProperties(this.properties);
     }
 
-    private void applyProperties(ArrayList<Property> applyingProperties)
+    public void applyProperties(ArrayList<Property> applyingProperties)
     {
+        PropertiesManager.loadPropertiesIntoArray(properties, applyingProperties);
         //TODO Change this way of getting values to match that of NTextField
-        for(Property p : applyingProperties)
+        for(Property p : properties)
         {
             Type type = p.getType();
             if(type == Type.SIZE)
@@ -116,12 +117,10 @@ public class NButton extends MovableComponent
         tempProperties.add(new Property(Type.BACKGROUND, new Color(220,220,220)));
         tempProperties.add(new Property(Type.NAME, "Button"));//TODO Put actual name
         tempProperties.add(new Property(Type.WIDGET_TYPE, 1));
-        tempProperties.add(new Property(Type.VALUE, null));
         tempProperties.add(new Property(Type.FONT_SIZE, 12));
         return tempProperties;
     }
 
-    private boolean isMovable = false;
     @Override
     public void setMovable(boolean movable)
     {
@@ -129,9 +128,15 @@ public class NButton extends MovableComponent
         button.setEnabled(!movable);
     }
 
+    private final static String WIDGET_NAME = "button";
     public String getWidgetName()
     {
-        return "button";
+        return WIDGET_NAME;
+    }
+
+    public static String getStaticWidgetName()
+    {
+        return WIDGET_NAME;
     }
 
     @Override
@@ -141,8 +146,8 @@ public class NButton extends MovableComponent
     }
 
     @Override
-    public boolean isMovable()
+    public void setValue(Object o)
     {
-        return isMovable;
+        System.err.println("Button was asked to apply object: " + o.toString());
     }
 }

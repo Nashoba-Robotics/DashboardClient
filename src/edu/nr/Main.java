@@ -1,6 +1,7 @@
 package edu.nr;
 
 import edu.nr.Components.NButton;
+import edu.nr.Components.NNumberField;
 import edu.nr.Components.NTextField;
 import edu.nr.Network.Network;
 import edu.nr.properties.PropertiesManager;
@@ -199,6 +200,24 @@ public class Main extends JFrame
             temp.setMovable(true);
         else
             temp.setMovable(false);
+        components.add(temp);
+
+        if(checkForOverlaps)
+        {
+            addWithOverlapChecking(temp, components);
+        }
+        else
+        {
+            panel.add(temp);
+            repaint();
+            revalidate();
+        }
+    }
+
+    private void addNumber(ArrayList<Property> properties, boolean checkForOverlaps)
+    {
+        NNumberField temp = new NNumberField(components, properties);
+        temp.setMovable(movableComponents.isSelected());
         components.add(temp);
 
         if(checkForOverlaps)
