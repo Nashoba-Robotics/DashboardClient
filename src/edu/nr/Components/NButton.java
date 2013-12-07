@@ -26,14 +26,23 @@ public class NButton extends MovableComponent
     private NButton(){}
 
     private ArrayList<MovableComponent> components;
-    public NButton(ArrayList<MovableComponent> components, ArrayList<Property> properties)
+    public NButton(ArrayList<MovableComponent> components, ArrayList<Property> properties, Main main)
     {
         this.components = components;
-        properties = new ArrayList<Property>();
         button = new JButton();
 
         setBackground(null);
-        loadProperties(properties);
+
+        if(properties == null)
+        {
+            this.properties = new ArrayList<Property>();
+            loadProperties(properties);
+        }
+        else
+        {
+            this.properties = properties;
+            applyProperties();
+        }
         applyProperties();
 
         setBorder(new EmptyBorder(1,1,1,1));
@@ -46,7 +55,7 @@ public class NButton extends MovableComponent
 
         setFocusable(false);
 
-        MyMouseListener listener = new MyMouseListener(NButton.this, components);
+        MyMouseListener listener = new MyMouseListener(NButton.this, components, main);
         button.addMouseListener(listener);
         button.addMouseMotionListener(listener);
 

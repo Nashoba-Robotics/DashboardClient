@@ -1,6 +1,7 @@
 package edu.nr.Components;
 
 import edu.nr.Components.mouse_listeners.MyMouseListener;
+import edu.nr.Main;
 import edu.nr.MovableComponent;
 import edu.nr.properties.PropertiesManager;
 import edu.nr.properties.Property;
@@ -23,28 +24,31 @@ public class NTextField extends MovableComponent
     private JLabel label;
     private int widgetType = -1;
 
-    public NTextField(ArrayList<MovableComponent> components, ArrayList<Property> loadedProperties)
+    public NTextField(ArrayList<MovableComponent> components, ArrayList<Property> loadedProperties, Main main)
     {
         this.components = components;
 
         label = new JLabel();
         label.setBorder(new EmptyBorder(0,0,0,0));
         label.setHorizontalAlignment(SwingConstants.CENTER);
+
         field = new JTextField();
-        //field.setPreferredSize(new Dimension(100,25));
         field.setDisabledTextColor(Color.BLACK);
 
-        loadProperties(loadedProperties);
+        properties = getDefaultProperties();
+        if(loadedProperties != null)
+        {
+            loadProperties(loadedProperties);
+        }
         applyProperties();
 
         setLayout(new BorderLayout());
-        setBorder(new EmptyBorder(1,1,1,1));
-        setBackground(new Color(200,200,200));
+        setBorder(new EmptyBorder(1, 1, 1, 1));
 
         add(label, BorderLayout.NORTH);
         add(field, BorderLayout.SOUTH);
 
-        MyMouseListener listener = new MyMouseListener(NTextField.this, components);
+        MyMouseListener listener = new MyMouseListener(NTextField.this, components, main);
         addMouseListener(listener);
         addMouseMotionListener(listener);
         field.addMouseListener(listener);
@@ -53,10 +57,6 @@ public class NTextField extends MovableComponent
 
     private void loadProperties(ArrayList<Property> loaded)
     {
-        if(properties == null)
-        {
-            this.properties = (getDefaultProperties());
-        }
         PropertiesManager.loadPropertiesIntoArray(properties, loaded);
     }
 
@@ -97,9 +97,15 @@ public class NTextField extends MovableComponent
         field.setEnabled(!movable);
     }
 
+    private final static String WIDGET_NAME = "text-field";
     @Override
     public String getWidgetName() {
-        return "text-field";
+        return WIDGET_NAME;
+    }
+
+    public static String getStaticWidgetName()
+    {
+        return WIDGET_NAME;
     }
 
     @Override

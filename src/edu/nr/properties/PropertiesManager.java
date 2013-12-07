@@ -2,6 +2,7 @@ package edu.nr.properties;
 
 import edu.nr.Components.NButton;
 import edu.nr.Components.NTextField;
+import edu.nr.Main;
 import edu.nr.MovableComponent;
 import org.w3c.dom.*;
 import org.xml.sax.SAXException;
@@ -29,7 +30,7 @@ import java.awt.Point;
 
 public class PropertiesManager
 {
-    public static ArrayList<MovableComponent> loadElementsFromFile(String path)
+    public static void loadElementsFromFile(String path, ArrayList<MovableComponent> components, Main main)
     {
         ArrayList<MovableComponent> movableComponents = new ArrayList<MovableComponent>();
         try
@@ -50,7 +51,7 @@ public class PropertiesManager
                 if(node.getNodeType() == Node.ELEMENT_NODE)
                 {
                     Element element = (Element)node;
-                    String widgetClasstName = element.getTagName();
+                    String widgetClassName = element.getTagName();
 
                     properties.add(new Property(Property.Type.NAME, element.getAttribute("name")));
 
@@ -65,17 +66,20 @@ public class PropertiesManager
                     Dimension dimensions = new Dimension(Integer.parseInt(((Element)element.getElementsByTagName("size").item(0)).getAttribute("width")), Integer.parseInt(((Element)element.getElementsByTagName("size").item(0)).getAttribute("height")));
                     properties.add(new Property(Property.Type.SIZE, dimensions));
 
-                    //Load the three colors from the red gre
+                    //Load the three colors
                     int red = Integer.parseInt(((Element)element.getElementsByTagName("background").item(0)).getAttribute("red"));
-                    int backBlue = Integer.parseInt(((Element)element.getElementsByTagName("background").item(0)).getAttribute("red"));
-                    int backGreen = Integer.parseInt(((Element)element.getElementsByTagName("background").item(0)).getAttribute("red"));
+                    int backBlue = Integer.parseInt(((Element)element.getElementsByTagName("background").item(0)).getAttribute("blue"));
+                    int backGreen = Integer.parseInt(((Element)element.getElementsByTagName("background").item(0)).getAttribute("green"));
                     properties.add(new Property(Property.Type.BACKGROUND, new Color(red, backGreen, backBlue)));
 
-                    //Load the three colors from the red gre
-                    red = Integer.parseInt(((Element)element.getElementsByTagName("foreground").item(0)).getAttribute("red"));
-                    backBlue = Integer.parseInt(((Element)element.getElementsByTagName("foreground").item(0)).getAttribute("red"));
-                    backGreen = Integer.parseInt(((Element)element.getElementsByTagName("foreground").item(0)).getAttribute("red"));
-                    properties.add(new Property(Property.Type.FOREGROUND, new Color(red, backGreen, backBlue)));
+                    //Load the three colors
+                    int red2 = Integer.parseInt(((Element)element.getElementsByTagName("foreground").item(0)).getAttribute("red"));
+                    int backBlue2 = Integer.parseInt(((Element)element.getElementsByTagName("foreground").item(0)).getAttribute("blue"));
+                    int backGreen2 = Integer.parseInt(((Element)element.getElementsByTagName("foreground").item(0)).getAttribute("green"));
+                    properties.add(new Property(Property.Type.FOREGROUND, new Color(red2, backGreen2, backBlue2)));
+
+
+                    properties.add(new Property(Property.Type.FONT_SIZE, Integer.parseInt(((Element)element.getElementsByTagName("fontSize").item(0)).getAttribute("size"))));
 
                     Element typeElement = ((Element)element.getElementsByTagName("type").item(0));
                     Property typeProperty = null;
@@ -89,8 +93,26 @@ public class PropertiesManager
                     }
                     properties.add(typeProperty);
 
-                    Class addingClass = null;
+                    //Figure out which class to add
+                    MovableComponent addingClass = null;
+                    String name = element.getTagName();
+                    if(name.compareToIgnoreCase(NButton.getStaticWidgetName()) == 0)
+                    {
+                        addingClass = new NButton(components, properties, main);
+                    }
+                    else if (name.compareToIgnoreCase(NTextField.getStaticWidgetName()) == 0)
+                    {
+                        addingClass =  new NTextField(components, properties, main);
+                    }
 
+                    if(addingClass == null)
+                    {
+                        System.exit(1);
+                    }
+
+                    addingClass.setMovable(main.isEditable());
+
+                    components.add(addingClass);
                 }
             }
         }
@@ -106,9 +128,6 @@ public class PropertiesManager
         {
             e.printStackTrace();
         }
-
-
-        return movableComponents;
     }
 
     public static boolean writeAllPropertiesToFile(String path, ArrayList<MovableComponent> components)
@@ -192,6 +211,8 @@ public class PropertiesManager
             TransformerFactory transformerFactory = TransformerFactory.newInstance();
             Transformer transformer = transformerFactory.newTransformer();
             DOMSource source = new DOMSource(doc);
+            if(!path.endsWith(".xml"))
+                path = path + ".xml";
             StreamResult result = new StreamResult(new File(path));
 
             // Output to console for testing

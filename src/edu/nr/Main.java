@@ -174,7 +174,7 @@ public class Main extends JFrame
 
     private void addTextField(ArrayList<Property> properties, boolean checkForOverlaps)
     {
-        NTextField temp = new NTextField(components, properties);
+        NTextField temp = new NTextField(components, properties, main);
         if(movableComponents.isSelected())
             temp.setMovable(true);
         else
@@ -195,7 +195,7 @@ public class Main extends JFrame
 
     private void addButton(ArrayList<Property> properties, boolean checkForOverlaps)
     {
-        NButton temp = new NButton(components, properties);
+        NButton temp = new NButton(components, properties, main);
         if(movableComponents.isSelected())
             temp.setMovable(true);
         else
@@ -262,12 +262,34 @@ public class Main extends JFrame
         int returnValue = openChooser.showOpenDialog(this);
         if(returnValue == JFileChooser.APPROVE_OPTION)
         {
-            PropertiesManager.loadElementsFromFile(openChooser.getSelectedFile().getPath());
+            components.clear();
+            panel.removeAll();
+            PropertiesManager.loadElementsFromFile(openChooser.getSelectedFile().getPath(), components, main);
+
+            for(MovableComponent m : components)
+            {
+                panel.add(m);
+            }
+            panel.repaint();
+            panel.revalidate();
         }
         else
         {
             System.out.println("Open aborted");
         }
 
+    }
+
+    public void removeWidget(MovableComponent m)
+    {
+        components.remove(m);
+        panel.remove(m);
+        panel.repaint();
+        panel.revalidate();
+    }
+
+    public boolean isEditable()
+    {
+        return movableComponents.isSelected();
     }
 }

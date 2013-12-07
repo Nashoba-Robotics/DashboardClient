@@ -27,10 +27,12 @@ public class MyMouseListener implements MouseListener, MouseMotionListener
     private volatile int myY = 0;
 
     private JComponent caller;
+    private Main main;
     private boolean callerIsButton = false;
     private ArrayList<MovableComponent> components;
-    public MyMouseListener(JComponent caller, ArrayList<MovableComponent> components)
+    public MyMouseListener(JComponent caller, ArrayList<MovableComponent> components, Main main)
     {
+        this.main = main;
         this.caller = caller;
         callerIsButton = (caller.getClass() == NButton.class);
         this.components = components;
@@ -84,7 +86,7 @@ public class MyMouseListener implements MouseListener, MouseMotionListener
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                System.out.println("Removing Items not Implemented Yet");
+                main.removeWidget((MovableComponent)caller);
             }
         });
 
