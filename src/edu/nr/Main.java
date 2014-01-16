@@ -1,5 +1,6 @@
 package edu.nr;
 
+import edu.nr.Components.MovableComponent;
 import edu.nr.Components.NButton;
 import edu.nr.Components.NNumberField;
 import edu.nr.Components.NTextField;
@@ -7,10 +8,14 @@ import edu.nr.Network.Network;
 import edu.nr.properties.PropertiesManager;
 import edu.nr.properties.Property;
 import edu.nr.util.OverlapChecker;
+import edu.nr.util.Printer;
+import edu.nr.util.TeamNumberManager;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+import java.io.OutputStream;
+import java.io.PrintStream;
 import java.util.ArrayList;
 
 import java.awt.*;
@@ -34,12 +39,26 @@ public class Main extends JFrame
     private ArrayList<MovableComponent> components = new ArrayList<MovableComponent>();
 
     public static boolean somethingIsBeingPressed = false;
+    public Network network;
 
     private Network.OnMessageReceivedListener messageListener;
 
     public Main()
     {
-        super("Dashboard Client");
+        super("NRDashboard");
+
+        //NOTE: This code replaces the sytem output stream with a dummy one.
+        //This is done because NetworkTables is printing output to the standard output (which a good library should not be doing)
+        //As a result, we take the standard input, hand it to our own static class (Printer), set systems output stream to a dummy outputstream, and use Printer for printing instead.
+        //This essentially suppresses all output from NetworkTables
+        PrintStream dummyStream    = new PrintStream(new OutputStream(){
+            public void write(int b) {
+                //NO-OP
+            }
+        });
+        Printer.setOutputStream(System.out);
+        System.setOut(dummyStream);
+
         panel = new JPanel();
         panel.setBackground(new Color(50,50,50));
         saveChooser = new JFileChooser();
@@ -52,11 +71,14 @@ public class Main extends JFrame
         panel.setDoubleBuffered(true);
         add(panel);
 
+        network = new Network(TeamNumberManager.getTeamNumber());
+        createMessageReceivedListener();
+        network.setOnMessageReceivedListener(messageListener);
+        network.connect();
+
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setVisible(true);
-
-        createMessageReceivedListener();
     }
 
     private void createMessageReceivedListener()
@@ -64,10 +86,18 @@ public class Main extends JFrame
         messageListener = new Network.OnMessageReceivedListener()
         {
             @Override
-            public void onMessageReceived(byte[] data)
+            public void onMessageReceived(String key, Object value)
             {
-                String input = new String(data);
-                //TODO Finish this
+                ArrayList<Property> addingProperties = new ArrayList<Property>();
+                addingProperties.add(new Property(Property.Type.NAME, key));
+                if(value.getClass() == java.lang.Double.class)
+                {
+                    addNumber(addingProperties, true, (Double)value);
+                }
+                else if(value.getClass() == java.lang.String.class)
+                {
+                    addTextField(addingProperties, true, (String)value);
+                }
             }
         };
     }
@@ -100,7 +130,7 @@ public class Main extends JFrame
         JMenu viewMenu = new JMenu("View");
         menuBar.add(viewMenu);
 
-        JMenuItem addButtonItem = new JMenuItem("Add Button");
+        /*JMenuItem addButtonItem = new JMenuItem("Add Button");
         addButtonItem.addActionListener(new ActionListener()
         {
             @Override
@@ -109,14 +139,14 @@ public class Main extends JFrame
                 addButton(null, true);
             }
         });
-
+        */
         JMenuItem addFieldItem = new JMenuItem("Add Text Field");
         addFieldItem.addActionListener(new ActionListener()
         {
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                addTextField(null, true);
+                addTextField(null, true, "");
             }
         });
 
@@ -127,6 +157,16 @@ public class Main extends JFrame
             public void actionPerformed(ActionEvent e)
             {
                 showSaveDialog();
+            }
+        });
+
+        JMenuItem setIp = new JMenuItem("Set Team Number");
+        setIp.addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                showIpDialog();
             }
         });
 
@@ -168,13 +208,70 @@ public class Main extends JFrame
         menu.add(openFile);
         menu.add(saveFile);
         menu.add(addFieldItem);
-        menu.add(addButtonItem);
+        //menu.add(addButtonItem);
+        menu.add(setIp);
         setJMenuBar(menuBar);
     }
 
-    private void addTextField(ArrayList<Property> properties, boolean checkForOverlaps)
+    public void showIpDialog()
+    {
+        String s = (String)JOptionPane.showInputDialog(
+                this,
+                "Enter your team number: ",
+                "Customized Dialog",
+                JOptionPane.PLAIN_MESSAGE,
+                null,
+                null,
+                TeamNumberManager.getTeamNumber());
+        if(s != null)
+        {
+            for(int i = 0; i < 4; i++)
+            {
+                if(!Character.isDigit(s.charAt(i)))
+                {
+                    Printer.println("Error: team number must only contain numbers");
+                    return;
+                }
+            }
+            if(s.length() != 4)
+            {
+                Printer.println("Error: team number must be 4 letters long");
+                return;
+            }
+            setIpAddress(s);
+        }
+
+    }
+
+    public void setIpAddress(String teamNumber)
+    {
+        TeamNumberManager.writeTeamNumber(teamNumber);
+
+        String options[] = {"Restart" , "Cancel"};
+        int n = JOptionPane.showOptionDialog(this,
+                "You must restart to apply changes",
+                "Restart Required",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.QUESTION_MESSAGE,
+                null,     //do not use a custom Icon
+                options,  //the titles of buttons
+                options[0]); //default button title
+
+        if(n == 0)
+        {
+            restart();
+        }
+    }
+
+    private void restart()
+    {
+
+    }
+
+    private void addTextField(ArrayList<Property> properties, boolean checkForOverlaps, String value)
     {
         NTextField temp = new NTextField(components, properties, main);
+        temp.setValue(value);
         if(movableComponents.isSelected())
             temp.setMovable(true);
         else
@@ -214,9 +311,10 @@ public class Main extends JFrame
         }
     }
 
-    private void addNumber(ArrayList<Property> properties, boolean checkForOverlaps)
+    private void addNumber(ArrayList<Property> properties, boolean checkForOverlaps, double value)
     {
-        NNumberField temp = new NNumberField(components, properties);
+        NNumberField temp = new NNumberField(components, properties, this);
+        temp.setValue(value);
         temp.setMovable(movableComponents.isSelected());
         components.add(temp);
 
@@ -246,11 +344,11 @@ public class Main extends JFrame
         int returnValue = saveChooser.showSaveDialog(this);
         if(returnValue == JFileChooser.APPROVE_OPTION)
         {
-            PropertiesManager.writeAllPropertiesToFile(saveChooser.getSelectedFile().getPath(), components);
+            PropertiesManager.writeAllPropertiesToFile(saveChooser.getSelectedFile().getPath(), components, main);
         }
         else
         {
-            System.out.println("save aborted");
+            Printer.println("save aborted");
         }
     }
 
@@ -275,7 +373,7 @@ public class Main extends JFrame
         }
         else
         {
-            System.out.println("Open aborted");
+            Printer.println("Open aborted");
         }
 
     }

@@ -1,4 +1,4 @@
-package edu.nr;
+package edu.nr.Components;
 
 import edu.nr.properties.Property;
 

@@ -2,14 +2,15 @@ package edu.nr.Components;
 
 import edu.nr.Components.mouse_listeners.MyMouseListener;
 import edu.nr.Main;
-import edu.nr.MovableComponent;
 import edu.nr.properties.PropertiesManager;
 import edu.nr.properties.Property;
+import edu.nr.util.Printer;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-import javax.swing.border.LineBorder;
 import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.util.ArrayList;
 
 /**
@@ -53,6 +54,30 @@ public class NTextField extends MovableComponent
         addMouseMotionListener(listener);
         field.addMouseListener(listener);
         field.addMouseMotionListener(listener);
+
+        field.setFocusTraversalKeysEnabled(false);
+        field.addKeyListener(new KeyListener()
+        {
+            @Override
+            public void keyTyped(KeyEvent e)
+            {
+                if(e.getKeyCode() == KeyEvent.VK_TAB)
+                {
+
+                }
+            }
+
+            @Override
+            public void keyPressed(KeyEvent e)
+            {
+
+            }
+
+            @Override
+            public void keyReleased(KeyEvent e) {
+
+            }
+        });
     }
 
     private void loadProperties(ArrayList<Property> loaded)
@@ -93,6 +118,7 @@ public class NTextField extends MovableComponent
     @Override
     public void setMovable(boolean movable)
     {
+        Printer.println("Movable set to: " + movable);
         isMovable = movable;
         field.setEnabled(!movable);
     }

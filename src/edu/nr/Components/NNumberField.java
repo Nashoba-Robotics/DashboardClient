@@ -1,8 +1,10 @@
 package edu.nr.Components;
 
-import edu.nr.MovableComponent;
+import edu.nr.Components.mouse_listeners.MyMouseListener;
+import edu.nr.Main;
 import edu.nr.properties.PropertiesManager;
 import edu.nr.properties.Property;
+import edu.nr.util.Printer;
 
 import javax.swing.*;
 import java.awt.*;
@@ -22,25 +24,31 @@ public class NNumberField extends MovableComponent
     private JProgressBar progressBar;
     private int widgetType = -1;
     private int maxValue = 0, minValue = 100;
+    private double number;
 
-    public NNumberField(ArrayList<MovableComponent> components, ArrayList<Property> properties)
+    public NNumberField(ArrayList<MovableComponent> components, ArrayList<Property> properties, Main main)
     {
         this.components = components;
+        this.number = number;
         numberField = new JTextField();
+        numberField.setText("" + number);
         label = new JLabel();
         progressBar = new JProgressBar();
 
         loadProperties(properties);
 
         setLayout(new BorderLayout());
+
+        MyMouseListener listener = new MyMouseListener(this, components, main);
+        addMouseListener(listener);
+        addMouseMotionListener(listener);
+        numberField.addMouseListener(listener);
+        numberField.addMouseMotionListener(listener);
     }
 
     private void loadProperties(ArrayList<Property> loading)
     {
-        if(properties == null)
-        {
-            properties = getDefaultProperties();
-        }
+        properties = getDefaultProperties();
         PropertiesManager.loadPropertiesIntoArray(properties, loading);
     }
 

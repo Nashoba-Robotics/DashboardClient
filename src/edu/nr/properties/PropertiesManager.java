@@ -3,7 +3,8 @@ package edu.nr.properties;
 import edu.nr.Components.NButton;
 import edu.nr.Components.NTextField;
 import edu.nr.Main;
-import edu.nr.MovableComponent;
+import edu.nr.Components.MovableComponent;
+import edu.nr.util.Printer;
 import org.w3c.dom.*;
 import org.xml.sax.SAXException;
 
@@ -39,7 +40,7 @@ public class PropertiesManager
             DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
             Document doc = dBuilder.parse(xmlFile);
-            System.out.println("Reading from: " + path);
+            Printer.println("Reading from: " + path);
             doc.getDocumentElement().normalize();
 
             Element root = doc.getDocumentElement();
@@ -130,7 +131,7 @@ public class PropertiesManager
         }
     }
 
-    public static boolean writeAllPropertiesToFile(String path, ArrayList<MovableComponent> components)
+    public static boolean writeAllPropertiesToFile(String path, ArrayList<MovableComponent> components, Main main)
     {
         try
         {
@@ -139,6 +140,7 @@ public class PropertiesManager
 
             Document doc = docBuilder.newDocument();
             Element rootElement = doc.createElement("dashboard");
+
             doc.appendChild(rootElement);
 
             for(MovableComponent movableComponent : components)
@@ -220,7 +222,7 @@ public class PropertiesManager
 
             transformer.transform(source, result);
 
-            System.out.println("File saved!");
+            Printer.println("File saved!");
 
 
             return true;

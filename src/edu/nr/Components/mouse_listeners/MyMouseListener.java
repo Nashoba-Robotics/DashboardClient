@@ -2,10 +2,10 @@ package edu.nr.Components.mouse_listeners;
 
 import edu.nr.Components.NButton;
 import edu.nr.Main;
-import edu.nr.MovableComponent;
-import edu.nr.properties.PropertiesManager;
+import edu.nr.Components.MovableComponent;
 import edu.nr.properties.Property;
 import edu.nr.util.OverlapChecker;
+import edu.nr.util.Printer;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -76,7 +76,7 @@ public class MyMouseListener implements MouseListener, MouseMotionListener
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                System.out.println("Properties not Implemented Yet");
+                Printer.println("Properties not Implemented Yet");
             }
         });
         menu.add(propertiesItem);

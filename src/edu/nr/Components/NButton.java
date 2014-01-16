@@ -2,14 +2,12 @@ package edu.nr.Components;
 
 import edu.nr.Components.mouse_listeners.MyMouseListener;
 import edu.nr.Main;
-import edu.nr.MovableComponent;
 import edu.nr.properties.PropertiesManager;
 import edu.nr.properties.Property;
 import edu.nr.properties.Property.Type;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
