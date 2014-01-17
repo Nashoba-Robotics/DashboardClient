@@ -74,11 +74,11 @@ public class Main extends JFrame
         network = new Network(TeamNumberManager.getTeamNumber());
         createMessageReceivedListener();
         network.setOnMessageReceivedListener(messageListener);
-        network.connect();
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setVisible(true);
+        network.connect();
     }
 
     private void createMessageReceivedListener()
@@ -90,16 +90,40 @@ public class Main extends JFrame
             {
                 ArrayList<Property> addingProperties = new ArrayList<Property>();
                 addingProperties.add(new Property(Property.Type.NAME, key));
-                if(value.getClass() == java.lang.Double.class)
+
+                MovableComponent existingComponent = null;
+                if(widgetWithName(key) != -1)
+                    existingComponent = components.get(widgetWithName(key));
+
+                if(existingComponent != null)
                 {
-                    addNumber(addingProperties, true, (Double)value);
+                    existingComponent.setValue(value);
                 }
-                else if(value.getClass() == java.lang.String.class)
+                else
                 {
-                    addTextField(addingProperties, true, (String)value);
+                    if(value.getClass() == java.lang.Double.class || value.getClass() == java.lang.Integer.class)
+                    {
+                        addNumber(addingProperties, true, (Double)value);
+                    }
+                    else if(value.getClass() == java.lang.String.class)
+                    {
+                        addTextField(addingProperties, true, (String)value);
+                    }
                 }
             }
         };
+    }
+
+    private int widgetWithName(String name)
+    {
+        for(int i = 0; i < components.size(); i++)
+        {
+            if(components.get(i).getTitle().equals(name))
+            {
+                return i;
+            }
+        }
+        return -1;
     }
 
     public static Main main;

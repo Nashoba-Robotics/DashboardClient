@@ -21,9 +21,7 @@ public class NNumberField extends MovableComponent
     private double value;
     private JTextField numberField;
     private JLabel label;
-    private JProgressBar progressBar;
     private int widgetType = -1;
-    private int maxValue = 0, minValue = 100;
     private double number;
 
     public NNumberField(ArrayList<MovableComponent> components, ArrayList<Property> properties, Main main)
@@ -33,7 +31,6 @@ public class NNumberField extends MovableComponent
         numberField = new JTextField();
         numberField.setText("" + number);
         label = new JLabel();
-        progressBar = new JProgressBar();
 
         loadProperties(properties);
 
@@ -90,12 +87,6 @@ public class NNumberField extends MovableComponent
             this.add(label, BorderLayout.NORTH);
             this.add(numberField, BorderLayout.SOUTH);
         }
-        else if(widgetType == 2)
-        {
-            this.removeAll();
-            this.add(label, BorderLayout.NORTH);
-            this.add(progressBar, BorderLayout.SOUTH);
-        }
         label.setText((String)Property.getPropertyFromType(Property.Type.NAME, properties).getData());
         setBackground((Color)Property.getPropertyFromType(Property.Type.BACKGROUND, properties).getData());
         setSize((Dimension) Property.getPropertyFromType(Property.Type.SIZE, properties).getData());
@@ -121,8 +112,18 @@ public class NNumberField extends MovableComponent
     @Override
     public void setValue(Object o)
     {
-        value = (Double)o;
+        if(o.getClass() == java.lang.Double.class)
+            value = (Double)o;
+        else if(o.getClass() == Integer.class)
+            value = ((Integer)o).floatValue();
+        else
+            Printer.println("Couldn't get class for: " + o.getClass());
         numberField.setText(String.valueOf(value));
-        progressBar.setValue((int)value);
+    }
+
+    @Override
+    public String getTitle()
+    {
+        return label.getText();
     }
 }

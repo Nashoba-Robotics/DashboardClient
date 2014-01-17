@@ -145,4 +145,16 @@ public class NTextField extends MovableComponent
     {
         field.setText((String)o);
     }
+
+    @Override
+    public String getName()
+    {
+        return label.getText();
+    }
+
+    @Override
+    public String getTitle()
+    {
+        return label.getText();
+    }
 }

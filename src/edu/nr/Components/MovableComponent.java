@@ -27,4 +27,5 @@ public abstract class MovableComponent extends JPanel
     public abstract String getWidgetName();
     public abstract void applyWidgetType();
     public abstract void setValue(Object o);
+    public abstract String getTitle();
 }

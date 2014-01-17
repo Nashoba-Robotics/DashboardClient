@@ -157,4 +157,10 @@ public class NButton extends MovableComponent
     {
         System.err.println("Button was asked to apply object: " + o.toString());
     }
+
+    @Override
+    public String getTitle()
+    {
+        return button.getText();
+    }
 }

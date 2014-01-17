@@ -67,7 +67,6 @@ public class OverlapChecker
 
     public static boolean overlapsOtherWidget(JComponent caller, JComponent compare, Point newLocation)
     {
-        Printer.println("Comparing " + compare.getSize() + " to point " + newLocation + "with height " + caller.getSize());
         if(compare != caller) //Make sure we aren't comparing this widget to itself
         {
             Point l1 = newLocation;
