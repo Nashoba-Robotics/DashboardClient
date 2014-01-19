@@ -14,6 +14,8 @@ import edu.nr.util.TeamNumberManager;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
@@ -75,9 +77,30 @@ public class Main extends JFrame
         createMessageReceivedListener();
         network.setOnMessageReceivedListener(messageListener);
 
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setVisible(true);
+        addWindowStateListener(new WindowAdapter()
+        {
+            @Override
+            public void windowClosing(WindowEvent e)
+            {
+                System.out.println(e.getNewState() + "     " + WindowEvent.WINDOW_CLOSING);
+                int n = JOptionPane.showConfirmDialog(
+                        Main.this,
+                        "Save before quitting?",
+                        "Save",
+                        JOptionPane.YES_NO_OPTION);
+                if(n == 0)
+                {
+                    showSaveDialog(true);
+                }
+                else
+                {
+                    System.exit(0);
+                }
+                super.windowClosing(e);
+            }
+        });
         network.connect();
     }
 
@@ -180,7 +203,7 @@ public class Main extends JFrame
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                showSaveDialog();
+                showSaveDialog(false);
             }
         });
 
@@ -362,13 +385,15 @@ public class Main extends JFrame
         repaint();
     }
 
-    private void showSaveDialog()
+    private void showSaveDialog(boolean exitAfterSave)
     {
         saveChooser.setDialogTitle("Choose a save file");
         int returnValue = saveChooser.showSaveDialog(this);
         if(returnValue == JFileChooser.APPROVE_OPTION)
         {
             PropertiesManager.writeAllPropertiesToFile(saveChooser.getSelectedFile().getPath(), components, main);
+            if(exitAfterSave)
+                System.exit(0);
         }
         else
         {
