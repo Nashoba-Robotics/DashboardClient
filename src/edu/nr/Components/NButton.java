@@ -27,6 +27,7 @@ public class NButton extends MovableComponent
     public NButton(ArrayList<MovableComponent> components, ArrayList<Property> properties, Main main)
     {
         this.components = components;
+        this.main = main;
         button = new JButton();
 
         setBackground(null);
@@ -135,32 +136,30 @@ public class NButton extends MovableComponent
         button.setEnabled(!movable);
     }
 
-    private final static String WIDGET_NAME = "button";
     public String getWidgetName()
     {
-        return WIDGET_NAME;
+        return WidgetNames.NUMBER_NAME;
     }
 
     public static String getStaticWidgetName()
     {
-        return WIDGET_NAME;
-    }
-
-    @Override
-    public void applyWidgetType()
-    {
-        //Nothing to do here because button only has one type
+        return WidgetNames.NUMBER_NAME;
     }
 
     @Override
     public void setValue(Object o)
     {
-        System.err.println("Button was asked to apply object: " + o.toString());
+        super.setValue(o);
     }
 
     @Override
     public String getTitle()
     {
         return button.getText();
+    }
+
+    @Override
+    public int getWidgetType() {
+        return 1;
     }
 }

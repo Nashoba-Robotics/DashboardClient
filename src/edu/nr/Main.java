@@ -1,15 +1,14 @@
 package edu.nr;
 
-import edu.nr.Components.MovableComponent;
-import edu.nr.Components.NButton;
-import edu.nr.Components.NNumberField;
-import edu.nr.Components.NTextField;
+import edu.nr.Components.*;
 import edu.nr.Network.Network;
 import edu.nr.properties.PropertiesManager;
 import edu.nr.properties.Property;
 import edu.nr.util.OverlapChecker;
 import edu.nr.util.Printer;
-import edu.nr.util.TeamNumberManager;
+import edu.nr.util.SettingsManager;
+import edu.wpi.first.wpilibj.tables.IRemote;
+import edu.wpi.first.wpilibj.tables.IRemoteConnectionListener;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -25,10 +24,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
 //TODO Implement properties right click menu
-//TODO Add remove widget functionality to right click menu
-//TODO Add widgets for: Boolean, Numbers, Graphs, Camera
-//TODO Talk to Brandon about how he is sending data over bytes (for use in the Network class)
-//TODO Finish XML Loading in PropertiesManager class
 //TODO Test out using JSCrollPane to handle items out of bounds
 
 /**
@@ -62,7 +57,7 @@ public class Main extends JFrame
         System.setOut(dummyStream);
 
         panel = new JPanel();
-        panel.setBackground(new Color(50,50,50));
+        panel.setBackground(new Color(200,200,200));
         saveChooser = new JFileChooser();
         openChooser = new JFileChooser();
         setSize(1000, 700);
@@ -73,18 +68,17 @@ public class Main extends JFrame
         panel.setDoubleBuffered(true);
         add(panel);
 
-        network = new Network(TeamNumberManager.getTeamNumber());
+        network = new Network(SettingsManager.getTeamNumber());
         createMessageReceivedListener();
         network.setOnMessageReceivedListener(messageListener);
 
         setLocationRelativeTo(null);
         setVisible(true);
-        addWindowStateListener(new WindowAdapter()
+
+        addWindowListener(new WindowAdapter()
         {
-            @Override
             public void windowClosing(WindowEvent e)
             {
-                System.out.println(e.getNewState() + "     " + WindowEvent.WINDOW_CLOSING);
                 int n = JOptionPane.showConfirmDialog(
                         Main.this,
                         "Save before quitting?",
@@ -98,10 +92,24 @@ public class Main extends JFrame
                 {
                     System.exit(0);
                 }
-                super.windowClosing(e);
             }
         });
+
         network.connect();
+        network.getTable().addConnectionListener(new IRemoteConnectionListener()
+        {
+            @Override
+            public void connected(IRemote iRemote)
+            {
+                setTitle("NRDashboard - Connected");
+            }
+
+            @Override
+            public void disconnected(IRemote iRemote)
+            {
+                setTitle("NRDashboard - Disconnected");
+            }
+        }, true);
     }
 
     private void createMessageReceivedListener()
@@ -124,13 +132,29 @@ public class Main extends JFrame
                 }
                 else
                 {
-                    if(value.getClass() == java.lang.Double.class || value.getClass() == java.lang.Integer.class)
+                    if(value instanceof Double || value instanceof Integer)
                     {
                         addNumber(addingProperties, true, (Double)value);
                     }
-                    else if(value.getClass() == java.lang.String.class)
+                    else if(value instanceof String)
                     {
                         addTextField(addingProperties, true, (String)value);
+                    }
+                    else if(value instanceof Boolean)
+                    {
+                        addBooleanField(addingProperties, true, value);
+                    }
+                    else if(value instanceof Object[])
+                    {
+                        /*Printer.print("Received an array: {");
+                        Object[] values = (Object[])value;
+                        for(int i = 0; i < values.length; i++)
+                        {
+                            if(i != 0)
+                                Printer.print(", ");
+                            Printer.print(values[i] + "");
+                        }
+                        Printer.println("}");*/
                     }
                 }
             }
@@ -227,13 +251,13 @@ public class Main extends JFrame
             {
                 if(movableComponents.isSelected())
                 {
-                    setTitle("Dashboard Client (Editable)");
+                    //setTitle("NRDashboard (Editable)");
                     for(MovableComponent b : components)
                         b.setMovable(true);
                 }
                 else
                 {
-                    setTitle("Dashboard Client");
+                    //setTitle("NRDashboard");
                     for(MovableComponent b : components)
                         b.setMovable(false);
                 }
@@ -269,7 +293,7 @@ public class Main extends JFrame
                 JOptionPane.PLAIN_MESSAGE,
                 null,
                 null,
-                TeamNumberManager.getTeamNumber());
+                SettingsManager.getTeamNumber());
         if(s != null)
         {
             for(int i = 0; i < 4; i++)
@@ -292,7 +316,7 @@ public class Main extends JFrame
 
     public void setIpAddress(String teamNumber)
     {
-        TeamNumberManager.writeTeamNumber(teamNumber);
+        SettingsManager.writeTeamNumber(teamNumber);
 
         String options[] = {"Restart" , "Cancel"};
         int n = JOptionPane.showOptionDialog(this,
@@ -319,10 +343,26 @@ public class Main extends JFrame
     {
         NTextField temp = new NTextField(components, properties, main);
         temp.setValue(value);
-        if(movableComponents.isSelected())
-            temp.setMovable(true);
+        temp.setMovable(movableComponents.isSelected());
+        components.add(temp);
+
+        if(checkForOverlaps)
+        {
+            addWithOverlapChecking(temp, components);
+        }
         else
-            temp.setMovable(false);
+        {
+            panel.add(temp);
+            repaint();
+            revalidate();
+        }
+    }
+
+    private void addBooleanField(ArrayList<Property> properties, boolean checkForOverlaps, Object value)
+    {
+        NBoolean temp = new NBoolean(components, properties, main);
+        temp.setValue(value);
+        temp.setMovable(movableComponents.isSelected());
         components.add(temp);
 
         if(checkForOverlaps)
@@ -417,6 +457,7 @@ public class Main extends JFrame
             {
                 panel.add(m);
             }
+            Printer.println("Added " + components.size() + " components");
             panel.repaint();
             panel.revalidate();
         }

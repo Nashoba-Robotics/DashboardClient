@@ -1,6 +1,7 @@
 package edu.nr.properties;
 
 import edu.nr.Components.NButton;
+import edu.nr.Components.NNumberField;
 import edu.nr.Components.NTextField;
 import edu.nr.Main;
 import edu.nr.Components.MovableComponent;
@@ -33,7 +34,6 @@ public class PropertiesManager
 {
     public static void loadElementsFromFile(String path, ArrayList<MovableComponent> components, Main main)
     {
-        ArrayList<MovableComponent> movableComponents = new ArrayList<MovableComponent>();
         try
         {
             File xmlFile = new File(path);
@@ -91,24 +91,28 @@ public class PropertiesManager
                     }
                     catch(NumberFormatException e)
                     {
+                        Printer.println("Error parsing Type");
                     }
                     properties.add(typeProperty);
 
                     //Figure out which class to add
                     MovableComponent addingClass = null;
                     String name = element.getTagName();
-                    if(name.compareToIgnoreCase(NButton.getStaticWidgetName()) == 0)
+                    if(name.equals(NButton.getStaticWidgetName()))
                     {
                         addingClass = new NButton(components, properties, main);
                     }
-                    else if (name.compareToIgnoreCase(NTextField.getStaticWidgetName()) == 0)
+                    else if (name.equals(NTextField.getStaticWidgetName()))
                     {
                         addingClass =  new NTextField(components, properties, main);
                     }
-
-                    if(addingClass == null)
+                    else if(name.equals(NNumberField.getStaticWidgetName()))
                     {
-                        System.exit(1);
+                        addingClass = new NNumberField(components, properties, main);
+                    }
+                    else
+                    {
+                        Printer.println("ERROR: Adding class was null");
                     }
 
                     addingClass.setMovable(main.isEditable());
@@ -116,6 +120,7 @@ public class PropertiesManager
                     components.add(addingClass);
                 }
             }
+            main.repaint();
         }
         catch (ParserConfigurationException e)
         {
@@ -197,9 +202,8 @@ public class PropertiesManager
                 widget.appendChild(foreground);
 
                 //Add the type of widget
-                p = Property.getPropertyFromType(Property.Type.WIDGET_TYPE, properties);
                 Element type = doc.createElement("type");
-                type.setAttribute("value", String.valueOf(p.getData()));
+                type.setAttribute("value", String.valueOf(movableComponent.getWidgetType()));
                 widget.appendChild(type);
 
                 //Add the Font size

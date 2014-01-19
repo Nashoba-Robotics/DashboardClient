@@ -20,15 +20,12 @@ import java.util.ArrayList;
  */
 public class NTextField extends MovableComponent
 {
-    private ArrayList<MovableComponent> components;
     private JTextField field;
     private JLabel label;
-    private int widgetType = -1;
 
     public NTextField(ArrayList<MovableComponent> components, ArrayList<Property> loadedProperties, Main main)
     {
-        this.components = components;
-
+        this.main = main;
         label = new JLabel();
         label.setBorder(new EmptyBorder(0,0,0,0));
         label.setHorizontalAlignment(SwingConstants.CENTER);
@@ -43,11 +40,11 @@ public class NTextField extends MovableComponent
         }
         applyProperties();
 
-        setLayout(new BorderLayout());
+        setLayout(new BoxLayout(this, 0));
         setBorder(new EmptyBorder(1, 1, 1, 1));
 
-        add(label, BorderLayout.NORTH);
-        add(field, BorderLayout.SOUTH);
+        add(label, BorderLayout.WEST);
+        add(field, BorderLayout.EAST);
 
         MyMouseListener listener = new MyMouseListener(NTextField.this, components, main);
         addMouseListener(listener);
@@ -56,28 +53,14 @@ public class NTextField extends MovableComponent
         field.addMouseMotionListener(listener);
 
         field.setFocusTraversalKeysEnabled(false);
-        field.addKeyListener(new KeyListener()
+        field.addKeyListener(new TabListener(new Runnable()
         {
             @Override
-            public void keyTyped(KeyEvent e)
+            public void run()
             {
-                if(e.getKeyCode() == KeyEvent.VK_TAB)
-                {
-
-                }
+                NTextField.this.main.network.putString(getTitle(), field.getText());
             }
-
-            @Override
-            public void keyPressed(KeyEvent e)
-            {
-
-            }
-
-            @Override
-            public void keyReleased(KeyEvent e) {
-
-            }
-        });
+        }));
     }
 
     private void loadProperties(ArrayList<Property> loaded)
@@ -89,12 +72,11 @@ public class NTextField extends MovableComponent
     {
         //Load the properties by using the Property classes function for getting a specific property out of our array by finding it's type,
         //Then set our values to the correctly casted version of the data from that property
-        label.setText((String)Property.getPropertyFromType(Property.Type.NAME, properties).getData());
+        label.setText((String)Property.getPropertyFromType(Property.Type.NAME, properties).getData() + " ");
         field.setForeground((Color)Property.getPropertyFromType(Property.Type.FOREGROUND, properties).getData());
         setBackground((Color)Property.getPropertyFromType(Property.Type.BACKGROUND, properties).getData());
         setSize((Dimension) Property.getPropertyFromType(Property.Type.SIZE, properties).getData());
         setLocation((Point)Property.getPropertyFromType(Property.Type.LOCATION, properties).getData());
-        widgetType = (Integer)Property.getPropertyFromType(Property.Type.WIDGET_TYPE, properties).getData();
 
         //Load the font size
         label.setFont(new Font("Arial", Font.BOLD, (Integer)Property.getPropertyFromType(Property.Type.FONT_SIZE, properties).getData()-1));
@@ -104,7 +86,7 @@ public class NTextField extends MovableComponent
     private ArrayList<Property> getDefaultProperties()
     {
         ArrayList<Property> tempProperties = new ArrayList<Property>();
-        tempProperties.add(new Property(Property.Type.SIZE, new Dimension(130,45)));
+        tempProperties.add(new Property(Property.Type.SIZE, new Dimension(130,25)));
         tempProperties.add(new Property(Property.Type.LOCATION, new Point(0,0)));
         tempProperties.add(new Property(Property.Type.FOREGROUND, Color.BLACK));
         tempProperties.add(new Property(Property.Type.BACKGROUND, Color.WHITE));
@@ -118,43 +100,36 @@ public class NTextField extends MovableComponent
     @Override
     public void setMovable(boolean movable)
     {
-        Printer.println("Movable set to: " + movable);
         isMovable = movable;
         field.setEnabled(!movable);
     }
 
-    private final static String WIDGET_NAME = "text-field";
     @Override
     public String getWidgetName() {
-        return WIDGET_NAME;
+        return WidgetNames.STRING_NAME;
     }
 
     public static String getStaticWidgetName()
     {
-        return WIDGET_NAME;
-    }
-
-    @Override
-    public void applyWidgetType()
-    {
-
+        return WidgetNames.STRING_NAME;
     }
 
     @Override
     public void setValue(Object o)
     {
+        super.setValue(o);
         field.setText((String)o);
-    }
-
-    @Override
-    public String getName()
-    {
-        return label.getText();
     }
 
     @Override
     public String getTitle()
     {
-        return label.getText();
+        return label.getText().trim();
+    }
+
+    @Override
+    public int getWidgetType()
+    {
+        return 1;
     }
 }

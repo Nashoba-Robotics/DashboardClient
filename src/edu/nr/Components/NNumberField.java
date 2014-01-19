@@ -8,6 +8,10 @@ import edu.nr.util.Printer;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.geom.Arc2D;
 import java.util.ArrayList;
 
 /**
@@ -21,26 +25,54 @@ public class NNumberField extends MovableComponent
     private double value;
     private JTextField numberField;
     private JLabel label;
-    private int widgetType = -1;
-    private double number;
 
     public NNumberField(ArrayList<MovableComponent> components, ArrayList<Property> properties, Main main)
     {
         this.components = components;
-        this.number = number;
+        this.main = main;
         numberField = new JTextField();
-        numberField.setText("" + number);
         label = new JLabel();
 
         loadProperties(properties);
-
-        setLayout(new BorderLayout());
 
         MyMouseListener listener = new MyMouseListener(this, components, main);
         addMouseListener(listener);
         addMouseMotionListener(listener);
         numberField.addMouseListener(listener);
         numberField.addMouseMotionListener(listener);
+
+        setLayout(new BoxLayout(this, 0));
+        add(label);
+        add(numberField);
+        applyProperties();
+
+        numberField.setFocusTraversalKeysEnabled(false);
+        numberField.addKeyListener(new TabListener(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                Double newValue = null;
+                try
+                {
+                    newValue = Double.parseDouble(numberField.getText());
+                }
+                catch (NumberFormatException e)
+                {
+                    if(valueSet)
+                    {
+                        numberField.setText(value + "");
+                        NNumberField.this.main.network.putNumber(getTitle(), value);
+                    }
+                    else
+                    {
+                        numberField.setText("");
+                    }
+                    return;
+                }
+                NNumberField.this.main.network.putNumber(getTitle(), newValue);
+            }
+        }));
     }
 
     private void loadProperties(ArrayList<Property> loading)
@@ -52,12 +84,11 @@ public class NNumberField extends MovableComponent
     private ArrayList<Property> getDefaultProperties()
     {
         ArrayList<Property> tempProperties = new ArrayList<Property>();
-        tempProperties.add(new Property(Property.Type.SIZE, new Dimension(130,45)));
+        tempProperties.add(new Property(Property.Type.SIZE, new Dimension(130,25)));
         tempProperties.add(new Property(Property.Type.LOCATION, new Point(0,0)));
         tempProperties.add(new Property(Property.Type.FOREGROUND, Color.BLACK));
         tempProperties.add(new Property(Property.Type.BACKGROUND, Color.WHITE));
         tempProperties.add(new Property(Property.Type.NAME, "Number"));
-        tempProperties.add(new Property(Property.Type.WIDGET_TYPE, 1));
         tempProperties.add(new Property(Property.Type.FONT_SIZE, 14));
 
         return tempProperties;
@@ -74,20 +105,14 @@ public class NNumberField extends MovableComponent
     public void applyProperties()
     {
         applyProperties(properties);
+        numberField.setSize(getWidth()-label.getWidth(), getHeight());
     }
 
     public void applyProperties(ArrayList<Property> applyingProperties)
     {
         PropertiesManager.loadPropertiesIntoArray(properties, applyingProperties);
 
-        widgetType = (Integer)Property.getPropertyFromType(Property.Type.WIDGET_TYPE, properties).getData();
-        if(widgetType == 1)
-        {
-            this.removeAll();
-            this.add(label, BorderLayout.NORTH);
-            this.add(numberField, BorderLayout.SOUTH);
-        }
-        label.setText((String)Property.getPropertyFromType(Property.Type.NAME, properties).getData());
+        label.setText((String)Property.getPropertyFromType(Property.Type.NAME, properties).getData() + " ");
         setBackground((Color)Property.getPropertyFromType(Property.Type.BACKGROUND, properties).getData());
         setSize((Dimension) Property.getPropertyFromType(Property.Type.SIZE, properties).getData());
         setLocation((Point)Property.getPropertyFromType(Property.Type.LOCATION, properties).getData());
@@ -97,25 +122,24 @@ public class NNumberField extends MovableComponent
         numberField.setFont(new Font("Arial", Font.PLAIN, (Integer)Property.getPropertyFromType(Property.Type.FONT_SIZE, properties).getData()));
     }
 
+    private static final String NAME = "number";
     @Override
     public String getWidgetName()
     {
-        return "number";
+        return NAME;
     }
 
-    @Override
-    public void applyWidgetType()
+    public static String getStaticWidgetName()
     {
-
+        return NAME;
     }
 
     @Override
     public void setValue(Object o)
     {
+        super.setValue(o);
         if(o.getClass() == java.lang.Double.class)
             value = (Double)o;
-        else if(o.getClass() == Integer.class)
-            value = ((Integer)o).floatValue();
         else
             Printer.println("Couldn't get class for: " + o.getClass());
         numberField.setText(String.valueOf(value));
@@ -124,6 +148,12 @@ public class NNumberField extends MovableComponent
     @Override
     public String getTitle()
     {
-        return label.getText();
+        return label.getText().trim();
+    }
+
+    @Override
+    public int getWidgetType()
+    {
+        return 1;
     }
 }

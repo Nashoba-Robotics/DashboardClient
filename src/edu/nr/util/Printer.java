@@ -21,4 +21,13 @@ public class Printer
             stream.println(message);
         }
     }
+
+    public static void print(String message)
+    {
+        if(stream != null)
+        {
+            stream.print(message);
+            stream.flush();
+        }
+    }
 }

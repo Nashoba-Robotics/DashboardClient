@@ -5,11 +5,11 @@ import java.io.*;
 /**
  * Created by colin on 1/15/14.
  */
-public class TeamNumberManager
+public class SettingsManager
 {
     public static void writeTeamNumber(String number)
     {
-        File f = new File(filePath());
+        File f = new File(teamFilePath());
         if(!f.exists())
         {
             try
@@ -30,14 +30,15 @@ public class TeamNumberManager
             writer.flush();
             writer.close();
         }
-        catch (IOException e) {
-            e.printStackTrace();
+        catch (IOException e)
+        {
+            Printer.println(e.toString());
         }
     }
 
     public static String getTeamNumber()
     {
-        File f = new File(filePath());
+        File f = new File(teamFilePath());
         if(!f.exists())
         {
             try
@@ -58,6 +59,12 @@ public class TeamNumberManager
         try
         {
             BufferedReader reader = new BufferedReader(new FileReader(f));
+            String result = reader.readLine();
+            if(result.length() != 4 && (!isNumbers(result)))
+            {
+                Printer.println("Error: " + "loaded team number is invalid");
+                return "0000";
+            }
             return reader.readLine();
 
         }
@@ -72,6 +79,46 @@ public class TeamNumberManager
         throw new RuntimeException("Error: couldn't load team number from file");
     }
 
+    public static void writeSavePath(String path)
+    {
+        File f = new File(saveFilePath());
+        if(!f.exists())
+        {
+            try
+            {
+                new File(folderPath()).mkdirs();
+                f.createNewFile();
+            }
+            catch (Exception e)
+            {
+                Printer.println("Error: couldn't create new save file location for writing");
+            }
+        }
+
+        try
+        {
+            FileWriter writer = new FileWriter(f);
+            writer.write(path);
+            writer.flush();
+            writer.close();
+        }
+        catch (IOException e)
+        {
+            Printer.println(e.toString());
+        }
+
+    }
+
+    private static boolean isNumbers(String s)
+    {
+        for(int i = 0; i < s.length(); i++)
+        {
+            if(!Character.isDigit(s.charAt(i)))
+                return false;
+        }
+        return true;
+    }
+
     private static String homePath()
     {
         return System.getProperty("user.home") + File.separator;
@@ -82,8 +129,13 @@ public class TeamNumberManager
         return homePath() + ".NRDashboard" + File.separator;
     }
 
-    private static String filePath()
+    private static String teamFilePath()
     {
         return folderPath() + "team";
+    }
+
+    private static String saveFilePath()
+    {
+        return folderPath() + "save";
     }
 }

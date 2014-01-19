@@ -14,10 +14,10 @@ import java.net.UnknownHostException;
 /**
  * @author co1in
  */
-public class Network implements ITableListener, IRemoteConnectionListener
+public class Network implements ITableListener
 {
     private NetworkTable table;
-    private final String DASHBOARD_NAME = "NRDashboard";
+    private final String DASHBOARD_NAME = "SmartDashboard";
 
     private OnMessageReceivedListener listener = null;
 
@@ -34,22 +34,21 @@ public class Network implements ITableListener, IRemoteConnectionListener
     {
         table = NetworkTable.getTable(DASHBOARD_NAME);
         table.addTableListener(this);
-        table.addConnectionListener(this, true);
     }
 
-    public void putString()
+    public void putString(String key, String value)
     {
-
+        table.putString(key, value);
     }
 
-    public void putNumber()
+    public void putNumber(String key, Double value)
     {
-
+        table.putNumber(key, value);
     }
 
-    public void putBoolean()
+    public void putBoolean(String key, Boolean value)
     {
-
+        table.putBoolean(key, value);
     }
 
     public void setOnMessageReceivedListener(OnMessageReceivedListener listener)
@@ -68,21 +67,13 @@ public class Network implements ITableListener, IRemoteConnectionListener
         }
     }
 
-    @Override
-    public void connected(IRemote iRemote)
-    {
-        Printer.println("Connected to Server");
-    }
-
-    @Override
-    public void disconnected(IRemote iRemote)
-    {
-        Printer.println("Disconnected from Server");
-        //TODO Add indicator light
-    }
-
     public interface OnMessageReceivedListener
     {
         public void onMessageReceived(String key, Object value);
+    }
+
+    public NetworkTable getTable()
+    {
+        return table;
     }
 }

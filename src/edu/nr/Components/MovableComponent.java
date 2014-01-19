@@ -1,5 +1,6 @@
 package edu.nr.Components;
 
+import edu.nr.Main;
 import edu.nr.properties.Property;
 
 import javax.swing.*;
@@ -9,6 +10,8 @@ public abstract class MovableComponent extends JPanel
 {
     protected  ArrayList<Property> properties = null;
     protected boolean isMovable;
+    protected boolean valueSet = false;
+    protected Main main;
 
     public final boolean isMovable()
     {
@@ -25,7 +28,10 @@ public abstract class MovableComponent extends JPanel
     }
     public abstract void applyProperties();
     public abstract String getWidgetName();
-    public abstract void applyWidgetType();
-    public abstract void setValue(Object o);
+    public void setValue(Object o)
+    {
+        valueSet = true;
+    }
     public abstract String getTitle();
+    public abstract int getWidgetType();
 }
