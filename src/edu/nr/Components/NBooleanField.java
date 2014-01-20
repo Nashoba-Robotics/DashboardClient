@@ -4,36 +4,43 @@ import edu.nr.Components.mouse_listeners.MyMouseListener;
 import edu.nr.Main;
 import edu.nr.properties.PropertiesManager;
 import edu.nr.properties.Property;
-import edu.nr.util.Printer;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.util.ArrayList;
 
 /**
- * User: co1in
- * Date: 11/13/13
- * Time: 10:22 PM
+ * @author co1in
+ *         Date: 1/18/14
+ *         Time: 11:49 PM
  */
-public class NTextField extends MovableField
+public class NBooleanField extends MovableField
 {
-    public NTextField(ArrayList<MovableComponent> components, ArrayList<Property> loadedProperties, Main main)
+    private Boolean currentValue = null;
+
+    public NBooleanField(ArrayList<MovableComponent> components, ArrayList<Property> properties, Main main)
     {
-        super(components, loadedProperties, main);
+        super(components, properties, main);
     }
 
     @Override
     protected void onTab()
     {
-        NTextField.this.main.network.putString(getTitle(), field.getText());
-    }
-
-    private void loadProperties(ArrayList<Property> loaded)
-    {
-        PropertiesManager.loadPropertiesIntoArray(properties, loaded);
+        if(field.getText().compareToIgnoreCase("true") == 0)
+            NBooleanField.this.main.network.putBoolean(getTitle(), true);
+        else if(field.getText().compareToIgnoreCase("false") == 0)
+            NBooleanField.this.main.network.putBoolean(getTitle(), false);
+        else
+        {
+            if(valueSet)
+            {
+                field.setText(currentValue + "");
+                NBooleanField.this.main.network.putBoolean(getTitle(), currentValue);
+            }
+            else
+                field.setText("");
+        }
     }
 
     protected ArrayList<Property> getDefaultProperties()
@@ -51,20 +58,17 @@ public class NTextField extends MovableField
     }
 
     @Override
-    public String getWidgetName() {
-        return WidgetNames.STRING_NAME;
-    }
-
-    public static String getStaticWidgetName()
+    public String getWidgetName()
     {
-        return WidgetNames.STRING_NAME;
+        return WidgetNames.BOOLEAN_NAME;
     }
 
     @Override
     public void setValue(Object o)
     {
         super.setValue(o);
-        field.setText((String)o);
+        field.setText(((Boolean)o).booleanValue() + "");
+        currentValue = (Boolean)o;
     }
 
     @Override
@@ -76,6 +80,15 @@ public class NTextField extends MovableField
     @Override
     public void attemptValueFetch()
     {
-        setValue(main.network.getString(getTitle()));
+        Boolean b = main.network.getBoolean(getTitle());
+        if(b != null)
+            setValue(b);
     }
+
+    public static int getStaticWidgetType()
+    {
+        return 1;
+    }
+
+
 }

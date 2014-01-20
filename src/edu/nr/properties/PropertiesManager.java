@@ -111,7 +111,7 @@ public class PropertiesManager
                     }
                     else if(name.equals(WidgetNames.BOOLEAN_NAME))
                     {
-                        addingClass = new NBoolean(components, properties, main);
+                        addingClass = new NBooleanField(components, properties, main);
                     }
                     else
                     {

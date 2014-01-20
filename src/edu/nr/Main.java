@@ -1,18 +1,17 @@
 package edu.nr;
 
-import com.sun.xml.internal.ws.api.config.management.policy.ManagementAssertion;
 import edu.nr.Components.*;
 import edu.nr.Network.Network;
 import edu.nr.properties.PropertiesManager;
 import edu.nr.properties.Property;
 import edu.nr.util.OverlapChecker;
 import edu.nr.util.Printer;
+import edu.nr.util.SaveManager;
 import edu.nr.util.SettingsManager;
 import edu.wpi.first.wpilibj.tables.IRemote;
 import edu.wpi.first.wpilibj.tables.IRemoteConnectionListener;
 
 import javax.swing.*;
-import javax.swing.filechooser.FileNameExtensionFilter;
 
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -32,12 +31,12 @@ import java.awt.event.ActionEvent;
  */
 public class Main extends JFrame
 {
-    JPanel panel;
-    JFileChooser saveChooser, openChooser;
+    public JPanel panel;
     private ArrayList<MovableComponent> components = new ArrayList<MovableComponent>();
 
     public static boolean somethingIsBeingPressed = false;
     public Network network;
+    private SaveManager saveManager;
 
     private Network.OnMessageReceivedListener messageListener;
 
@@ -46,7 +45,7 @@ public class Main extends JFrame
         super("NRDashboard - Loading");
 
         //NOTE: This code replaces the sytem output stream with a dummy one.
-        //This is done because NetworkTables is printing output to the standard output (which a good library should not be doing)
+        //This is done because NetworkTables is printing debug output to the standard output (which a good library should not be doing)
         //As a result, we take the standard input, hand it to our own static class (Printer), set systems output stream to a dummy outputstream, and use Printer for printing instead.
         //This essentially suppresses all output from NetworkTables
         PrintStream dummyStream    = new PrintStream(new OutputStream(){
@@ -55,12 +54,10 @@ public class Main extends JFrame
             }
         });
         Printer.setOutputStream(System.out);
-        //System.setOut(dummyStream);
+        System.setOut(dummyStream);
 
         panel = new JPanel();
         panel.setBackground(new Color(200,200,200));
-        saveChooser = new JFileChooser();
-        openChooser = new JFileChooser();
         setSize(1000, 700);
 
         addMenuBar();
@@ -92,14 +89,10 @@ public class Main extends JFrame
                         System.exit(0);
                     }
                     else
-                    {
-                        showSaveDialog(true);
-                    }
+                        saveManager.showSaveDialog(true);
                 }
                 else
-                {
                     System.exit(0);
-                }
             }
         });
 
@@ -115,7 +108,9 @@ public class Main extends JFrame
             panel.revalidate();
         }
 
+        //Initiate the networkTables connection
         network.connect();
+        //Update the title of the window to inform user if we are connected or not
         network.getTable().addConnectionListener(new IRemoteConnectionListener()
         {
             @Override
@@ -131,6 +126,7 @@ public class Main extends JFrame
             }
         }, true);
 
+        //Try and get values for any blank components loaded from the save file
         for(MovableComponent comp : components)
             comp.attemptValueFetch();
     }
@@ -153,15 +149,15 @@ public class Main extends JFrame
                 {
                     if(value instanceof Double || value instanceof Integer)
                     {
-                        addNumber(addingProperties, true, (Double)value);
+                        addComponent(new NNumberField(components, addingProperties, Main.this), true, value);
                     }
                     else if(value instanceof String)
                     {
-                        addTextField(addingProperties, true, (String)value);
+                        addComponent(new NTextField(components, addingProperties, Main.this), true, value);
                     }
                     else if(value instanceof Boolean)
                     {
-                        addBooleanField(addingProperties, true, value);
+                        addComponent(new NBooleanField(components, addingProperties, Main.this), true, value);
                     }
                     else if(value instanceof Object[])
                     {
@@ -220,26 +216,6 @@ public class Main extends JFrame
         JMenu viewMenu = new JMenu("View");
         menuBar.add(viewMenu);
 
-        /*JMenuItem addButtonItem = new JMenuItem("Add Button");
-        addButtonItem.addActionListener(new ActionListener()
-        {
-            @Override
-            public void actionPerformed(ActionEvent e)
-            {
-                addButton(null, true);
-            }
-        });
-        */
-        /*JMenuItem addFieldItem = new JMenuItem("Add Text Field");
-        addFieldItem.addActionListener(new ActionListener()
-        {
-            @Override
-            public void actionPerformed(ActionEvent e)
-            {
-                addTextField(null, true, "");
-            }
-        });*/
-
         JMenuItem saveFile = new JMenuItem("Save");
         saveFile.addActionListener(new ActionListener()
         {
@@ -252,7 +228,7 @@ public class Main extends JFrame
                 }
                 else
                 {
-                    showSaveDialog(false);
+                    saveManager.showSaveDialog(false);
                 }
             }
         });
@@ -261,7 +237,7 @@ public class Main extends JFrame
         saveAsFile.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                showSaveDialog(false);
+                saveManager.showSaveDialog(false);
             }
         });
 
@@ -304,7 +280,7 @@ public class Main extends JFrame
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                showOpenDialog();
+                saveManager.showOpenDialog();
             }
         });
 
@@ -373,68 +349,8 @@ public class Main extends JFrame
 
     }
 
-    private void addTextField(ArrayList<Property> properties, boolean checkForOverlaps, String value)
+    private void addComponent(MovableComponent temp, boolean checkForOverlaps, Object value)
     {
-        NTextField temp = new NTextField(components, properties, main);
-        temp.setValue(value);
-        temp.setMovable(movableComponents.isSelected());
-        components.add(temp);
-
-        if(checkForOverlaps)
-        {
-            addWithOverlapChecking(temp, components);
-        }
-        else
-        {
-            panel.add(temp);
-            repaint();
-            revalidate();
-        }
-    }
-
-    private void addBooleanField(ArrayList<Property> properties, boolean checkForOverlaps, Object value)
-    {
-        NBoolean temp = new NBoolean(components, properties, main);
-        temp.setValue(value);
-        temp.setMovable(movableComponents.isSelected());
-        components.add(temp);
-
-        if(checkForOverlaps)
-        {
-            addWithOverlapChecking(temp, components);
-        }
-        else
-        {
-            panel.add(temp);
-            repaint();
-            revalidate();
-        }
-    }
-
-    private void addButton(ArrayList<Property> properties, boolean checkForOverlaps)
-    {
-        NButton temp = new NButton(components, properties, main);
-        if(movableComponents.isSelected())
-            temp.setMovable(true);
-        else
-            temp.setMovable(false);
-        components.add(temp);
-
-        if(checkForOverlaps)
-        {
-            addWithOverlapChecking(temp, components);
-        }
-        else
-        {
-            panel.add(temp);
-            repaint();
-            revalidate();
-        }
-    }
-
-    private void addNumber(ArrayList<Property> properties, boolean checkForOverlaps, double value)
-    {
-        NNumberField temp = new NNumberField(components, properties, this);
         temp.setValue(value);
         temp.setMovable(movableComponents.isSelected());
         components.add(temp);
@@ -457,54 +373,6 @@ public class Main extends JFrame
         Property.getPropertyFromType(Property.Type.LOCATION, adding.getProperties()).setData(OverlapChecker.getOpenAddingLocation(adding, components));
         adding.applyProperties();
         repaint();
-    }
-
-    private void showSaveDialog(boolean exitAfterSave)
-    {
-        saveChooser.setDialogTitle("Choose a save file");
-        int returnValue = saveChooser.showSaveDialog(this);
-        if(returnValue == JFileChooser.APPROVE_OPTION)
-        {
-            String finalSavePath = saveChooser.getSelectedFile().getPath();
-            if(!finalSavePath.endsWith(".xml"))
-                finalSavePath += ".xml";
-            PropertiesManager.writeAllPropertiesToFile(finalSavePath, components, main);
-            SettingsManager.writeSavePath(finalSavePath);
-            if(exitAfterSave)
-                System.exit(0);
-        }
-        else
-        {
-            Printer.println("save aborted");
-            if(exitAfterSave)
-                System.exit(0);
-        }
-    }
-
-    private void showOpenDialog()
-    {
-        FileNameExtensionFilter xmlfilter = new FileNameExtensionFilter("xml files (*.xml)", "xml");
-        openChooser.setFileFilter(xmlfilter);
-        openChooser.setDialogTitle("Select a file to open");
-        int returnValue = openChooser.showOpenDialog(this);
-        if(returnValue == JFileChooser.APPROVE_OPTION)
-        {
-            components.clear();
-            panel.removeAll();
-            PropertiesManager.loadElementsFromFile(openChooser.getSelectedFile().getPath(), components, main);
-
-            for(MovableComponent m : components)
-            {
-                panel.add(m);
-            }
-            panel.repaint();
-            panel.revalidate();
-        }
-        else
-        {
-            Printer.println("Open aborted");
-        }
-
     }
 
     public void removeWidget(MovableComponent m)

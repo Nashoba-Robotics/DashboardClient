@@ -21,12 +21,10 @@ public class NButton extends MovableComponent
 
     private JButton button;
 
-    private NButton(){}
-
-    private ArrayList<MovableComponent> components;
     public NButton(ArrayList<MovableComponent> components, ArrayList<Property> properties, Main main)
     {
-        this.components = components;
+        super(components, properties, main);
+
         this.main = main;
         button = new JButton();
 
@@ -44,19 +42,12 @@ public class NButton extends MovableComponent
         }
         applyProperties();
 
-        setBorder(new EmptyBorder(1,1,1,1));
-        setLayout(new BorderLayout());
         add(button, BorderLayout.CENTER);
         button.setFocusable(false);
         setBackground(Color.WHITE);
 
-        setOpaque(false);
-
-        setFocusable(false);
-
-        MyMouseListener listener = new MyMouseListener(NButton.this, components, main);
-        button.addMouseListener(listener);
-        button.addMouseMotionListener(listener);
+        button.addMouseListener(mouseListener);
+        button.addMouseMotionListener(mouseListener);
 
         button.addActionListener(new ActionListener()
         {
@@ -116,7 +107,7 @@ public class NButton extends MovableComponent
         }
     }
 
-    private ArrayList<Property> getDefaultProperties()
+    protected ArrayList<Property> getDefaultProperties()
     {
         ArrayList<Property> tempProperties = new ArrayList<Property>();
         tempProperties.add(new Property(Type.SIZE, new Dimension(100,32)));
