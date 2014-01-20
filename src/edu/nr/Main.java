@@ -25,6 +25,9 @@ import java.awt.event.ActionEvent;
 
 //TODO Implement properties right click menu
 //TODO Test out using JSCrollPane to handle items out of bounds
+//TODO Add a 'new' option to the file menu
+//TODO Add more widgets for numbers and boolean
+//TODO Add a status indicator
 
 /**
  * @author co1in
