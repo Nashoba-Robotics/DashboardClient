@@ -2,10 +2,7 @@ package edu.nr.Network;
 
 import edu.nr.util.Printer;
 import edu.wpi.first.wpilibj.networktables.NetworkTable;
-import edu.wpi.first.wpilibj.tables.IRemote;
-import edu.wpi.first.wpilibj.tables.IRemoteConnectionListener;
-import edu.wpi.first.wpilibj.tables.ITable;
-import edu.wpi.first.wpilibj.tables.ITableListener;
+import edu.wpi.first.wpilibj.tables.*;
 
 import java.io.*;
 import java.net.Socket;
@@ -75,5 +72,34 @@ public class Network implements ITableListener
     public NetworkTable getTable()
     {
         return table;
+    }
+
+    public String getString(String key)
+    {
+        return table.getString(key, "");
+    }
+
+    public Boolean getBoolean(String key)
+    {
+        try
+        {
+            return table.getBoolean(key);
+        }
+        catch (TableKeyNotDefinedException e)
+        {
+            return null;
+        }
+    }
+
+    public Double getNumber(String key)
+    {
+        try
+        {
+            return table.getNumber(key);
+        }
+        catch (TableKeyNotDefinedException e)
+        {
+            return null;
+        }
     }
 }

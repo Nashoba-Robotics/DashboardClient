@@ -97,16 +97,59 @@ public class SettingsManager
 
         try
         {
-            FileWriter writer = new FileWriter(f);
-            writer.write(path);
-            writer.flush();
+            PrintWriter writer = new PrintWriter(new FileWriter(f), true);
+            writer.println(path);
             writer.close();
         }
         catch (IOException e)
         {
             Printer.println(e.toString());
         }
+    }
 
+    public static void deleteLastSavePath()
+    {
+        File f = new File(saveFilePath());
+        if(f.exists())
+        {
+            try
+            {
+                PrintWriter writer = new PrintWriter(new FileWriter(f), true);
+                writer.println("null");
+                writer.close();
+            }
+            catch (IOException e)
+            {
+                Printer.println(e.toString());
+            }
+        }
+    }
+
+    public static String getLastSavePath()
+    {
+        File f = new File(saveFilePath());
+        if(!f.exists())
+        {
+            return null;
+        }
+        else
+        {
+            try
+            {
+                BufferedReader reader = new BufferedReader(new FileReader(f));
+                String path = reader.readLine();
+                if(path.equals("null"))
+                    return null;
+                else
+                    return path;
+            }
+            catch (IOException e)
+            {
+                Printer.println(e.toString());
+            }
+
+        }
+        return null;
     }
 
     private static boolean isNumbers(String s)

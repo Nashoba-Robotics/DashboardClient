@@ -64,7 +64,7 @@ public class MyMouseListener implements MouseListener, MouseMotionListener
                 myY = caller.getY();
             }
         }
-        Main.somethingIsBeingPressed = true;
+        main.somethingIsBeingPressed = true;
         isPressed = true;
     }
 
@@ -97,10 +97,9 @@ public class MyMouseListener implements MouseListener, MouseMotionListener
     @Override
     public void mouseReleased(MouseEvent e)
     {
-        Main.main.getContentPane().invalidate();
-        Main.main.repaint();
+        main.repaint();
         isPressed = false;
-        Main.somethingIsBeingPressed = false;
+        main.somethingIsBeingPressed = false;
         if(!mouseIsIn)
         {
             caller.setBorder(new EmptyBorder(1,1,1,1));
@@ -141,8 +140,8 @@ public class MyMouseListener implements MouseListener, MouseMotionListener
 
             //Check to see if we were dragged
             OverlapChecker.checkForCollision(caller, components, myNewLocation, oldLocation);
-            Main.main.repaint();
-            Main.main.invalidate();
+            main.repaint();
+            main.invalidate();
             Property.getPropertyFromType(Property.Type.LOCATION, ((MovableComponent)caller).getProperties()).setData(caller.getLocation());
         }
     }

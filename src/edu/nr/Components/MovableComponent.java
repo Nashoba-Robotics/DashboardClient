@@ -34,4 +34,5 @@ public abstract class MovableComponent extends JPanel
     }
     public abstract String getTitle();
     public abstract int getWidgetType();
+    public abstract void attemptValueFetch();
 }

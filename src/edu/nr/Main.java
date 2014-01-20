@@ -1,5 +1,6 @@
 package edu.nr;
 
+import com.sun.xml.internal.ws.api.config.management.policy.ManagementAssertion;
 import edu.nr.Components.*;
 import edu.nr.Network.Network;
 import edu.nr.properties.PropertiesManager;
@@ -42,7 +43,7 @@ public class Main extends JFrame
 
     public Main()
     {
-        super("NRDashboard");
+        super("NRDashboard - Loading");
 
         //NOTE: This code replaces the sytem output stream with a dummy one.
         //This is done because NetworkTables is printing output to the standard output (which a good library should not be doing)
@@ -54,7 +55,7 @@ public class Main extends JFrame
             }
         });
         Printer.setOutputStream(System.out);
-        System.setOut(dummyStream);
+        //System.setOut(dummyStream);
 
         panel = new JPanel();
         panel.setBackground(new Color(200,200,200));
@@ -65,7 +66,6 @@ public class Main extends JFrame
         addMenuBar();
 
         panel.setLayout(null);
-        panel.setDoubleBuffered(true);
         add(panel);
 
         network = new Network(SettingsManager.getTeamNumber());
@@ -86,7 +86,15 @@ public class Main extends JFrame
                         JOptionPane.YES_NO_OPTION);
                 if(n == 0)
                 {
-                    showSaveDialog(true);
+                    if(SettingsManager.getLastSavePath() != null)
+                    {
+                        PropertiesManager.writeAllPropertiesToFile(SettingsManager.getLastSavePath(), components, main);
+                        System.exit(0);
+                    }
+                    else
+                    {
+                        showSaveDialog(true);
+                    }
                 }
                 else
                 {
@@ -94,6 +102,18 @@ public class Main extends JFrame
                 }
             }
         });
+
+        if(SettingsManager.getLastSavePath() != null)
+        {
+            PropertiesManager.loadElementsFromFile(SettingsManager.getLastSavePath(), components, this);
+            for(MovableComponent m : components)
+            {
+                panel.add(m);
+            }
+
+            panel.repaint();
+            panel.revalidate();
+        }
 
         network.connect();
         network.getTable().addConnectionListener(new IRemoteConnectionListener()
@@ -110,6 +130,9 @@ public class Main extends JFrame
                 setTitle("NRDashboard - Disconnected");
             }
         }, true);
+
+        for(MovableComponent comp : components)
+            comp.attemptValueFetch();
     }
 
     private void createMessageReceivedListener()
@@ -122,13 +145,9 @@ public class Main extends JFrame
                 ArrayList<Property> addingProperties = new ArrayList<Property>();
                 addingProperties.add(new Property(Property.Type.NAME, key));
 
-                MovableComponent existingComponent = null;
                 if(widgetWithName(key) != -1)
-                    existingComponent = components.get(widgetWithName(key));
-
-                if(existingComponent != null)
                 {
-                    existingComponent.setValue(value);
+                    components.get(widgetWithName(key)).setValue(value);
                 }
                 else
                 {
@@ -165,7 +184,7 @@ public class Main extends JFrame
     {
         for(int i = 0; i < components.size(); i++)
         {
-            if(components.get(i).getTitle().equals(name))
+            if(components.get(i).getTitle().equals(name.trim()))
             {
                 return i;
             }
@@ -211,7 +230,7 @@ public class Main extends JFrame
             }
         });
         */
-        JMenuItem addFieldItem = new JMenuItem("Add Text Field");
+        /*JMenuItem addFieldItem = new JMenuItem("Add Text Field");
         addFieldItem.addActionListener(new ActionListener()
         {
             @Override
@@ -219,14 +238,29 @@ public class Main extends JFrame
             {
                 addTextField(null, true, "");
             }
-        });
+        });*/
 
-        JMenuItem saveFile = new JMenuItem(("Save Layout"));
+        JMenuItem saveFile = new JMenuItem("Save");
         saveFile.addActionListener(new ActionListener()
         {
             @Override
             public void actionPerformed(ActionEvent e)
             {
+                if(SettingsManager.getLastSavePath() != null)
+                {
+                    PropertiesManager.writeAllPropertiesToFile(SettingsManager.getLastSavePath(), components, main);
+                }
+                else
+                {
+                    showSaveDialog(false);
+                }
+            }
+        });
+
+        JMenuItem saveAsFile = new JMenuItem(("Save As"));
+        saveAsFile.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
                 showSaveDialog(false);
             }
         });
@@ -278,7 +312,7 @@ public class Main extends JFrame
 
         menu.add(openFile);
         menu.add(saveFile);
-        menu.add(addFieldItem);
+        menu.add(saveAsFile);
         //menu.add(addButtonItem);
         menu.add(setIp);
         setJMenuBar(menuBar);
@@ -431,13 +465,19 @@ public class Main extends JFrame
         int returnValue = saveChooser.showSaveDialog(this);
         if(returnValue == JFileChooser.APPROVE_OPTION)
         {
-            PropertiesManager.writeAllPropertiesToFile(saveChooser.getSelectedFile().getPath(), components, main);
+            String finalSavePath = saveChooser.getSelectedFile().getPath();
+            if(!finalSavePath.endsWith(".xml"))
+                finalSavePath += ".xml";
+            PropertiesManager.writeAllPropertiesToFile(finalSavePath, components, main);
+            SettingsManager.writeSavePath(finalSavePath);
             if(exitAfterSave)
                 System.exit(0);
         }
         else
         {
             Printer.println("save aborted");
+            if(exitAfterSave)
+                System.exit(0);
         }
     }
 
@@ -457,7 +497,6 @@ public class Main extends JFrame
             {
                 panel.add(m);
             }
-            Printer.println("Added " + components.size() + " components");
             panel.repaint();
             panel.revalidate();
         }

@@ -7,6 +7,7 @@ import edu.nr.properties.Property;
 import edu.nr.util.Printer;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
@@ -32,6 +33,7 @@ public class NNumberField extends MovableComponent
         this.main = main;
         numberField = new JTextField();
         label = new JLabel();
+        label.setBorder(new EmptyBorder(0,0,0,0));
 
         loadProperties(properties);
 
@@ -42,6 +44,7 @@ public class NNumberField extends MovableComponent
         numberField.addMouseMotionListener(listener);
 
         setLayout(new BoxLayout(this, 0));
+        setBorder(new EmptyBorder(1, 1, 1, 1));
         add(label);
         add(numberField);
         applyProperties();
@@ -105,15 +108,14 @@ public class NNumberField extends MovableComponent
     public void applyProperties()
     {
         applyProperties(properties);
-        numberField.setSize(getWidth()-label.getWidth(), getHeight());
     }
 
     public void applyProperties(ArrayList<Property> applyingProperties)
     {
         PropertiesManager.loadPropertiesIntoArray(properties, applyingProperties);
 
-        label.setText((String)Property.getPropertyFromType(Property.Type.NAME, properties).getData() + " ");
-        setBackground((Color)Property.getPropertyFromType(Property.Type.BACKGROUND, properties).getData());
+        label.setText(" " + (String)Property.getPropertyFromType(Property.Type.NAME, properties).getData() + " ");
+        setBackground((Color) Property.getPropertyFromType(Property.Type.BACKGROUND, properties).getData());
         setSize((Dimension) Property.getPropertyFromType(Property.Type.SIZE, properties).getData());
         setLocation((Point)Property.getPropertyFromType(Property.Type.LOCATION, properties).getData());
         numberField.setForeground((Color)Property.getPropertyFromType(Property.Type.FOREGROUND, properties).getData());
@@ -122,17 +124,12 @@ public class NNumberField extends MovableComponent
         numberField.setFont(new Font("Arial", Font.PLAIN, (Integer)Property.getPropertyFromType(Property.Type.FONT_SIZE, properties).getData()));
     }
 
-    private static final String NAME = "number";
     @Override
     public String getWidgetName()
     {
-        return NAME;
+        return WidgetNames.NUMBER_NAME;
     }
 
-    public static String getStaticWidgetName()
-    {
-        return NAME;
-    }
 
     @Override
     public void setValue(Object o)
@@ -155,5 +152,13 @@ public class NNumberField extends MovableComponent
     public int getWidgetType()
     {
         return 1;
+    }
+
+    @Override
+    public void attemptValueFetch()
+    {
+        Double d = main.network.getNumber(getTitle());
+        if(d != null)
+            setValue(d);
     }
 }

@@ -141,11 +141,6 @@ public class NButton extends MovableComponent
         return WidgetNames.NUMBER_NAME;
     }
 
-    public static String getStaticWidgetName()
-    {
-        return WidgetNames.NUMBER_NAME;
-    }
-
     @Override
     public void setValue(Object o)
     {
@@ -161,5 +156,11 @@ public class NButton extends MovableComponent
     @Override
     public int getWidgetType() {
         return 1;
+    }
+
+    @Override
+    public void attemptValueFetch()
+    {
+        //Nothing to do here
     }
 }

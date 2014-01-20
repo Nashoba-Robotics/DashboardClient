@@ -72,8 +72,8 @@ public class NTextField extends MovableComponent
     {
         //Load the properties by using the Property classes function for getting a specific property out of our array by finding it's type,
         //Then set our values to the correctly casted version of the data from that property
-        label.setText((String)Property.getPropertyFromType(Property.Type.NAME, properties).getData() + " ");
-        field.setForeground((Color)Property.getPropertyFromType(Property.Type.FOREGROUND, properties).getData());
+        label.setText(" " + (String)Property.getPropertyFromType(Property.Type.NAME, properties).getData() + " ");
+        field.setForeground((Color) Property.getPropertyFromType(Property.Type.FOREGROUND, properties).getData());
         setBackground((Color)Property.getPropertyFromType(Property.Type.BACKGROUND, properties).getData());
         setSize((Dimension) Property.getPropertyFromType(Property.Type.SIZE, properties).getData());
         setLocation((Point)Property.getPropertyFromType(Property.Type.LOCATION, properties).getData());
@@ -131,5 +131,11 @@ public class NTextField extends MovableComponent
     public int getWidgetType()
     {
         return 1;
+    }
+
+    @Override
+    public void attemptValueFetch()
+    {
+        setValue(main.network.getString(getTitle()));
     }
 }

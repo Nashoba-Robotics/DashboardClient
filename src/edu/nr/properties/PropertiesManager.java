@@ -1,11 +1,9 @@
 package edu.nr.properties;
 
-import edu.nr.Components.NButton;
-import edu.nr.Components.NNumberField;
-import edu.nr.Components.NTextField;
+import edu.nr.Components.*;
 import edu.nr.Main;
-import edu.nr.Components.MovableComponent;
 import edu.nr.util.Printer;
+import edu.nr.util.SettingsManager;
 import org.w3c.dom.*;
 import org.xml.sax.SAXException;
 
@@ -19,6 +17,7 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import java.awt.*;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -98,17 +97,21 @@ public class PropertiesManager
                     //Figure out which class to add
                     MovableComponent addingClass = null;
                     String name = element.getTagName();
-                    if(name.equals(NButton.getStaticWidgetName()))
+                    if(name.equals(WidgetNames.BUTTON_NAME))
                     {
                         addingClass = new NButton(components, properties, main);
                     }
-                    else if (name.equals(NTextField.getStaticWidgetName()))
+                    else if (name.equals(WidgetNames.STRING_NAME))
                     {
                         addingClass =  new NTextField(components, properties, main);
                     }
-                    else if(name.equals(NNumberField.getStaticWidgetName()))
+                    else if(name.equals(WidgetNames.NUMBER_NAME))
                     {
                         addingClass = new NNumberField(components, properties, main);
+                    }
+                    else if(name.equals(WidgetNames.BOOLEAN_NAME))
+                    {
+                        addingClass = new NBoolean(components, properties, main);
                     }
                     else
                     {
@@ -129,6 +132,11 @@ public class PropertiesManager
         catch (SAXException e)
         {
             e.printStackTrace();
+        }
+        catch (FileNotFoundException e)
+        {
+            Printer.println("Couldn't locate save file: '" + path + "'");
+            SettingsManager.deleteLastSavePath();
         }
         catch (IOException e)
         {
@@ -217,8 +225,6 @@ public class PropertiesManager
             TransformerFactory transformerFactory = TransformerFactory.newInstance();
             Transformer transformer = transformerFactory.newTransformer();
             DOMSource source = new DOMSource(doc);
-            if(!path.endsWith(".xml"))
-                path = path + ".xml";
             StreamResult result = new StreamResult(new File(path));
 
             // Output to console for testing

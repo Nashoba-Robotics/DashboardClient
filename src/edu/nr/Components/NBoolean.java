@@ -101,14 +101,14 @@ public class NBoolean extends MovableComponent
     @Override
     public void applyProperties()
     {
-        label.setText((String) Property.getPropertyFromType(Property.Type.NAME, properties).getData() + " ");
+        label.setText(" " + (String) Property.getPropertyFromType(Property.Type.NAME, properties).getData() + " ");
         field.setForeground((Color) Property.getPropertyFromType(Property.Type.FOREGROUND, properties).getData());
         setBackground((Color) Property.getPropertyFromType(Property.Type.BACKGROUND, properties).getData());
         setSize((Dimension) Property.getPropertyFromType(Property.Type.SIZE, properties).getData());
         setLocation((Point)Property.getPropertyFromType(Property.Type.LOCATION, properties).getData());
 
         //Load the font size
-        label.setFont(new Font("Arial", Font.BOLD, (Integer)Property.getPropertyFromType(Property.Type.FONT_SIZE, properties).getData()-1));
+        label.setFont(new Font("Arial", Font.BOLD, (Integer) Property.getPropertyFromType(Property.Type.FONT_SIZE, properties).getData() - 1));
         field.setFont(new Font("Arial", Font.PLAIN, (Integer) Property.getPropertyFromType(Property.Type.FONT_SIZE, properties).getData()));
     }
 
@@ -138,8 +138,18 @@ public class NBoolean extends MovableComponent
         return 1;
     }
 
+    @Override
+    public void attemptValueFetch()
+    {
+        Boolean b = main.network.getBoolean(getTitle());
+        if(b != null)
+            setValue(b);
+    }
+
     public static int getStaticWidgetType()
     {
         return 1;
     }
+
+
 }
