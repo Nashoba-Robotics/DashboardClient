@@ -47,12 +47,17 @@ public abstract class MovableComponent extends JPanel
     {
         this.properties = properties;
     }
-    public abstract void applyProperties();
+    public abstract void applyProperties(boolean setSize);
     public abstract String getWidgetName();
     public void setValue(Object o)
     {
         valueSet = true;
     }
+    public boolean valueHasBeenSet()
+    {
+        return valueSet;
+    }
+
     public abstract String getTitle();
     public abstract int getWidgetType();
     public abstract void attemptValueFetch();

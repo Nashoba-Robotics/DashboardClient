@@ -164,6 +164,7 @@ public class Main extends JFrame
                     }
                     else if(value instanceof Object[])
                     {
+                        Printer.println("Received an array: " + ((Object[]) value).getClass());
                         /*Printer.print("Received an array: {");
                         Object[] values = (Object[])value;
                         for(int i = 0; i < values.length; i++)
@@ -173,6 +174,10 @@ public class Main extends JFrame
                             Printer.print(values[i] + "");
                         }
                         Printer.println("}");*/
+                    }
+                    else
+                    {
+                        Printer.println("Received a thing: " + value.getClass());
                     }
                 }
             }
@@ -277,6 +282,23 @@ public class Main extends JFrame
             }
         });
 
+        JMenuItem removeUnused = new JMenuItem("Remove Unused");
+        removeUnused.addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                for(int i = 0; i < components.size(); i++)
+                {
+                    if(!components.get(i).valueHasBeenSet())
+                    {
+                        removeWidget(components.get(i));
+                        i--;
+                    }
+                }
+            }
+        });
+
         JMenuItem openFile = new JMenuItem("Open...");
         openFile.addActionListener(new ActionListener()
         {
@@ -288,6 +310,7 @@ public class Main extends JFrame
         });
 
         viewMenu.add(movableComponents);
+        viewMenu.add(removeUnused);
 
         menu.add(openFile);
         menu.add(saveFile);
@@ -374,7 +397,7 @@ public class Main extends JFrame
     {
         panel.add(adding);
         Property.getPropertyFromType(Property.Type.LOCATION, adding.getProperties()).setData(OverlapChecker.getOpenAddingLocation(adding, components));
-        adding.applyProperties();
+        adding.applyProperties(false);
         repaint();
     }
 

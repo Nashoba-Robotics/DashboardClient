@@ -33,7 +33,7 @@ public abstract class MovableField extends MovableComponent
 
         add(label);
         add(field);
-        applyProperties();
+        applyProperties(false);
     }
 
     private final Runnable tabRunnable = new Runnable()
@@ -61,12 +61,13 @@ public abstract class MovableField extends MovableComponent
     }
 
     @Override
-    public final void applyProperties()
+    public final void applyProperties(boolean setSize)
     {
         label.setText(" " + Property.getPropertyFromType(Property.Type.NAME, properties).getData() + " ");
         field.setForeground((Color) Property.getPropertyFromType(Property.Type.FOREGROUND, properties).getData());
         setBackground((Color) Property.getPropertyFromType(Property.Type.BACKGROUND, properties).getData());
-        setSize((Dimension) Property.getPropertyFromType(Property.Type.SIZE, properties).getData());
+        if(setSize)
+            setSize((Dimension) Property.getPropertyFromType(Property.Type.SIZE, properties).getData());
         setLocation((Point)Property.getPropertyFromType(Property.Type.LOCATION, properties).getData());
 
         //Load the font size

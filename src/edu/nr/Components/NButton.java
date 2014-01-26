@@ -38,9 +38,9 @@ public class NButton extends MovableComponent
         else
         {
             this.properties = properties;
-            applyProperties();
+            applyProperties(false);
         }
-        applyProperties();
+        applyProperties(false);
 
         add(button, BorderLayout.CENTER);
         button.setFocusable(false);
@@ -65,7 +65,7 @@ public class NButton extends MovableComponent
         PropertiesManager.loadPropertiesIntoArray(this.properties, loadedProperties);
     }
 
-    public void applyProperties()
+    public void applyProperties(boolean setSize)
     {
         applyProperties(this.properties);
     }
