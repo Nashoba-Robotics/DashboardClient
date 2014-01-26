@@ -10,6 +10,7 @@ import edu.nr.util.Printer;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
+import javax.swing.event.MouseInputAdapter;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
@@ -19,28 +20,18 @@ import java.util.ArrayList;
  * Date: 11/13/13
  * Time: 10:25 PM
  */
-public class MyMouseListener implements MouseListener, MouseMotionListener
+public class MyMouseListener extends MouseInputAdapter
 {
-    private volatile int screenX = 0;
-    private volatile int screenY = 0;
-    private volatile int myX = 0;
-    private volatile int myY = 0;
+    private int cursor;
+    private Point startPos = null;
+    private final int MIN_WIDTH = 30;
 
     private JComponent caller;
     private Main main;
-    private boolean callerIsButton = false;
-    private ArrayList<MovableComponent> components;
-    public MyMouseListener(JComponent caller, ArrayList<MovableComponent> components, Main main)
+    public MyMouseListener(JComponent caller, Main main)
     {
         this.main = main;
         this.caller = caller;
-        callerIsButton = (caller.getClass() == NButton.class);
-        this.components = components;
-    }
-    @Override
-    public void mouseClicked(MouseEvent e)
-    {
-
     }
 
     private boolean isPressed = false;
@@ -55,13 +46,13 @@ public class MyMouseListener implements MouseListener, MouseMotionListener
             {
                 doPop(e);
             }
-            else if(((MovableComponent)caller).isMovable())
+            else
             {
-                screenX = e.getXOnScreen();
-                screenY = e.getYOnScreen();
-
-                myX = caller.getX();
-                myY = caller.getY();
+                ResizableBorder border = (ResizableBorder)caller.getBorder();
+                cursor = border.getCursor(e);
+                startPos = e.getPoint();
+                caller.requestFocus();
+                caller.repaint();
             }
         }
         main.somethingIsBeingPressed = true;
@@ -100,58 +91,139 @@ public class MyMouseListener implements MouseListener, MouseMotionListener
         main.repaint();
         isPressed = false;
         main.somethingIsBeingPressed = false;
-        if(!mouseIsIn)
-        {
-            caller.setBorder(new EmptyBorder(1,1,1,1));
-        }
     }
 
     @Override
     public void mouseEntered(MouseEvent e)
     {
         mouseIsIn = true;
-        if(((MovableComponent)caller).isMovable() && !Main.somethingIsBeingPressed)
+        /*if(((MovableComponent)caller).isMovable() && !Main.somethingIsBeingPressed)
         {
             caller.setBorder(new LineBorder(Color.GREEN, 1, false));
-        }
+        }*/
     }
 
     @Override
     public void mouseExited(MouseEvent e)
     {
+        //New
         mouseIsIn = false;
         if(((MovableComponent)caller).isMovable() && !isPressed)
         {
-            caller.setBorder(new EmptyBorder(1,1,1,1));
+            caller.setCursor(Cursor.getDefaultCursor());
         }
     }
 
     @Override
-    public void mouseDragged(MouseEvent e)
+    public void mouseDragged(MouseEvent me)
     {
+        //New
         if(((MovableComponent)caller).isMovable())
         {
-            int deltaX = e.getXOnScreen() - screenX;
-            int deltaY = e.getYOnScreen() - screenY;
+            if (startPos != null)
+            {
+                int x = caller.getX();
+                int y = caller.getY();
+                int w = caller.getWidth();
+                int h = caller.getHeight();
 
-            Point oldLocation = caller.getLocation();
+                int dx = me.getX() - startPos.x;
+                int dy = me.getY() - startPos.y;
 
-            Point myNewLocation = new Point(myX + deltaX, myY + deltaY);
+                switch (cursor)
+                {
+                    case Cursor.N_RESIZE_CURSOR:
+                        if (!(h - dy < MIN_WIDTH))
+                        {
+                            caller.setBounds(x, y + dy, w, h - dy);
+                            resize();
+                        }
+                        break;
 
-            //Check to see if we were dragged
-            OverlapChecker.checkForCollision(caller, components, myNewLocation, oldLocation);
-            main.repaint();
-            main.invalidate();
-            Property.getPropertyFromType(Property.Type.LOCATION, ((MovableComponent)caller).getProperties()).setData(caller.getLocation());
+                    case Cursor.S_RESIZE_CURSOR:
+                        if (!(h + dy < MIN_WIDTH))
+                        {
+                            caller.setBounds(x, y, w, h + dy);
+                            startPos = me.getPoint();
+                            resize();
+                        }
+                        break;
+
+                    case Cursor.W_RESIZE_CURSOR:
+                        if (!(w - dx < MIN_WIDTH))
+                        {
+                            caller.setBounds(x + dx, y, w - dx, h);
+                            resize();
+                        }
+                        break;
+
+                    case Cursor.E_RESIZE_CURSOR:
+                        if (!(w + dx < MIN_WIDTH))
+                        {
+                            caller.setBounds(x, y, w + dx, h);
+                            startPos = me.getPoint();
+                            resize();
+                        }
+                        break;
+
+                    case Cursor.NW_RESIZE_CURSOR:
+                        if (!(w - dx < MIN_WIDTH) && !(h - dy < MIN_WIDTH))
+                        {
+                            caller.setBounds(x + dx, y + dy, w - dx, h - dy);
+                            resize();
+                        }
+                        break;
+
+                    case Cursor.NE_RESIZE_CURSOR:
+                        if (!(w + dx < MIN_WIDTH) && !(h - dy < MIN_WIDTH))
+                        {
+                            caller.setBounds(x, y + dy, w + dx, h - dy);
+                            startPos = new Point(me.getX(), startPos.y);
+                            resize();
+                        }
+                        break;
+
+                    case Cursor.SW_RESIZE_CURSOR:
+                        if (!(w - dx < MIN_WIDTH) && !(h + dy < MIN_WIDTH))
+                        {
+                            caller.setBounds(x + dx, y, w - dx, h + dy);
+                            startPos = new Point(startPos.x, me.getY());
+                            resize();
+                        }
+                        break;
+
+                    case Cursor.SE_RESIZE_CURSOR:
+                        if (!(w + dx < MIN_WIDTH) && !(h + dy < MIN_WIDTH)) {
+                            caller.setBounds(x, y, w + dx, h + dy);
+                            startPos = me.getPoint();
+                            resize();
+                        }
+                        break;
+
+                    case Cursor.MOVE_CURSOR:
+                        Rectangle bounds = caller.getBounds();
+                        bounds.translate(dx, dy);
+                        caller.setBounds(bounds);
+                        resize();
+                }
+                caller.setCursor(Cursor.getPredefinedCursor(cursor));
+            }
         }
+    }
+
+    private void resize()
+    {
+        main.revalidate();
     }
 
     @Override
     public void mouseMoved(MouseEvent e)
     {
-        if(((MovableComponent)caller).isMovable() && !Main.somethingIsBeingPressed)
+        //New
+        if (e.getComponent().hasFocus() && ((MovableComponent)caller).isMovable())
         {
-            caller.setBorder(new LineBorder(Color.GREEN, 1, false));
+            ResizableBorder border = (ResizableBorder)caller.getBorder();
+            caller.setCursor(Cursor.getPredefinedCursor(border.getCursor(e)));
         }
     }
 }

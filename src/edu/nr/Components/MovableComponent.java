@@ -19,7 +19,7 @@ public abstract class MovableComponent extends JPanel
         this.properties = getDefaultProperties();
         PropertiesManager.loadPropertiesIntoArray(this.properties, properties);
 
-        mouseListener = new MyMouseListener(this, components, main);
+        mouseListener = new MyMouseListener(this, main);
         addMouseListener(mouseListener);
         addMouseMotionListener(mouseListener);
 

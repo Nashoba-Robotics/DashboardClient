@@ -1,10 +1,12 @@
 package edu.nr.Components;
 
+import edu.nr.Components.mouse_listeners.ResizableBorder;
 import edu.nr.Main;
 import edu.nr.properties.Property;
 import edu.nr.util.Printer;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.util.ArrayList;
 
@@ -55,6 +57,14 @@ public abstract class MovableField extends MovableComponent
     {
         isMovable = movable;
         field.setEnabled(!movable);
+        if(movable)
+        {
+            setBorder(new ResizableBorder(1));
+        }
+        else
+        {
+            setBorder(new EmptyBorder(0,0,0,0));
+        }
     }
 
     @Override
