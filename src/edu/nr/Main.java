@@ -60,7 +60,7 @@ public class Main extends JFrame
         System.setOut(dummyStream);
 
         panel = new JPanel();
-        panel.setBackground(new Color(200,200,200));
+        panel.setBackground(new Color(100,100,100));
         setSize(1000, 700);
 
         addMenuBar();

@@ -2,6 +2,7 @@ package edu.nr.Components;
 
 import edu.nr.Main;
 import edu.nr.properties.Property;
+import edu.nr.util.Printer;
 
 import javax.swing.*;
 import java.awt.*;
@@ -16,6 +17,8 @@ public abstract class MovableField extends MovableComponent
 {
     protected JTextField field;
     protected JLabel label;
+
+    private final int FIELD_MIN_WIDTH = 80;
 
     public MovableField(ArrayList<MovableComponent> components, ArrayList<Property> properties, Main main)
     {
@@ -68,6 +71,12 @@ public abstract class MovableField extends MovableComponent
         setBackground((Color) Property.getPropertyFromType(Property.Type.BACKGROUND, properties).getData());
         if(setSize)
             setSize((Dimension) Property.getPropertyFromType(Property.Type.SIZE, properties).getData());
+        else
+        {
+            int pref = FIELD_MIN_WIDTH;
+            pref += label.getPreferredSize().width;
+            setSize(new Dimension(pref, ((Dimension) Property.getPropertyFromType(Property.Type.SIZE, properties).getData()).height));
+        }
         setLocation((Point)Property.getPropertyFromType(Property.Type.LOCATION, properties).getData());
 
         //Load the font size
