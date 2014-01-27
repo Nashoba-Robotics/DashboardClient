@@ -26,9 +26,9 @@ public class MyMouseListener extends MouseInputAdapter
     private Point startPos = null;
     private final int MIN_WIDTH = 30;
 
-    private JComponent caller;
+    private MovableComponent caller;
     private Main main;
-    public MyMouseListener(JComponent caller, Main main)
+    public MyMouseListener(MovableComponent caller, Main main)
     {
         this.main = main;
         this.caller = caller;
@@ -48,15 +48,23 @@ public class MyMouseListener extends MouseInputAdapter
             }
             else
             {
-                ResizableBorder border = (ResizableBorder)caller.getBorder();
-                cursor = border.getCursor(e);
-                startPos = e.getPoint();
+                Point delta = getDeltaPoint(e);
+
+                cursor = caller.getCursor(delta.x, delta.y);
+                startPos = (Point)delta.clone();
                 caller.requestFocus();
                 caller.repaint();
             }
         }
         main.somethingIsBeingPressed = true;
         isPressed = true;
+    }
+
+    private Point getDeltaPoint(MouseEvent e)
+    {
+        Point screen = e.getLocationOnScreen();
+        Point callerLocation = caller.getLocationOnScreen();
+        return new Point(screen.x - callerLocation.x, screen.y - callerLocation.y);
     }
 
     private void doPop(MouseEvent e)
@@ -82,7 +90,9 @@ public class MyMouseListener extends MouseInputAdapter
         });
 
         menu.add(removeItem);
-        menu.show(e.getComponent(), e.getX(), e.getY());
+
+        Point delta = getDeltaPoint(e);
+        menu.show(e.getComponent(), delta.x, delta.y);
     }
 
     @Override
@@ -117,8 +127,7 @@ public class MyMouseListener extends MouseInputAdapter
     @Override
     public void mouseDragged(MouseEvent me)
     {
-        //New
-        if(((MovableComponent)caller).isMovable())
+        if((caller).isMovable())
         {
             if (startPos != null)
             {
@@ -127,8 +136,9 @@ public class MyMouseListener extends MouseInputAdapter
                 int w = caller.getWidth();
                 int h = caller.getHeight();
 
-                int dx = me.getX() - startPos.x;
-                int dy = me.getY() - startPos.y;
+                Point delta = getDeltaPoint(me);
+                int dx = delta.x - startPos.x;
+                int dy = delta.y - startPos.y;
 
                 switch (cursor)
                 {
@@ -144,7 +154,7 @@ public class MyMouseListener extends MouseInputAdapter
                         if (!(h + dy < MIN_WIDTH))
                         {
                             caller.setBounds(x, y, w, h + dy);
-                            startPos = me.getPoint();
+                            startPos = (Point)delta.clone();
                             resize();
                         }
                         break;
@@ -161,7 +171,7 @@ public class MyMouseListener extends MouseInputAdapter
                         if (!(w + dx < MIN_WIDTH))
                         {
                             caller.setBounds(x, y, w + dx, h);
-                            startPos = me.getPoint();
+                            startPos = (Point)delta.clone();
                             resize();
                         }
                         break;
@@ -178,7 +188,7 @@ public class MyMouseListener extends MouseInputAdapter
                         if (!(w + dx < MIN_WIDTH) && !(h - dy < MIN_WIDTH))
                         {
                             caller.setBounds(x, y + dy, w + dx, h - dy);
-                            startPos = new Point(me.getX(), startPos.y);
+                            startPos = new Point(delta.x, startPos.y);
                             resize();
                         }
                         break;
@@ -187,7 +197,7 @@ public class MyMouseListener extends MouseInputAdapter
                         if (!(w - dx < MIN_WIDTH) && !(h + dy < MIN_WIDTH))
                         {
                             caller.setBounds(x + dx, y, w - dx, h + dy);
-                            startPos = new Point(startPos.x, me.getY());
+                            startPos = new Point(startPos.x, delta.y);
                             resize();
                         }
                         break;
@@ -195,7 +205,7 @@ public class MyMouseListener extends MouseInputAdapter
                     case Cursor.SE_RESIZE_CURSOR:
                         if (!(w + dx < MIN_WIDTH) && !(h + dy < MIN_WIDTH)) {
                             caller.setBounds(x, y, w + dx, h + dy);
-                            startPos = me.getPoint();
+                            startPos = (Point)delta.clone();
                             resize();
                         }
                         break;
@@ -219,11 +229,12 @@ public class MyMouseListener extends MouseInputAdapter
     @Override
     public void mouseMoved(MouseEvent e)
     {
+        Point delta = getDeltaPoint(e);
         //New
-        if (e.getComponent().hasFocus() && ((MovableComponent)caller).isMovable())
+        if (caller.hasFocus() && (caller).isMovable())
         {
-            ResizableBorder border = (ResizableBorder)caller.getBorder();
-            caller.setCursor(Cursor.getPredefinedCursor(border.getCursor(e)));
+            caller.setCursor(Cursor.getPredefinedCursor(caller.getCursor(delta.x, delta.y)));
+            //Printer.println("Location on Comp: " + (delta.x) + "  :  " + (delta.y));
         }
     }
 }

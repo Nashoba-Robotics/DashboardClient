@@ -30,7 +30,7 @@ public class ResizableBorder implements Border {
     }
 
     public Insets getBorderInsets(Component component) {
-        return new Insets(dist, dist, dist, dist);
+        return new Insets(0, 0, 0, 0);
     }
 
     public boolean isBorderOpaque() {
@@ -42,39 +42,39 @@ public class ResizableBorder implements Border {
         g.setColor(Color.black);
         g.drawRect(x + dist / 2, y + dist / 2, w - dist, h - dist);
 
-        if (component.hasFocus()) {
-
-
+        if (component.hasFocus())
+        {
             for (int i = 0; i < locations.length; i++) {
-                Rectangle rect = getRectangle(x, y, w, h, locations[i]);
+                Rectangle rect = getRectangle(x, y, w, h, locations[i], dist);
                 g.setColor(Color.WHITE);
                 g.fillRect(rect.x, rect.y, rect.width - 1, rect.height - 1);
                 g.setColor(Color.BLUE);
-                g.drawRect(rect.x, rect.y, rect.width - 1, rect.height - 1);
+                //g.drawRect(rect.x, rect.y, rect.width - 1, rect.height - 1);
             }
         }
     }
 
-    private Rectangle getRectangle(int x, int y, int w, int h, int location)
+    private Rectangle getRectangle(int x, int y, int w, int h, int location, int distance)
     {
-        switch (location) {
+        switch (location)
+        {
             case SwingConstants.NORTH:
-                return new Rectangle(x + w / 2 - dist / 2, y, dist, dist);
+                return new Rectangle(x + w / 2 - dist / 2, y, distance, distance);
             case SwingConstants.SOUTH:
-                return new Rectangle(x + w / 2 - dist / 2, y + h - dist, dist,
-                        dist);
+                return new Rectangle(x + w / 2 - dist / 2, y + h - dist, distance,
+                        distance);
             case SwingConstants.WEST:
-                return new Rectangle(x, y + h / 2 - dist / 2, dist, dist);
+                return new Rectangle(x, y + h / 2 - dist / 2, distance, distance);
             case SwingConstants.EAST:
-                return new Rectangle(x + w - dist, y + h / 2 - dist / 2, dist, dist);
+                return new Rectangle(x + w - dist, y + h / 2 - dist / 2, distance, distance);
             case SwingConstants.NORTH_WEST:
-                return new Rectangle(x, y, dist, dist);
+                return new Rectangle(x, y, distance, distance);
             case SwingConstants.NORTH_EAST:
-                return new Rectangle(x + w - dist, y, dist, dist);
+                return new Rectangle(x + w - dist, y, distance, distance);
             case SwingConstants.SOUTH_WEST:
-                return new Rectangle(x, y + h - dist, dist, dist);
+                return new Rectangle(x, y + h - dist, distance, distance);
             case SwingConstants.SOUTH_EAST:
-                return new Rectangle(x + w - dist, y + h - dist, dist, dist);
+                return new Rectangle(x + w - dist, y + h - dist, distance, distance);
         }
         return null;
     }
@@ -87,7 +87,7 @@ public class ResizableBorder implements Border {
 
         for (int i = 0; i < locations.length; i++)
         {
-            Rectangle rect = getRectangle(0, 0, w, h, locations[i]);
+            Rectangle rect = getRectangle(0, 0, w, h, locations[i], 10);
             if (rect.contains(me.getPoint()))
                 return cursors[i];
         }

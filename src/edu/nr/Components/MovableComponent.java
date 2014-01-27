@@ -7,6 +7,8 @@ import edu.nr.properties.Property;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+import java.awt.*;
+import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
 
@@ -61,4 +63,68 @@ public abstract class MovableComponent extends JPanel
     public abstract String getTitle();
     public abstract int getWidgetType();
     public abstract void attemptValueFetch();
+
+    private Rectangle getRectangle(int x, int y, int w, int h, int location, int distance)
+    {
+        switch (location)
+        {
+            case SwingConstants.NORTH:
+                return new Rectangle(distance, y, w - distance*2, distance);
+            case SwingConstants.SOUTH:
+                return new Rectangle(distance, y + h - distance, w-distance*2, distance);
+            case SwingConstants.WEST:
+                return new Rectangle(x, distance, distance, h - distance*2);
+            case SwingConstants.EAST:
+                return new Rectangle(x + w - distance, distance, distance, h - distance*2);
+            case SwingConstants.NORTH_WEST:
+                return new Rectangle(x, y, distance, distance);
+            case SwingConstants.NORTH_EAST:
+                return new Rectangle(x + w - distance, y, distance, distance);
+            case SwingConstants.SOUTH_WEST:
+                return new Rectangle(x, y + h - distance, distance, distance);
+            case SwingConstants.SOUTH_EAST:
+                return new Rectangle(x + w - distance, y + h - distance, distance, distance);
+        }
+        return null;
+    }
+
+    int locations[] =
+            {
+                    SwingConstants.NORTH, SwingConstants.SOUTH, SwingConstants.WEST,
+                    SwingConstants.EAST, SwingConstants.NORTH_WEST,
+                    SwingConstants.NORTH_EAST, SwingConstants.SOUTH_WEST,
+                    SwingConstants.SOUTH_EAST
+            };
+
+    int cursors[] =
+            {
+                    Cursor.N_RESIZE_CURSOR, Cursor.S_RESIZE_CURSOR, Cursor.W_RESIZE_CURSOR,
+                    Cursor.E_RESIZE_CURSOR, Cursor.NW_RESIZE_CURSOR, Cursor.NE_RESIZE_CURSOR,
+                    Cursor.SW_RESIZE_CURSOR, Cursor.SE_RESIZE_CURSOR
+            };
+
+    public int getCursor(int x, int y)
+    {
+        int w = getWidth();
+        int h = getHeight();
+
+        for (int i = 0; i < locations.length; i++)
+        {
+            Rectangle rect = getRectangle(0, 0, w, h, locations[i], 10);
+            if (rect.contains(new Point(x,y)))
+                return cursors[i];
+        }
+
+        return Cursor.MOVE_CURSOR;
+    }
+
+    @Override
+    public void paint(Graphics g)
+    {
+        super.paint(g);
+
+        g.setColor(Color.black);
+        if(isMovable())
+            g.drawRect(3, 3, getWidth()-6, getHeight()-6);
+    }
 }
