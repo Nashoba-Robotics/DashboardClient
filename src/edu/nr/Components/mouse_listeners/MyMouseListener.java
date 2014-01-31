@@ -211,9 +211,14 @@ public class MyMouseListener extends MouseInputAdapter
                         break;
 
                     case Cursor.MOVE_CURSOR:
-                        Rectangle bounds = caller.getBounds();
+                        /*OLD Rectangle bounds = caller.getBounds();
                         bounds.translate(dx, dy);
-                        caller.setBounds(bounds);
+                        caller.setBounds(bounds);*/
+						Point callerPoint = caller.getLocation();
+						Point newLocation = new Point();
+						newLocation.x = callerPoint.x + dx;
+						newLocation.y = callerPoint.y + dy;
+						OverlapChecker.checkForCollision(caller, main.getComponentsList(), newLocation, callerPoint);
                         resize();
                 }
                 caller.setCursor(Cursor.getPredefinedCursor(cursor));
@@ -224,6 +229,7 @@ public class MyMouseListener extends MouseInputAdapter
     private void resize()
     {
         main.revalidate();
+		main.repaint();
     }
 
     @Override
@@ -231,7 +237,7 @@ public class MyMouseListener extends MouseInputAdapter
     {
         Point delta = getDeltaPoint(e);
         //New
-        if (caller.hasFocus() && (caller).isMovable())
+        if ((caller).isMovable())
         {
             caller.setCursor(Cursor.getPredefinedCursor(caller.getCursor(delta.x, delta.y)));
             //Printer.println("Location on Comp: " + (delta.x) + "  :  " + (delta.y));

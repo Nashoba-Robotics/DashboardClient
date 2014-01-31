@@ -134,6 +134,11 @@ public class Main extends JFrame
             comp.attemptValueFetch();
     }
 
+	public ArrayList<MovableComponent> getComponentsList()
+	{
+		return this.components;
+	}
+
     private void createMessageReceivedListener()
     {
         messageListener = new Network.OnMessageReceivedListener()
@@ -279,6 +284,8 @@ public class Main extends JFrame
                     for(MovableComponent b : components)
                         b.setMovable(false);
                 }
+				revalidate();
+				repaint();
             }
         });
 

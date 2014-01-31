@@ -1,12 +1,9 @@
 package edu.nr.Components;
 
-import edu.nr.Components.mouse_listeners.ResizableBorder;
 import edu.nr.Main;
 import edu.nr.properties.Property;
-import edu.nr.util.Printer;
 
 import javax.swing.*;
-import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.util.ArrayList;
 

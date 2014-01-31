@@ -110,7 +110,7 @@ public abstract class MovableComponent extends JPanel
 
         for (int i = 0; i < locations.length; i++)
         {
-            Rectangle rect = getRectangle(0, 0, w, h, locations[i], 10);
+            Rectangle rect = getRectangle(0, 0, w, h, locations[i], 3);
             if (rect.contains(new Point(x,y)))
                 return cursors[i];
         }
@@ -123,8 +123,8 @@ public abstract class MovableComponent extends JPanel
     {
         super.paint(g);
 
-        g.setColor(Color.black);
+        g.setColor(Color.green);
         if(isMovable())
-            g.drawRect(3, 3, getWidth()-6, getHeight()-6);
+            g.drawRect(0, 0, getWidth()-1, getHeight()-1);
     }
 }
