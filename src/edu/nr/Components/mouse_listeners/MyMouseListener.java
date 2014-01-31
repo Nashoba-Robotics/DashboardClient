@@ -220,8 +220,10 @@ public class MyMouseListener extends MouseInputAdapter
 						newLocation.y = callerPoint.y + dy;
 						OverlapChecker.checkForCollision(caller, main.getComponentsList(), newLocation, callerPoint);
                         resize();
+						Property.getPropertyFromType(Property.Type.LOCATION, (caller).getProperties()).setData(caller.getLocation());
                 }
                 caller.setCursor(Cursor.getPredefinedCursor(cursor));
+				Property.getPropertyFromType(Property.Type.SIZE, (caller).getProperties()).setData(caller.getSize());
             }
         }
     }

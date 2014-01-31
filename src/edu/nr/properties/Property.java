@@ -22,7 +22,8 @@ public class Property
         /** The foreground color of the widget set by the user. Data type must be java.awt.Color */FOREGROUND,
         /** The background color of the widget set by the user. Data type must be java.awt.Color */BACKGROUND,
         /** The type of widget for this particular data type set by the user. (Example: changing a number value widget from a text field to a dial or progress bar widget. Data type must be Integer) */WIDGET_TYPE,
-        /** The size of the font for this widget's text set by the user. Data type must be an Integer */FONT_SIZE}
+        /** The size of the font for this widget's text set by the user. Data type must be an Integer */FONT_SIZE,
+		/**The Y axis value name for graph widgets*/ GRAPH_AXIS_NAME}
 
     public static Class[] typeClasses = {String.class, Dimension.class, Point.class, Color.class, Color.class, Integer.class, Object.class, Integer.class};
 

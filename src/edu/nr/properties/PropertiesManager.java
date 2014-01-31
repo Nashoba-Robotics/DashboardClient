@@ -53,65 +53,74 @@ public class PropertiesManager
                     Element element = (Element)node;
                     String widgetClassName = element.getTagName();
 
-                    properties.add(new Property(Property.Type.NAME, element.getAttribute("name")));
+                    properties.add(new Property(Property.Type.NAME, element.getAttribute(Property.Type.NAME.name())));
 
                     //My apologies for the intensively large amount of method calls that happen on each line in the following block of code :(
                     //I will try to document these lines more thoroughly to make up for it :D
 
                     //This line gets the location element from our widget, gets the x and y values, and plugs them into a new Point object that we will add to our properties list
-                    Point locationPoint = new Point(Integer.parseInt(((Element)element.getElementsByTagName("location").item(0)).getAttribute("x")), Integer.parseInt(((Element)element.getElementsByTagName("location").item(0)).getAttribute("y")));
+                    Point locationPoint = new Point(Integer.parseInt(((Element)element.getElementsByTagName(Property.Type.LOCATION.name()).item(0)).getAttribute("x")), Integer.parseInt(((Element)element.getElementsByTagName(Property.Type.LOCATION.name()).item(0)).getAttribute("y")));
                     properties.add(new Property(Property.Type.LOCATION, locationPoint));
 
-                    //get the width and height attributes from the element labeled "size" and put those values into a new dimension object for adding to a new property
-                    Dimension dimensions = new Dimension(Integer.parseInt(((Element)element.getElementsByTagName("size").item(0)).getAttribute("width")), Integer.parseInt(((Element)element.getElementsByTagName("size").item(0)).getAttribute("height")));
+                    //get the width and height attributes from the element labeled Property.Type.SIZE.name() and put those values into a new dimension object for adding to a new property
+                    Dimension dimensions = new Dimension(Integer.parseInt(((Element)element.getElementsByTagName(Property.Type.SIZE.name()).item(0)).getAttribute("width")), Integer.parseInt(((Element)element.getElementsByTagName(Property.Type.SIZE.name()).item(0)).getAttribute("height")));
                     properties.add(new Property(Property.Type.SIZE, dimensions));
 
                     //Load the three colors
-                    int red = Integer.parseInt(((Element)element.getElementsByTagName("background").item(0)).getAttribute("red"));
-                    int backBlue = Integer.parseInt(((Element)element.getElementsByTagName("background").item(0)).getAttribute("blue"));
-                    int backGreen = Integer.parseInt(((Element)element.getElementsByTagName("background").item(0)).getAttribute("green"));
+                    int red = Integer.parseInt(((Element)element.getElementsByTagName(Property.Type.BACKGROUND.name()).item(0)).getAttribute("red"));
+                    int backBlue = Integer.parseInt(((Element)element.getElementsByTagName(Property.Type.BACKGROUND.name()).item(0)).getAttribute("blue"));
+                    int backGreen = Integer.parseInt(((Element)element.getElementsByTagName(Property.Type.BACKGROUND.name()).item(0)).getAttribute("green"));
                     properties.add(new Property(Property.Type.BACKGROUND, new Color(red, backGreen, backBlue)));
 
                     //Load the three colors
-                    int red2 = Integer.parseInt(((Element)element.getElementsByTagName("foreground").item(0)).getAttribute("red"));
-                    int backBlue2 = Integer.parseInt(((Element)element.getElementsByTagName("foreground").item(0)).getAttribute("blue"));
-                    int backGreen2 = Integer.parseInt(((Element)element.getElementsByTagName("foreground").item(0)).getAttribute("green"));
+                    int red2 = Integer.parseInt(((Element)element.getElementsByTagName(Property.Type.FOREGROUND.name()).item(0)).getAttribute("red"));
+                    int backBlue2 = Integer.parseInt(((Element)element.getElementsByTagName(Property.Type.FOREGROUND.name()).item(0)).getAttribute("blue"));
+                    int backGreen2 = Integer.parseInt(((Element)element.getElementsByTagName(Property.Type.FOREGROUND.name()).item(0)).getAttribute("green"));
                     properties.add(new Property(Property.Type.FOREGROUND, new Color(red2, backGreen2, backBlue2)));
 
+                    properties.add(new Property(Property.Type.FONT_SIZE, Integer.parseInt(((Element)element.getElementsByTagName(Property.Type.FONT_SIZE.name()).item(0)).getAttribute(Property.Type.SIZE.name()))));
 
-                    properties.add(new Property(Property.Type.FONT_SIZE, Integer.parseInt(((Element)element.getElementsByTagName("fontSize").item(0)).getAttribute("size"))));
+					if(element.getElementsByTagName(Property.Type.GRAPH_AXIS_NAME.name()).item(0) != null)
+					{
+						(element.getElementsByTagName(Property.Type.GRAPH_AXIS_NAME.name()).item(0))
+					}
 
-                    Element typeElement = ((Element)element.getElementsByTagName("type").item(0));
-                    Property typeProperty = null;
+                    Element typeElement = ((Element)element.getElementsByTagName(Property.Type.WIDGET_TYPE.name()).item(0));
+					int type = -1;
                     try
                     {
-                        int type = Integer.parseInt(typeElement.getAttribute("value"));
-                        typeProperty = new Property(Property.Type.WIDGET_TYPE, type);
+                        type = Integer.parseInt(typeElement.getAttribute("value"));
                     }
                     catch(NumberFormatException e)
                     {
                         Printer.println("Error parsing Type");
                     }
-                    properties.add(typeProperty);
 
                     //Figure out which class to add
                     MovableComponent addingClass = null;
                     String name = element.getTagName();
                     if(name.equals(WidgetNames.BUTTON_NAME))
                     {
-                        addingClass = new NButton(components, properties, main);
+                        addingClass = new NButton(components, properties, main, true);
                     }
                     else if (name.equals(WidgetNames.STRING_NAME))
                     {
-                        addingClass =  new NTextField(components, properties, main);
+                        addingClass =  new NTextField(components, properties, main, true);
                     }
                     else if(name.equals(WidgetNames.NUMBER_NAME))
                     {
-                        addingClass = new NNumberField(components, properties, main);
+						switch (type)
+						{
+							case 1:
+								addingClass = new NNumberField(components, properties, main, true);
+								break;
+							case 2:
+
+						}
                     }
                     else if(name.equals(WidgetNames.BOOLEAN_NAME))
                     {
-                        addingClass = new NBooleanField(components, properties, main);
+                        addingClass = new NBooleanField(components, properties, main, true);
                     }
                     else
                     {
@@ -165,13 +174,13 @@ public class PropertiesManager
                 //Write Name
                 Property p = Property.getPropertyFromType(Property.Type.NAME, properties);
                 assert p != null;
-                Attr attr = doc.createAttribute("name");
+                Attr attr = doc.createAttribute(Property.Type.NAME.name());
                 attr.setValue(String.valueOf(p.getData()));
                 widget.setAttributeNode(attr);
 
                 //Add the location
                 p = Property.getPropertyFromType(Property.Type.LOCATION, properties);
-                Element location = doc.createElement("location");
+                Element location = doc.createElement(Property.Type.LOCATION.name());
                 Attr locX = doc.createAttribute("x");
                 locX.setValue(String.valueOf(((Point) p.getData()).x));
                 Attr locY = doc.createAttribute("y");
@@ -182,7 +191,7 @@ public class PropertiesManager
 
                 //Add the size
                 p = Property.getPropertyFromType(Property.Type.SIZE, properties);
-                Element size = doc.createElement("size");
+                Element size = doc.createElement(Property.Type.SIZE.name());
                 Attr width = doc.createAttribute("width");
                 width.setValue(String.valueOf(((Dimension)p.getData()).width));
                 Attr height = doc.createAttribute("height");
@@ -193,7 +202,7 @@ public class PropertiesManager
 
                 //Add a background Color
                 p = Property.getPropertyFromType(Property.Type.BACKGROUND, properties);
-                Element background = doc.createElement("background");
+                Element background = doc.createElement(Property.Type.BACKGROUND.name());
                 Color color = (Color)p.getData();
                 background.setAttribute("red", String.valueOf(color.getRed()));
                 background.setAttribute("green", String.valueOf(color.getGreen()));
@@ -202,7 +211,7 @@ public class PropertiesManager
 
                 //Add the foreground Color
                 p = Property.getPropertyFromType(Property.Type.FOREGROUND, properties);
-                Element foreground = doc.createElement("foreground");
+                Element foreground = doc.createElement(Property.Type.FOREGROUND.name());
                 color = (Color)p.getData();
                 foreground.setAttribute("red", String.valueOf(color.getRed()));
                 foreground.setAttribute("green", String.valueOf(color.getGreen()));
@@ -210,14 +219,14 @@ public class PropertiesManager
                 widget.appendChild(foreground);
 
                 //Add the type of widget
-                Element type = doc.createElement("type");
+                Element type = doc.createElement(Property.Type.WIDGET_TYPE.name());
                 type.setAttribute("value", String.valueOf(movableComponent.getWidgetType()));
                 widget.appendChild(type);
 
                 //Add the Font size
                 p = Property.getPropertyFromType(Property.Type.FONT_SIZE, properties);
-                Element fontSize = doc.createElement("fontSize");
-                fontSize.setAttribute("size", String.valueOf(p.getData()));
+                Element fontSize = doc.createElement(Property.Type.FONT_SIZE.name());
+                fontSize.setAttribute(Property.Type.SIZE.name(), String.valueOf(p.getData()));
                 widget.appendChild(fontSize);
             }
 

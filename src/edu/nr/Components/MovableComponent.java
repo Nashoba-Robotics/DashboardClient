@@ -14,9 +14,10 @@ import java.util.ArrayList;
 
 public abstract class MovableComponent extends JPanel
 {
-    public MovableComponent(ArrayList<MovableComponent> components, ArrayList<Property> properties, Main main)
+    public MovableComponent(ArrayList<MovableComponent> components, ArrayList<Property> properties, Main main, boolean addingFromSave)
     {
         this.main = main;
+		this.addingFromSave = addingFromSave;
 
         this.properties = getDefaultProperties();
         PropertiesManager.loadPropertiesIntoArray(this.properties, properties);
@@ -32,6 +33,7 @@ public abstract class MovableComponent extends JPanel
     protected  ArrayList<Property> properties = null;
     protected boolean isMovable;
     protected boolean valueSet = false;
+	protected boolean addingFromSave;
     protected Main main;
     protected MyMouseListener mouseListener;
 

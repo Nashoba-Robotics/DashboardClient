@@ -157,15 +157,15 @@ public class Main extends JFrame
                 {
                     if(value instanceof Double || value instanceof Integer)
                     {
-                        addComponent(new NNumberField(components, addingProperties, Main.this), true, value);
+                        addComponent(new NNumberField(components, addingProperties, Main.this, false), true, value);
                     }
                     else if(value instanceof String)
                     {
-                        addComponent(new NTextField(components, addingProperties, Main.this), true, value);
+                        addComponent(new NTextField(components, addingProperties, Main.this, false), true, value);
                     }
                     else if(value instanceof Boolean)
                     {
-                        addComponent(new NBooleanField(components, addingProperties, Main.this), true, value);
+                        addComponent(new NBooleanField(components, addingProperties, Main.this, false), true, value);
                     }
                     else if(value instanceof Object[])
                     {

@@ -17,11 +17,11 @@ public abstract class MovableField extends MovableComponent
     protected JTextField field;
     protected JLabel label;
 
-    private final int FIELD_MIN_WIDTH = 80;
+    private final int FIELD_MIN_WIDTH = 100;
 
-    public MovableField(ArrayList<MovableComponent> components, ArrayList<Property> properties, Main main)
+    public MovableField(ArrayList<MovableComponent> components, ArrayList<Property> properties, Main main, boolean addingFromSave)
     {
-        super(components, properties, main);
+        super(components, properties, main, addingFromSave);
 
         setLayout(new BoxLayout(this, 0));
 
@@ -33,7 +33,7 @@ public abstract class MovableField extends MovableComponent
 
         add(label);
         add(field);
-        applyProperties(false);
+        applyProperties(addingFromSave);
     }
 
     private final Runnable tabRunnable = new Runnable()
