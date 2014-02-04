@@ -80,26 +80,4 @@ public abstract class MovableField extends MovableComponent
         label.setFont(new Font("Arial", Font.BOLD, (Integer) Property.getPropertyFromType(Property.Type.FONT_SIZE, properties).getData() - 1));
         field.setFont(new Font("Arial", Font.PLAIN, (Integer) Property.getPropertyFromType(Property.Type.FONT_SIZE, properties).getData()));
     }
-
-    protected class MouseAwareField extends JPanel
-    {
-        private JTextField field;
-        public MouseAwareField()
-        {
-            field = new JTextField();
-            field.setFocusTraversalKeysEnabled(false);
-            field.addKeyListener(new TabListener(tabRunnable));
-            add(field);
-        }
-
-        public void setText(String text)
-        {
-            field.setText(text);
-        }
-
-        public String getText()
-        {
-            return field.getText();
-        }
-    }
 }

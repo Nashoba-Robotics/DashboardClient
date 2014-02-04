@@ -24,10 +24,11 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
 //TODO Implement properties right click menu
+//TODO Make it so items can't be dragged after they are right-clicked
 //TODO Test out using JSCrollPane to handle items out of bounds
 //TODO Add a 'new' option to the file menu
 //TODO Add more widgets for numbers and boolean
-//TODO Add a status indicator
+//TODO Add a connection indicator
 
 /**
  * @author co1in

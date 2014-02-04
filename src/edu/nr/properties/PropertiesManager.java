@@ -66,23 +66,39 @@ public class PropertiesManager
                     Dimension dimensions = new Dimension(Integer.parseInt(((Element)element.getElementsByTagName(Property.Type.SIZE.name()).item(0)).getAttribute("width")), Integer.parseInt(((Element)element.getElementsByTagName(Property.Type.SIZE.name()).item(0)).getAttribute("height")));
                     properties.add(new Property(Property.Type.SIZE, dimensions));
 
-                    //Load the three colors
-                    int red = Integer.parseInt(((Element)element.getElementsByTagName(Property.Type.BACKGROUND.name()).item(0)).getAttribute("red"));
-                    int backBlue = Integer.parseInt(((Element)element.getElementsByTagName(Property.Type.BACKGROUND.name()).item(0)).getAttribute("blue"));
-                    int backGreen = Integer.parseInt(((Element)element.getElementsByTagName(Property.Type.BACKGROUND.name()).item(0)).getAttribute("green"));
-                    properties.add(new Property(Property.Type.BACKGROUND, new Color(red, backGreen, backBlue)));
+                    //Load the three background colors
+					Element backgroundElement = ((Element)element.getElementsByTagName(Property.Type.BACKGROUND.name()).item(0));
+					if(backgroundElement != null)
+					{
+						int red = Integer.parseInt(((Element)element.getElementsByTagName(Property.Type.BACKGROUND.name()).item(0)).getAttribute("red"));
+						int backBlue = Integer.parseInt(((Element)element.getElementsByTagName(Property.Type.BACKGROUND.name()).item(0)).getAttribute("blue"));
+						int backGreen = Integer.parseInt(((Element)element.getElementsByTagName(Property.Type.BACKGROUND.name()).item(0)).getAttribute("green"));
+						properties.add(new Property(Property.Type.BACKGROUND, new Color(red, backGreen, backBlue)));
+					}
 
-                    //Load the three colors
-                    int red2 = Integer.parseInt(((Element)element.getElementsByTagName(Property.Type.FOREGROUND.name()).item(0)).getAttribute("red"));
-                    int backBlue2 = Integer.parseInt(((Element)element.getElementsByTagName(Property.Type.FOREGROUND.name()).item(0)).getAttribute("blue"));
-                    int backGreen2 = Integer.parseInt(((Element)element.getElementsByTagName(Property.Type.FOREGROUND.name()).item(0)).getAttribute("green"));
-                    properties.add(new Property(Property.Type.FOREGROUND, new Color(red2, backGreen2, backBlue2)));
+                    //Load the three foreground colors
+					Element foregroundElement = ((Element)element.getElementsByTagName(Property.Type.FOREGROUND.name()).item(0));
+					if(foregroundElement != null)
+					{
+						int red = Integer.parseInt(foregroundElement.getAttribute("red"));
+						int backBlue = Integer.parseInt(foregroundElement.getAttribute("blue"));
+						int backGreen = Integer.parseInt(foregroundElement.getAttribute("green"));
+						properties.add(new Property(Property.Type.FOREGROUND, new Color(red, backGreen, backBlue)));
+					}
 
                     properties.add(new Property(Property.Type.FONT_SIZE, Integer.parseInt(((Element)element.getElementsByTagName(Property.Type.FONT_SIZE.name()).item(0)).getAttribute(Property.Type.SIZE.name()))));
 
 					if(element.getElementsByTagName(Property.Type.GRAPH_AXIS_NAME.name()).item(0) != null)
 					{
-						(element.getElementsByTagName(Property.Type.GRAPH_AXIS_NAME.name()).item(0))
+						properties.add(new Property(Property.Type.GRAPH_AXIS_NAME, ((Element)element.getElementsByTagName(Property.Type.GRAPH_AXIS_NAME.name()).item(0)).getAttribute("name")));
+					}
+					if(element.getElementsByTagName(Property.Type.GRAPH_REFRESH_RATE.name()).item(0) != null)
+					{
+						properties.add(new Property(Property.Type.GRAPH_REFRESH_RATE, Integer.parseInt(((Element)element.getElementsByTagName(Property.Type.GRAPH_REFRESH_RATE.name()).item(0)).getAttribute("rate"))));
+					}
+					if(element.getElementsByTagName(Property.Type.AUTOREFRESH.name()).item(0) != null)
+					{
+						properties.add(new Property(Property.Type.AUTOREFRESH, Boolean.parseBoolean(((Element) element.getElementsByTagName(Property.Type.AUTOREFRESH.name()).item(0)).getAttribute("value"))));
 					}
 
                     Element typeElement = ((Element)element.getElementsByTagName(Property.Type.WIDGET_TYPE.name()).item(0));
@@ -173,21 +189,24 @@ public class PropertiesManager
 
                 //Write Name
                 Property p = Property.getPropertyFromType(Property.Type.NAME, properties);
-                assert p != null;
+				assert p != null;
                 Attr attr = doc.createAttribute(Property.Type.NAME.name());
                 attr.setValue(String.valueOf(p.getData()));
                 widget.setAttributeNode(attr);
 
                 //Add the location
                 p = Property.getPropertyFromType(Property.Type.LOCATION, properties);
-                Element location = doc.createElement(Property.Type.LOCATION.name());
-                Attr locX = doc.createAttribute("x");
-                locX.setValue(String.valueOf(((Point) p.getData()).x));
-                Attr locY = doc.createAttribute("y");
-                locY.setValue(String.valueOf(((Point) p.getData()).y));
-                location.setAttributeNode(locX);
-                location.setAttributeNode(locY);
-                widget.appendChild(location);
+				if(p != null)
+				{
+					Element location = doc.createElement(Property.Type.LOCATION.name());
+					Attr locX = doc.createAttribute("x");
+					locX.setValue(String.valueOf(((Point) p.getData()).x));
+					Attr locY = doc.createAttribute("y");
+					locY.setValue(String.valueOf(((Point) p.getData()).y));
+					location.setAttributeNode(locX);
+					location.setAttributeNode(locY);
+					widget.appendChild(location);
+				}
 
                 //Add the size
                 p = Property.getPropertyFromType(Property.Type.SIZE, properties);
@@ -201,22 +220,29 @@ public class PropertiesManager
                 widget.appendChild(size);
 
                 //Add a background Color
+				Color color = null;
                 p = Property.getPropertyFromType(Property.Type.BACKGROUND, properties);
-                Element background = doc.createElement(Property.Type.BACKGROUND.name());
-                Color color = (Color)p.getData();
-                background.setAttribute("red", String.valueOf(color.getRed()));
-                background.setAttribute("green", String.valueOf(color.getGreen()));
-                background.setAttribute("blue", String.valueOf(color.getBlue()));
-                widget.appendChild(background);
+				if(p != null)
+				{
+					Element background = doc.createElement(Property.Type.BACKGROUND.name());
+					color = (Color)p.getData();
+					background.setAttribute("red", String.valueOf(color.getRed()));
+					background.setAttribute("green", String.valueOf(color.getGreen()));
+					background.setAttribute("blue", String.valueOf(color.getBlue()));
+					widget.appendChild(background);
+				}
 
                 //Add the foreground Color
                 p = Property.getPropertyFromType(Property.Type.FOREGROUND, properties);
-                Element foreground = doc.createElement(Property.Type.FOREGROUND.name());
-                color = (Color)p.getData();
-                foreground.setAttribute("red", String.valueOf(color.getRed()));
-                foreground.setAttribute("green", String.valueOf(color.getGreen()));
-                foreground.setAttribute("blue", String.valueOf(color.getBlue()));
-                widget.appendChild(foreground);
+				if(p != null)
+				{
+					Element foreground = doc.createElement(Property.Type.FOREGROUND.name());
+					color = (Color)p.getData();
+					foreground.setAttribute("red", String.valueOf(color.getRed()));
+					foreground.setAttribute("green", String.valueOf(color.getGreen()));
+					foreground.setAttribute("blue", String.valueOf(color.getBlue()));
+					widget.appendChild(foreground);
+				}
 
                 //Add the type of widget
                 Element type = doc.createElement(Property.Type.WIDGET_TYPE.name());
@@ -225,9 +251,12 @@ public class PropertiesManager
 
                 //Add the Font size
                 p = Property.getPropertyFromType(Property.Type.FONT_SIZE, properties);
-                Element fontSize = doc.createElement(Property.Type.FONT_SIZE.name());
-                fontSize.setAttribute(Property.Type.SIZE.name(), String.valueOf(p.getData()));
-                widget.appendChild(fontSize);
+				if( p != null)
+				{
+					Element fontSize = doc.createElement(Property.Type.FONT_SIZE.name());
+					fontSize.setAttribute(Property.Type.SIZE.name(), String.valueOf(p.getData()));
+					widget.appendChild(fontSize);
+				}
             }
 
             // write the content into xml file
