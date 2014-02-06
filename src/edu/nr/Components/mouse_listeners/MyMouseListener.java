@@ -40,7 +40,7 @@ public class MyMouseListener extends MouseInputAdapter
     @Override
     public void mousePressed(MouseEvent e)
     {
-        if(((MovableComponent)caller).isMovable())
+        if(caller.isMovable())
         {
             if(e.isMetaDown() || e.isPopupTrigger())
             {
@@ -80,12 +80,25 @@ public class MyMouseListener extends MouseInputAdapter
         });
         menu.add(propertiesItem);
 
+		JMenu changeMenu = new JMenu("Change to");
+		String[] widgetChoices = caller.getWidgetChoices();
+		for(int i = 0; i < widgetChoices.length; i++)
+		{
+			JMenuItem item = new JMenuItem();
+			item.setText(widgetChoices[i]);
+			if((i+1) == caller.getWidgetType())
+				item.setEnabled(false);
+			item.addActionListener(new MyMenuActionListener(i+1));
+			changeMenu.add(item);
+		}
+		menu.add(changeMenu);
+
         JMenuItem removeItem = new JMenuItem("Remove Item");
         removeItem.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                main.removeWidget((MovableComponent)caller);
+                main.removeWidget(caller);
             }
         });
 
@@ -94,6 +107,21 @@ public class MyMouseListener extends MouseInputAdapter
         Point delta = getDeltaPoint(e);
         menu.show(e.getComponent(), delta.x, delta.y);
     }
+
+	private class MyMenuActionListener implements ActionListener
+	{
+		private int index;
+		public MyMenuActionListener(int index)
+		{
+			this.index = index;
+		}
+
+		@Override
+		public void actionPerformed(ActionEvent e)
+		{
+
+		}
+	}
 
     @Override
     public void mouseReleased(MouseEvent e)
@@ -107,10 +135,6 @@ public class MyMouseListener extends MouseInputAdapter
     public void mouseEntered(MouseEvent e)
     {
         mouseIsIn = true;
-        /*if(((MovableComponent)caller).isMovable() && !Main.somethingIsBeingPressed)
-        {
-            caller.setBorder(new LineBorder(Color.GREEN, 1, false));
-        }*/
     }
 
     @Override
@@ -118,7 +142,7 @@ public class MyMouseListener extends MouseInputAdapter
     {
         //New
         mouseIsIn = false;
-        if(((MovableComponent)caller).isMovable() && !isPressed)
+        if((caller).isMovable() && !isPressed)
         {
             caller.setCursor(Cursor.getDefaultCursor());
         }
@@ -127,7 +151,7 @@ public class MyMouseListener extends MouseInputAdapter
     @Override
     public void mouseDragged(MouseEvent me)
     {
-        if((caller).isMovable())
+        if((caller).isMovable() && !(me.isPopupTrigger()) && !(me.isMetaDown()))
         {
             if (startPos != null)
             {
@@ -237,12 +261,10 @@ public class MyMouseListener extends MouseInputAdapter
     @Override
     public void mouseMoved(MouseEvent e)
     {
-        Point delta = getDeltaPoint(e);
-        //New
-        if ((caller).isMovable())
+        if ((caller).isMovable() && !(e.isPopupTrigger()) && !(e.isMetaDown()))
         {
+			Point delta = getDeltaPoint(e);
             caller.setCursor(Cursor.getPredefinedCursor(caller.getCursor(delta.x, delta.y)));
-            //Printer.println("Location on Comp: " + (delta.x) + "  :  " + (delta.y));
         }
     }
 }

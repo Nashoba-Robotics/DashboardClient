@@ -421,4 +421,9 @@ public class Main extends JFrame
     {
         return movableComponents.isSelected();
     }
+
+	public void convertWidget(int widgetType, MovableComponent caller)
+	{
+
+	}
 }

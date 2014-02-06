@@ -115,15 +115,15 @@ public class PropertiesManager
                     //Figure out which class to add
                     MovableComponent addingClass = null;
                     String name = element.getTagName();
-                    if(name.equals(WidgetNames.BUTTON_NAME))
+                    if(name.equals(WidgetInfo.BUTTON_NAME))
                     {
                         addingClass = new NButton(components, properties, main, true);
                     }
-                    else if (name.equals(WidgetNames.STRING_NAME))
+                    else if (name.equals(WidgetInfo.STRING_NAME))
                     {
                         addingClass =  new NTextField(components, properties, main, true);
                     }
-                    else if(name.equals(WidgetNames.NUMBER_NAME))
+                    else if(name.equals(WidgetInfo.NUMBER_NAME))
                     {
 						switch (type)
 						{
@@ -134,7 +134,7 @@ public class PropertiesManager
 
 						}
                     }
-                    else if(name.equals(WidgetNames.BOOLEAN_NAME))
+                    else if(name.equals(WidgetInfo.BOOLEAN_NAME))
                     {
                         addingClass = new NBooleanField(components, properties, main, true);
                     }

@@ -1,18 +1,11 @@
 package edu.nr.Components;
 
-import edu.nr.Components.mouse_listeners.MyMouseListener;
 import edu.nr.Main;
 import edu.nr.properties.PropertiesManager;
 import edu.nr.properties.Property;
 import edu.nr.util.Printer;
 
-import javax.swing.*;
-import javax.swing.border.EmptyBorder;
 import java.awt.*;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.awt.geom.Arc2D;
 import java.util.ArrayList;
 
 /**
@@ -51,7 +44,7 @@ public class NNumberField extends MovableField
     @Override
     public String getWidgetName()
     {
-        return WidgetNames.NUMBER_NAME;
+        return WidgetInfo.NUMBER_NAME;
     }
 
 
@@ -80,14 +73,20 @@ public class NNumberField extends MovableField
             setValue(d);
     }
 
-    @Override
+	@Override
+	public String[] getWidgetChoices()
+	{
+		return WidgetInfo.numberNames;
+	}
+
+	@Override
     protected void onTab()
     {
         Double newValue = null;
         try
         {
             newValue = Double.parseDouble(field.getText());
-            NNumberField.this.main.network.putNumber(getTitle(), newValue);
+            main.network.putNumber(getTitle(), newValue);
         }
         catch (NumberFormatException e)
         {

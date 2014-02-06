@@ -11,9 +11,7 @@ import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 
 import java.awt.*;
-import java.awt.geom.Arc2D;
 import java.util.ArrayList;
-import java.util.Timer;
 
 /**
  * @author co1in
@@ -135,7 +133,7 @@ public class NGraph extends MovableComponent
 	@Override
 	public String getWidgetName()
 	{
-		return WidgetNames.NUMBER_NAME;
+		return WidgetInfo.NUMBER_NAME;
 	}
 
 	@Override
@@ -160,5 +158,12 @@ public class NGraph extends MovableComponent
 		if(d != null)
 			currentValue = d;*/
 	}
+
+	@Override
+	public String[] getWidgetChoices()
+	{
+		return WidgetInfo.numberNames;
+	}
+
 
 }

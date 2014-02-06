@@ -5,7 +5,11 @@ package edu.nr.Components;
  *         Date: 1/19/14
  *         Time: 2:09 PM
  */
-public class WidgetNames
+public class WidgetInfo
 {
     public static final String BOOLEAN_NAME="boolean", STRING_NAME="string", NUMBER_NAME="number", BUTTON_NAME="button";
+
+	public static final String[] stringWidgets = {"TextBox"};
+	public static final String[] numberNames = {"TextBox", "Graph"};
+	public static final String[] booleanNames = {"TextBox"};
 }

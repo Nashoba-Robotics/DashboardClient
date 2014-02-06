@@ -1,16 +1,10 @@
 package edu.nr.Components;
 
-import edu.nr.Components.mouse_listeners.MyMouseListener;
 import edu.nr.Main;
 import edu.nr.properties.PropertiesManager;
 import edu.nr.properties.Property;
-import edu.nr.util.Printer;
 
-import javax.swing.*;
-import javax.swing.border.EmptyBorder;
 import java.awt.*;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.util.ArrayList;
 
 /**
@@ -52,12 +46,12 @@ public class NTextField extends MovableField
 
     @Override
     public String getWidgetName() {
-        return WidgetNames.STRING_NAME;
+        return WidgetInfo.STRING_NAME;
     }
 
     public static String getStaticWidgetName()
     {
-        return WidgetNames.STRING_NAME;
+        return WidgetInfo.STRING_NAME;
     }
 
     @Override
@@ -78,4 +72,10 @@ public class NTextField extends MovableField
     {
         setValue(main.network.getString(getTitle()));
     }
+
+	@Override
+	public String[] getWidgetChoices()
+	{
+		return WidgetInfo.stringWidgets;
+	}
 }

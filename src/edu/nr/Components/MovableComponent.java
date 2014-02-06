@@ -129,4 +129,6 @@ public abstract class MovableComponent extends JPanel
         if(isMovable())
             g.drawRect(0, 0, getWidth()-1, getHeight()-1);
     }
+
+	public abstract String[] getWidgetChoices();
 }

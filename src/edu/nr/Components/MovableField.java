@@ -17,7 +17,7 @@ public abstract class MovableField extends MovableComponent
     protected JTextField field;
     protected JLabel label;
 
-    private final int FIELD_MIN_WIDTH = 100;
+    private final int FIELD_MIN_WIDTH = 80;
 
     public MovableField(ArrayList<MovableComponent> components, ArrayList<Property> properties, Main main, boolean addingFromSave)
     {
@@ -30,6 +30,16 @@ public abstract class MovableField extends MovableComponent
         field.addMouseMotionListener(mouseListener);
 
         label = new JLabel();
+
+		field.addKeyListener(new TabListener(new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				onTab();
+			}
+		}));
+		field.setFocusTraversalKeysEnabled(false);
 
         add(label);
         add(field);

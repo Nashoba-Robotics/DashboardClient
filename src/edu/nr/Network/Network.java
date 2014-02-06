@@ -56,7 +56,7 @@ public class Network implements ITableListener
     @Override
     public void valueChanged(ITable iTable, String s, Object o, boolean b)
     {
-        Printer.println("MESSAGE: " + s + ": " + o);
+        //Printer.println("MESSAGE: " + s + ": " + o);
         if(listener != null)
         {
             listener.onMessageReceived(s, o);

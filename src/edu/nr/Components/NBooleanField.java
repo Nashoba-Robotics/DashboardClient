@@ -1,12 +1,8 @@
 package edu.nr.Components;
 
-import edu.nr.Components.mouse_listeners.MyMouseListener;
 import edu.nr.Main;
-import edu.nr.properties.PropertiesManager;
 import edu.nr.properties.Property;
 
-import javax.swing.*;
-import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.util.ArrayList;
 
@@ -60,7 +56,7 @@ public class NBooleanField extends MovableField
     @Override
     public String getWidgetName()
     {
-        return WidgetNames.BOOLEAN_NAME;
+        return WidgetInfo.BOOLEAN_NAME;
     }
 
     @Override
@@ -85,10 +81,9 @@ public class NBooleanField extends MovableField
             setValue(b);
     }
 
-    public static int getStaticWidgetType()
-    {
-        return 1;
-    }
-
-
+	@Override
+	public String[] getWidgetChoices()
+	{
+		return WidgetInfo.booleanNames;
+	}
 }
