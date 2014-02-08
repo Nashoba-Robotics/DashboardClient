@@ -17,9 +17,9 @@ public class NNumberField extends MovableField
 {
     private double value;
 
-    public NNumberField(ArrayList<MovableComponent> components, ArrayList<Property> properties, Main main, boolean addingFromSave)
+    public NNumberField(ArrayList<MovableComponent> components, ArrayList<Property> properties, boolean addingFromSave)
     {
-        super(components, properties, main, addingFromSave);
+        super(components, properties, addingFromSave);
     }
 
     private void loadProperties(ArrayList<Property> loading)

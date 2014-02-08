@@ -8,21 +8,19 @@ import edu.nr.properties.Property;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.util.ArrayList;
 
 public abstract class MovableComponent extends JPanel
 {
-    public MovableComponent(ArrayList<MovableComponent> components, ArrayList<Property> properties, Main main, boolean addingFromSave)
+    public MovableComponent(ArrayList<MovableComponent> components, ArrayList<Property> properties, boolean addingFromSave)
     {
-        this.main = main;
+        this.main = Main.mainVar;
 		this.addingFromSave = addingFromSave;
 
         this.properties = getDefaultProperties();
         PropertiesManager.loadPropertiesIntoArray(this.properties, properties);
 
-        mouseListener = new MyMouseListener(this, main);
+        mouseListener = new MyMouseListener(this);
         addMouseListener(mouseListener);
         addMouseMotionListener(mouseListener);
 
@@ -53,6 +51,7 @@ public abstract class MovableComponent extends JPanel
     }
     public abstract void applyProperties(boolean setSize);
     public abstract String getWidgetName();
+	public abstract Object getValue();
     public void setValue(Object o)
     {
         valueSet = true;

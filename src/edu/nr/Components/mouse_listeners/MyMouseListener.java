@@ -1,19 +1,16 @@
 package edu.nr.Components.mouse_listeners;
 
-import edu.nr.Components.NButton;
 import edu.nr.Main;
 import edu.nr.Components.MovableComponent;
 import edu.nr.properties.Property;
+import edu.nr.util.ComponentChanger;
 import edu.nr.util.OverlapChecker;
 import edu.nr.util.Printer;
 
 import javax.swing.*;
-import javax.swing.border.EmptyBorder;
-import javax.swing.border.LineBorder;
 import javax.swing.event.MouseInputAdapter;
 import java.awt.*;
 import java.awt.event.*;
-import java.util.ArrayList;
 
 /**
  * @author co1in
@@ -28,10 +25,12 @@ public class MyMouseListener extends MouseInputAdapter
 
     private MovableComponent caller;
     private Main main;
-    public MyMouseListener(MovableComponent caller, Main main)
+	public RightClickMenu rightClickMenu;
+    public MyMouseListener(MovableComponent caller)
     {
-        this.main = main;
+        this.main = Main.mainVar;
         this.caller = caller;
+		rightClickMenu = new RightClickMenu(caller);
     }
 
     private boolean isPressed = false;
@@ -67,45 +66,11 @@ public class MyMouseListener extends MouseInputAdapter
         return new Point(screen.x - callerLocation.x, screen.y - callerLocation.y);
     }
 
+
     private void doPop(MouseEvent e)
     {
-        JPopupMenu menu = new JPopupMenu();
-        JMenuItem propertiesItem = new JMenuItem("Properties");
-        propertiesItem.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e)
-            {
-                Printer.println("Properties not Implemented Yet");
-            }
-        });
-        menu.add(propertiesItem);
-
-		JMenu changeMenu = new JMenu("Change to");
-		String[] widgetChoices = caller.getWidgetChoices();
-		for(int i = 0; i < widgetChoices.length; i++)
-		{
-			JMenuItem item = new JMenuItem();
-			item.setText(widgetChoices[i]);
-			if((i+1) == caller.getWidgetType())
-				item.setEnabled(false);
-			item.addActionListener(new MyMenuActionListener(i+1));
-			changeMenu.add(item);
-		}
-		menu.add(changeMenu);
-
-        JMenuItem removeItem = new JMenuItem("Remove Item");
-        removeItem.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e)
-            {
-                main.removeWidget(caller);
-            }
-        });
-
-        menu.add(removeItem);
-
         Point delta = getDeltaPoint(e);
-        menu.show(e.getComponent(), delta.x, delta.y);
+        rightClickMenu.show(e.getComponent(), delta.x, delta.y);
     }
 
 	private class MyMenuActionListener implements ActionListener
@@ -119,7 +84,8 @@ public class MyMouseListener extends MouseInputAdapter
 		@Override
 		public void actionPerformed(ActionEvent e)
 		{
-
+			MovableComponent newComponent = ComponentChanger.changeComponent(index, caller);
+			Main.mainVar.changeComponent(caller, newComponent);
 		}
 	}
 

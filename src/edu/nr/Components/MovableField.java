@@ -19,9 +19,9 @@ public abstract class MovableField extends MovableComponent
 
     private final int FIELD_MIN_WIDTH = 80;
 
-    public MovableField(ArrayList<MovableComponent> components, ArrayList<Property> properties, Main main, boolean addingFromSave)
+    public MovableField(ArrayList<MovableComponent> components, ArrayList<Property> properties, boolean addingFromSave)
     {
-        super(components, properties, main, addingFromSave);
+        super(components, properties, addingFromSave);
 
         setLayout(new BoxLayout(this, 0));
 
@@ -82,7 +82,7 @@ public abstract class MovableField extends MovableComponent
         {
             int pref = FIELD_MIN_WIDTH;
             pref += label.getPreferredSize().width;
-            setSize(new Dimension(pref, ((Dimension) Property.getPropertyFromType(Property.Type.SIZE, properties).getData()).height));
+            setSize(new Dimension(pref, ((Dimension) Property.getPropertyFromType(Property.Type.SIZE, getDefaultProperties()).getData()).height));
         }
         setLocation((Point)Property.getPropertyFromType(Property.Type.LOCATION, properties).getData());
 

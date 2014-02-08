@@ -19,9 +19,9 @@ public class NButton extends MovableComponent
 
     private JButton button;
 
-    public NButton(ArrayList<MovableComponent> components, ArrayList<Property> properties, Main main, boolean addingFromSave)
+    public NButton(ArrayList<MovableComponent> components, ArrayList<Property> properties, boolean addingFromSave)
     {
-        super(components, properties, main, addingFromSave);
+        super(components, properties, addingFromSave);
 
         this.main = main;
         button = new JButton();

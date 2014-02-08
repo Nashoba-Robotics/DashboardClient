@@ -52,6 +52,7 @@ public class Main extends JFrame
         //This is done because NetworkTables is printing debug output to the standard output (which a good library should not be doing)
         //As a result, we take the standard input, hand it to our own static class (Printer), set systems output stream to a dummy outputstream, and use Printer for printing instead.
         //This essentially suppresses all output from NetworkTables
+		saveManager = new SaveManager(components, this);
         PrintStream dummyStream    = new PrintStream(new OutputStream(){
             public void write(int b) {
                 //NO-OP
@@ -89,7 +90,7 @@ public class Main extends JFrame
                 {
                     if(SettingsManager.getLastSavePath() != null)
                     {
-                        PropertiesManager.writeAllPropertiesToFile(SettingsManager.getLastSavePath(), components, main);
+                        PropertiesManager.writeAllPropertiesToFile(SettingsManager.getLastSavePath(), components, mainVar);
                         System.exit(0);
                     }
                     else
@@ -99,41 +100,44 @@ public class Main extends JFrame
                     System.exit(0);
             }
         });
-
-        if(SettingsManager.getLastSavePath() != null)
-        {
-            PropertiesManager.loadElementsFromFile(SettingsManager.getLastSavePath(), components, this);
-            for(MovableComponent m : components)
-            {
-                panel.add(m);
-            }
-
-            panel.repaint();
-            panel.revalidate();
-        }
-
-        //Initiate the networkTables connection
-        network.connect();
-        //Update the title of the window to inform user if we are connected or not
-        network.getTable().addConnectionListener(new IRemoteConnectionListener()
-        {
-            @Override
-            public void connected(IRemote iRemote)
-            {
-                setTitle("NRDashboard - Connected");
-            }
-
-            @Override
-            public void disconnected(IRemote iRemote)
-            {
-                setTitle("NRDashboard - Disconnected");
-            }
-        }, true);
-
-        //Try and get values for any blank components loaded from the save file
-        for(MovableComponent comp : components)
-            comp.attemptValueFetch();
     }
+
+	public void initSettings()
+	{
+		if(SettingsManager.getLastSavePath() != null)
+		{
+			PropertiesManager.loadElementsFromFile(SettingsManager.getLastSavePath(), components, this);
+			for(MovableComponent m : components)
+			{
+				panel.add(m);
+			}
+
+			panel.repaint();
+			panel.revalidate();
+		}
+
+		//Initiate the networkTables connection
+		network.connect();
+		//Update the title of the window to inform user if we are connected or not
+		network.getTable().addConnectionListener(new IRemoteConnectionListener()
+		{
+			@Override
+			public void connected(IRemote iRemote)
+			{
+				setTitle("NRDashboard - Connected");
+			}
+
+			@Override
+			public void disconnected(IRemote iRemote)
+			{
+				setTitle("NRDashboard - Disconnected");
+			}
+		}, true);
+
+		//Try and get values for any blank components loaded from the save file
+		for(MovableComponent comp : components)
+			comp.attemptValueFetch();
+	}
 
 	public ArrayList<MovableComponent> getComponentsList()
 	{
@@ -158,15 +162,15 @@ public class Main extends JFrame
                 {
                     if(value instanceof Double || value instanceof Integer)
                     {
-                        addComponent(new NNumberField(components, addingProperties, Main.this, false), true, value);
+                        addComponent(new NNumberField(components, addingProperties, false), true, value);
                     }
                     else if(value instanceof String)
                     {
-                        addComponent(new NTextField(components, addingProperties, Main.this, false), true, value);
+                        addComponent(new NTextField(components, addingProperties, false), true, value);
                     }
                     else if(value instanceof Boolean)
                     {
-                        addComponent(new NBooleanField(components, addingProperties, Main.this, false), true, value);
+                        addComponent(new NBooleanField(components, addingProperties, false), true, value);
                     }
                     else if(value instanceof Object[])
                     {
@@ -202,7 +206,7 @@ public class Main extends JFrame
         return -1;
     }
 
-    public static Main main;
+    public static Main mainVar;
     public static void main(String[] args)
     {
         try {
@@ -216,7 +220,8 @@ public class Main extends JFrame
         } catch (UnsupportedLookAndFeelException e) {
             e.printStackTrace();
         }
-        main = new Main();
+        mainVar = new Main();
+		mainVar.initSettings();
     }
 
     private JCheckBoxMenuItem movableComponents;
@@ -238,7 +243,7 @@ public class Main extends JFrame
             {
                 if(SettingsManager.getLastSavePath() != null)
                 {
-                    PropertiesManager.writeAllPropertiesToFile(SettingsManager.getLastSavePath(), components, main);
+                    PropertiesManager.writeAllPropertiesToFile(SettingsManager.getLastSavePath(), components, mainVar);
                 }
                 else
                 {
@@ -422,8 +427,18 @@ public class Main extends JFrame
         return movableComponents.isSelected();
     }
 
-	public void convertWidget(int widgetType, MovableComponent caller)
+	public void changeComponent(MovableComponent from, MovableComponent to)
 	{
-
+		panel.remove(from);
+		panel.add(to);
+		repaint();
+		revalidate();
+		for(int i = 0; i < components.size(); i++)
+		{
+			if(components.get(i) == from)
+			{
+				components.set(i, to);
+			}
+		}
 	}
 }

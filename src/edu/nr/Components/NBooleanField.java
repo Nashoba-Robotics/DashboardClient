@@ -15,9 +15,9 @@ public class NBooleanField extends MovableField
 {
     private Boolean currentValue = null;
 
-    public NBooleanField(ArrayList<MovableComponent> components, ArrayList<Property> properties, Main main, boolean addingFromSave)
+    public NBooleanField(ArrayList<MovableComponent> components, ArrayList<Property> properties, boolean addingFromSave)
     {
-        super(components, properties, main, addingFromSave);
+        super(components, properties, addingFromSave);
     }
 
     @Override

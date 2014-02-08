@@ -10,6 +10,7 @@ import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 
+import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 
@@ -24,21 +25,35 @@ public class NGraph extends MovableComponent
 	ChartPanel plotPanel;
 	private long startTime;
 	private String name;
-	private boolean graphStarted = false;
 	private double currentValue;
 	private double sleepTime;
 	private boolean autoRefresh;
+	private JPopupMenu originalMenu;
 
-	public NGraph(ArrayList<MovableComponent> components, ArrayList<Property> properties, Main main, boolean addingFromSave)
+	public NGraph(ArrayList<MovableComponent> components, ArrayList<Property> properties, boolean addingFromSave)
 	{
-		super(components, properties, main, addingFromSave);
+		super(components, properties, addingFromSave);
 		series = new XYSeries("Field Name");
+
+		applyProperties(addingFromSave);
 	}
 
 	@Override
 	public void setMovable(boolean movable)
 	{
 		isMovable = movable;
+		if(movable)
+		{
+			plotPanel.setMouseWheelEnabled(false);
+			plotPanel.setMouseZoomable(false);
+			plotPanel.setPopupMenu(mouseListener.rightClickMenu);
+		}
+		else
+		{
+			plotPanel.setMouseWheelEnabled(true);
+			plotPanel.setMouseZoomable(true);
+			plotPanel.setPopupMenu(originalMenu);
+		}
 	}
 
 	@Override
@@ -67,19 +82,21 @@ public class NGraph extends MovableComponent
 
 		XYDataset set = new XYSeriesCollection(series);
 		plotPanel = new ChartPanel(ChartFactory.createXYLineChart(name, "Time (s)",axisName, set, PlotOrientation.VERTICAL, false, true, false ));
-
-		this.removeAll();
+		originalMenu = plotPanel.getPopupMenu();
+		plotPanel.addMouseListener(mouseListener);
+		plotPanel.addMouseMotionListener(mouseListener);
 		add(plotPanel, BorderLayout.CENTER);
 	}
 
+	int graphStarted = 0;
 	@Override
 	public void setValue(Object o)
 	{
 		super.setValue(o);
-		if(!graphStarted)
+		if(graphStarted == 1)
 		{
 			startTime = System.currentTimeMillis();
-			graphStarted = true;
+			graphStarted++;
 			currentValue = (Double)o;
 			if(autoRefresh)
 				startTimerThread();
@@ -90,12 +107,17 @@ public class NGraph extends MovableComponent
 				series.add(floatDelta, (Double)o);
 			}
 		}
+		else if(graphStarted == 0)
+		{
+			graphStarted++;
+			currentValue = (Double)o;
+		}
 		else
 		{
-			if(currentValue != (double)((Double)o))
+			if(currentValue != ((Double)o))
 			{
-				long deltaTime = startTime - System.currentTimeMillis();
-				double floatDelta = deltaTime;
+				long deltaTime = System.currentTimeMillis() - startTime;
+				double floatDelta = deltaTime/1000f;
 				series.add(floatDelta, (Double)o);
 				currentValue = (Double)o;
 			}
@@ -112,9 +134,9 @@ public class NGraph extends MovableComponent
 			{
 				while(autoRefresh)
 				{
-					long deltaTime = startTime - System.currentTimeMillis();
+					long deltaTime = System.currentTimeMillis() - startTime;
 					double floatDelta = deltaTime;
-					series.add(floatDelta, currentValue);
+					series.add(floatDelta/1000, currentValue);
 
 					try
 					{
@@ -128,12 +150,24 @@ public class NGraph extends MovableComponent
 				timerThread = null;
 			}
 		});
+		timerThread.start();
+	}
+
+	public void stopTimerThread()
+	{
+		autoRefresh = false;
 	}
 
 	@Override
 	public String getWidgetName()
 	{
 		return WidgetInfo.NUMBER_NAME;
+	}
+
+	@Override
+	public Object getValue()
+	{
+		return currentValue;
 	}
 
 	@Override
@@ -154,7 +188,7 @@ public class NGraph extends MovableComponent
 		//Don't think the best thing to do is start the graph prematurely
 		//However, if we wanted to, it would look something like this:
 
-		/*Double d = main.network.getNumber(name);
+		/*Double d = mainVar.network.getNumber(name);
 		if(d != null)
 			currentValue = d;*/
 	}
@@ -164,6 +198,4 @@ public class NGraph extends MovableComponent
 	{
 		return WidgetInfo.numberNames;
 	}
-
-
 }

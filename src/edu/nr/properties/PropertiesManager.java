@@ -86,7 +86,9 @@ public class PropertiesManager
 						properties.add(new Property(Property.Type.FOREGROUND, new Color(red, backGreen, backBlue)));
 					}
 
-                    properties.add(new Property(Property.Type.FONT_SIZE, Integer.parseInt(((Element)element.getElementsByTagName(Property.Type.FONT_SIZE.name()).item(0)).getAttribute(Property.Type.SIZE.name()))));
+					Element fontElement = (Element)element.getElementsByTagName(Property.Type.FONT_SIZE.name()).item(0);
+					if(fontElement != null)
+                    	properties.add(new Property(Property.Type.FONT_SIZE, Integer.parseInt(fontElement.getAttribute(Property.Type.SIZE.name()))));
 
 					if(element.getElementsByTagName(Property.Type.GRAPH_AXIS_NAME.name()).item(0) != null)
 					{
@@ -117,26 +119,27 @@ public class PropertiesManager
                     String name = element.getTagName();
                     if(name.equals(WidgetInfo.BUTTON_NAME))
                     {
-                        addingClass = new NButton(components, properties, main, true);
+                        addingClass = new NButton(components, properties, true);
                     }
                     else if (name.equals(WidgetInfo.STRING_NAME))
                     {
-                        addingClass =  new NTextField(components, properties, main, true);
+                        addingClass =  new NTextField(components, properties, true);
                     }
                     else if(name.equals(WidgetInfo.NUMBER_NAME))
                     {
 						switch (type)
 						{
 							case 1:
-								addingClass = new NNumberField(components, properties, main, true);
+								addingClass = new NNumberField(components, properties, true);
 								break;
 							case 2:
-
+								addingClass = new NGraph(components, properties, true);
+								break;
 						}
                     }
                     else if(name.equals(WidgetInfo.BOOLEAN_NAME))
                     {
-                        addingClass = new NBooleanField(components, properties, main, true);
+                        addingClass = new NBooleanField(components, properties, true);
                     }
                     else
                     {

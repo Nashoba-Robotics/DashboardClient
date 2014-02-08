@@ -14,9 +14,9 @@ import java.util.ArrayList;
  */
 public class NTextField extends MovableField
 {
-    public NTextField(ArrayList<MovableComponent> components, ArrayList<Property> loadedProperties, Main main, boolean addingFromSave)
+    public NTextField(ArrayList<MovableComponent> components, ArrayList<Property> loadedProperties, boolean addingFromSave)
     {
-        super(components, loadedProperties, main, addingFromSave);
+        super(components, loadedProperties, addingFromSave);
     }
 
     @Override
