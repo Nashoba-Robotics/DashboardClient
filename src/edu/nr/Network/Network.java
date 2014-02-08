@@ -23,7 +23,7 @@ public class Network implements ITableListener
     public Network(String ip)
     {
         NetworkTable.setClientMode();
-        NetworkTable.setIPAddress("localhost");
+        NetworkTable.setIPAddress("10.17.68.2");
         //TODO Change above line to use team number
     }
 
@@ -56,7 +56,7 @@ public class Network implements ITableListener
     @Override
     public void valueChanged(ITable iTable, String s, Object o, boolean b)
     {
-        //Printer.println("MESSAGE: " + s + ": " + o);
+        Printer.println("MESSAGE: " + s + ": " + o);
         if(listener != null)
         {
             listener.onMessageReceived(s, o);

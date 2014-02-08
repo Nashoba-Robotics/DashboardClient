@@ -49,7 +49,13 @@ public class NTextField extends MovableField
         return WidgetInfo.STRING_NAME;
     }
 
-    public static String getStaticWidgetName()
+	@Override
+	public Object getValue()
+	{
+		return field.getText();
+	}
+
+	public static String getStaticWidgetName()
     {
         return WidgetInfo.STRING_NAME;
     }

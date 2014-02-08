@@ -47,8 +47,14 @@ public class NNumberField extends MovableField
         return WidgetInfo.NUMBER_NAME;
     }
 
+	@Override
+	public Object getValue()
+	{
+		return value;
+	}
 
-    @Override
+
+	@Override
     public void setValue(Object o)
     {
         super.setValue(o);

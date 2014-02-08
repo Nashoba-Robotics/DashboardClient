@@ -59,7 +59,13 @@ public class NBooleanField extends MovableField
         return WidgetInfo.BOOLEAN_NAME;
     }
 
-    @Override
+	@Override
+	public Object getValue()
+	{
+		return currentValue;
+	}
+
+	@Override
     public void setValue(Object o)
     {
         super.setValue(o);

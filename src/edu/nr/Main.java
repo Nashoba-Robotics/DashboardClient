@@ -175,15 +175,15 @@ public class Main extends JFrame
                     else if(value instanceof Object[])
                     {
                         Printer.println("Received an array: " + ((Object[]) value).getClass());
-                        /*Printer.print("Received an array: {");
+                        Printer.print("Received an array: {");
                         Object[] values = (Object[])value;
                         for(int i = 0; i < values.length; i++)
                         {
                             if(i != 0)
                                 Printer.print(", ");
-                            Printer.print(values[i] + "");
+                            Printer.print(values[i].getClass() + ":" + values[i] + "");
                         }
-                        Printer.println("}");*/
+                        Printer.println("}");
                     }
                     else
                     {

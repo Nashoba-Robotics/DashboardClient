@@ -130,7 +130,13 @@ public class NButton extends MovableComponent
         return WidgetInfo.NUMBER_NAME;
     }
 
-    @Override
+	@Override
+	public Object getValue()
+	{
+		return null;
+	}
+
+	@Override
     public void setValue(Object o)
     {
         super.setValue(o);
