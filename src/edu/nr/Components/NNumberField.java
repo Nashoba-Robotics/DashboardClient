@@ -1,6 +1,6 @@
 package edu.nr.Components;
 
-import edu.nr.Main;
+import edu.nr.Components.extras.WidgetInfo;
 import edu.nr.properties.PropertiesManager;
 import edu.nr.properties.Property;
 import edu.nr.util.Printer;
@@ -17,9 +17,9 @@ public class NNumberField extends MovableField
 {
     private double value;
 
-    public NNumberField(ArrayList<MovableComponent> components, ArrayList<Property> properties, boolean addingFromSave)
+    public NNumberField(ArrayList<Property> properties, boolean addingFromSave)
     {
-        super(components, properties, addingFromSave);
+        super(properties, addingFromSave);
     }
 
     private void loadProperties(ArrayList<Property> loading)

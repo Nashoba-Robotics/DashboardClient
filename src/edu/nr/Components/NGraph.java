@@ -1,6 +1,6 @@
 package edu.nr.Components;
 
-import edu.nr.Main;
+import edu.nr.Components.extras.WidgetInfo;
 import edu.nr.properties.Property;
 import edu.nr.util.Printer;
 import org.jfree.chart.ChartFactory;
@@ -12,6 +12,8 @@ import org.jfree.data.xy.XYSeriesCollection;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
 /**
@@ -30,9 +32,9 @@ public class NGraph extends MovableComponent
 	private boolean autoRefresh;
 	private JPopupMenu originalMenu;
 
-	public NGraph(ArrayList<MovableComponent> components, ArrayList<Property> properties, boolean addingFromSave)
+	public NGraph(ArrayList<Property> properties, boolean addingFromSave)
 	{
-		super(components, properties, addingFromSave);
+		super(properties, addingFromSave);
 		series = new XYSeries("Field Name");
 
 		applyProperties(addingFromSave);
@@ -83,9 +85,24 @@ public class NGraph extends MovableComponent
 		XYDataset set = new XYSeriesCollection(series);
 		plotPanel = new ChartPanel(ChartFactory.createXYLineChart(name, "Time (s)",axisName, set, PlotOrientation.VERTICAL, false, true, false ));
 		originalMenu = plotPanel.getPopupMenu();
+
+		JMenuItem resetItem = new JMenuItem("Reset");
+		resetItem.addActionListener(new ResetListener());
+
+		originalMenu.add(resetItem, 0);
+
 		plotPanel.addMouseListener(mouseListener);
 		plotPanel.addMouseMotionListener(mouseListener);
 		add(plotPanel, BorderLayout.CENTER);
+	}
+
+	private class ResetListener implements ActionListener
+	{
+		@Override
+		public void actionPerformed(ActionEvent e)
+		{
+			series.clear();
+		}
 	}
 
 	int graphStarted = 0;
@@ -127,7 +144,7 @@ public class NGraph extends MovableComponent
 	private Thread timerThread = null;
 	private void startTimerThread()
 	{
-		timerThread = new Thread(new Runnable()
+		/*timerThread = new Thread(new Runnable()
 		{
 			@Override
 			public void run()
@@ -150,7 +167,7 @@ public class NGraph extends MovableComponent
 				timerThread = null;
 			}
 		});
-		timerThread.start();
+		timerThread.start();*/
 	}
 
 	public void stopTimerThread()

@@ -31,6 +31,7 @@ public class Network implements ITableListener
     {
         table = NetworkTable.getTable(DASHBOARD_NAME);
         table.addTableListener(this);
+		table.addSubTableListener(this);
     }
 
     public void putString(String key, String value)
@@ -56,7 +57,7 @@ public class Network implements ITableListener
     @Override
     public void valueChanged(ITable iTable, String s, Object o, boolean b)
     {
-        Printer.println("MESSAGE: " + s + ": " + o);
+        //Printer.println("MESSAGE: " + s + ": " + o);
         if(listener != null)
         {
             listener.onMessageReceived(s, o);
@@ -101,4 +102,9 @@ public class Network implements ITableListener
             return null;
         }
     }
+
+	public NetworkTable getNetworkSubTable(String name)
+	{
+		return (NetworkTable)table.getSubTable(name);
+	}
 }

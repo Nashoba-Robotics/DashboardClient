@@ -1,9 +1,12 @@
 package edu.nr.Components;
 
-import edu.nr.Main;
+import edu.nr.Components.extras.WidgetInfo;
 import edu.nr.properties.PropertiesManager;
 import edu.nr.properties.Property;
 import edu.nr.properties.Property.Type;
+import edu.wpi.first.wpilibj.networktables.NetworkTable;
+import edu.wpi.first.wpilibj.tables.ITable;
+import edu.wpi.first.wpilibj.tables.ITableListener;
 
 import javax.swing.*;
 import java.awt.*;
@@ -14,33 +17,30 @@ import java.util.ArrayList;
 /**
  * @author co1in
  */
-public class NButton extends MovableComponent
+public class NButton extends MovableComponent implements ITableListener
 {
 
     private JButton button;
+	private NetworkTable table;
+	private JLabel label;
 
-    public NButton(ArrayList<MovableComponent> components, ArrayList<Property> properties, boolean addingFromSave)
+    public NButton(NetworkTable table, ArrayList<Property> properties, boolean addingFromSave)
     {
-        super(components, properties, addingFromSave);
+        super(properties, addingFromSave);
+		if(table != null)
+		{
+			this.table = table;
+		}
+		else
+		{
+			//TODO Add loading from save option
+		}
+		button = new JButton();
+		label = new JLabel();
 
-        this.main = main;
-        button = new JButton();
+		add(label, BorderLayout.WEST);
+        add(button, BorderLayout.EAST);
 
-        setBackground(null);
-
-        if(properties == null)
-        {
-            this.properties = new ArrayList<Property>();
-            loadProperties(properties);
-        }
-        else
-        {
-            this.properties = properties;
-            applyProperties(false);
-        }
-        applyProperties(false);
-
-        add(button, BorderLayout.CENTER);
         button.setFocusable(false);
         setBackground(Color.WHITE);
 
@@ -52,35 +52,45 @@ public class NButton extends MovableComponent
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                //TODO Talk to network here
+				boolean settingValue = button.getText().equals(BUTTON_START_TEXT);
+				setButtonValue(settingValue);
+				NButton.this.table.putBoolean("running", settingValue);
             }
         });
-    }
+		setButtonValue(false);
 
-    protected void loadProperties(ArrayList<Property> loadedProperties)
-    {
-        this.setProperties(getDefaultProperties());
-        PropertiesManager.loadPropertiesIntoArray(this.properties, loadedProperties);
+		applyProperties(addingFromSave);
+		this.table.addTableListener(this, true);
     }
 
     public void applyProperties(boolean setSize)
     {
-        applyProperties(this.properties);
+        applyProperties(this.properties, setSize);
     }
 
-    public void applyProperties(ArrayList<Property> applyingProperties)
+    public void applyProperties(ArrayList<Property> applyingProperties, boolean setSize)
     {
         PropertiesManager.loadPropertiesIntoArray(properties, applyingProperties);
-        //TODO Change this way of getting values to match that of NTextField
         for(Property p : properties)
         {
             Type type = p.getType();
             if(type == Type.SIZE)
             {
-                Dimension d = (Dimension) p.getData();
-                button.setSize(d);
-                setSize(new Dimension((int)d.getWidth()-1, (int)d.getHeight()-1));
-                validate();
+				if(setSize)
+				{
+					Dimension d = (Dimension) p.getData();
+					setSize(new Dimension((int)d.getWidth()-1, (int)d.getHeight()-1));
+					setMaximumSize(new Dimension((int)d.getWidth()-1, (int)d.getHeight()-1));
+					validate();
+				}
+				else
+				{
+					int width = button.getPreferredSize().width + label.getPreferredSize().width;
+					Dimension d = new Dimension(width + 5, ((Dimension)Property.getPropertyFromType(Type.SIZE, getDefaultProperties()).getData()).height);
+					setSize(d);
+					setMaximumSize(d);
+					setPreferredSize(d);
+				}
             }
             else if(type == Type.LOCATION)
             {
@@ -88,15 +98,15 @@ public class NButton extends MovableComponent
             }
             else if(type == Type.FOREGROUND)
             {
-                button.setForeground((Color)p.getData());
+                label.setForeground((Color)p.getData());
             }
             else if(type == Type.BACKGROUND)
             {
-                button.setBackground((Color)p.getData());
+                setBackground((Color)p.getData());
             }
             else if(type == Type.NAME)
             {
-                button.setText((String)p.getData());
+                label.setText(" " + (String)p.getData());
             }
             else if(type == Type.FONT_SIZE)
             {
@@ -114,7 +124,7 @@ public class NButton extends MovableComponent
         tempProperties.add(new Property(Type.BACKGROUND, new Color(220,220,220)));
         tempProperties.add(new Property(Type.NAME, "Button"));//TODO Put actual name
         tempProperties.add(new Property(Type.WIDGET_TYPE, 1));
-        tempProperties.add(new Property(Type.FONT_SIZE, 12));
+        tempProperties.add(new Property(Type.FONT_SIZE, 9));
         return tempProperties;
     }
 
@@ -145,7 +155,7 @@ public class NButton extends MovableComponent
     @Override
     public String getTitle()
     {
-        return button.getText();
+        return label.getText().trim();
     }
 
     @Override
@@ -163,5 +173,40 @@ public class NButton extends MovableComponent
 	public String[] getWidgetChoices()
 	{
 		return new String[0];
+	}
+
+	private final String BUTTON_START_TEXT = "start";
+	private void setButtonValue(boolean value)
+	{
+		if(value)
+		{
+			button.setText("stop");
+			button.setForeground(new Color(200, 0, 0));
+		}
+		else
+		{
+			button.setText(BUTTON_START_TEXT);
+			button.setForeground(new Color(0, 150, 0));
+		}
+	}
+
+	@Override
+	public void valueChanged(ITable iTable, String name, Object value, boolean isNewValue)
+	{
+		if(value instanceof String)
+		{
+			if(name.equals("name"))
+			{
+				label.setText(" " + (String)value);
+			}
+		}
+		else if(value instanceof Boolean)
+		{
+			if(name.equals("running"))
+			{
+				boolean realValue = (Boolean)value;
+				setButtonValue(realValue);
+			}
+		}
 	}
 }

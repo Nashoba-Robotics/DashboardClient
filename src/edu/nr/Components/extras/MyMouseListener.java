@@ -1,13 +1,11 @@
-package edu.nr.Components.mouse_listeners;
+package edu.nr.Components.extras;
 
 import edu.nr.Main;
 import edu.nr.Components.MovableComponent;
 import edu.nr.properties.Property;
 import edu.nr.util.ComponentChanger;
 import edu.nr.util.OverlapChecker;
-import edu.nr.util.Printer;
 
-import javax.swing.*;
 import javax.swing.event.MouseInputAdapter;
 import java.awt.*;
 import java.awt.event.*;

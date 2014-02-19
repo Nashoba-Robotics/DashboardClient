@@ -1,4 +1,4 @@
-package edu.nr.Components;
+package edu.nr.Components.extras;
 
 /**
  * @author co1in

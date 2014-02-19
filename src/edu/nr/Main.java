@@ -8,8 +8,8 @@ import edu.nr.util.OverlapChecker;
 import edu.nr.util.Printer;
 import edu.nr.util.SaveManager;
 import edu.nr.util.SettingsManager;
-import edu.wpi.first.wpilibj.tables.IRemote;
-import edu.wpi.first.wpilibj.tables.IRemoteConnectionListener;
+import edu.wpi.first.wpilibj.networktables.NetworkTable;
+import edu.wpi.first.wpilibj.tables.*;
 
 import javax.swing.*;
 
@@ -24,10 +24,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
 //TODO Implement properties right click menu
-//TODO Make it so items can't be dragged after they are right-clicked
 //TODO Test out using JSCrollPane to handle items out of bounds
 //TODO Add a 'new' option to the file menu
-//TODO Add more widgets for numbers and boolean
 //TODO Add a connection indicator
 
 /**
@@ -64,6 +62,7 @@ public class Main extends JFrame
         panel = new JPanel();
         panel.setBackground(new Color(100,100,100));
         setSize(1000, 700);
+		setExtendedState(Frame.MAXIMIZED_BOTH);
 
         addMenuBar();
 
@@ -162,15 +161,15 @@ public class Main extends JFrame
                 {
                     if(value instanceof Double || value instanceof Integer)
                     {
-                        addComponent(new NNumberField(components, addingProperties, false), true, value);
+                        addComponent(new NNumberField(addingProperties, false), true, value);
                     }
                     else if(value instanceof String)
                     {
-                        addComponent(new NTextField(components, addingProperties, false), true, value);
+                        addComponent(new NTextField(addingProperties, false), true, value);
                     }
                     else if(value instanceof Boolean)
                     {
-                        addComponent(new NBooleanField(components, addingProperties, false), true, value);
+                        addComponent(new NBooleanField(addingProperties, false), true, value);
                     }
                     else if(value instanceof Object[])
                     {
@@ -185,6 +184,19 @@ public class Main extends JFrame
                         }
                         Printer.println("}");
                     }
+					else if(value instanceof NetworkTable)
+					{
+						ITable newTable = (ITable)value;
+						try
+						{
+							newTable.addTableListener("~TYPE~", new MyButtonTableListener(newTable, addingProperties), true);
+						}
+						catch (TableKeyNotDefinedException e)
+						{
+							e.printStackTrace();
+							Printer.println("Error: Couldn't get type of subtable: " + key);
+						}
+					}
                     else
                     {
                         Printer.println("Received a thing: " + value.getClass());
@@ -193,6 +205,36 @@ public class Main extends JFrame
             }
         };
     }
+
+	private class MyButtonTableListener implements ITableListener
+	{
+		private ITable table;
+		private ArrayList<Property> addingProperties;
+		public MyButtonTableListener(ITable addingTable, ArrayList<Property> addingProperties)
+		{
+			this.table = addingTable;
+			this.addingProperties = addingProperties;
+		}
+		@Override
+		public void valueChanged(ITable iTable, String s, Object o, boolean b)
+		{
+			table.removeTableListener(this);
+			if(o.equals("Command"))
+			{
+				SwingUtilities.invokeLater(new Runnable()
+				{
+					public void run()
+					{
+						addComponent(new NButton((NetworkTable)table, addingProperties, false), true, null);
+					}
+				});
+			}
+			else
+			{
+				Printer.println("Error: unable to add weird subtable: " + s + " : " + o);
+			}
+		}
+	}
 
     private int widgetWithName(String name)
     {

@@ -1,6 +1,6 @@
 package edu.nr.Components;
 
-import edu.nr.Main;
+import edu.nr.Components.extras.TabListener;
 import edu.nr.properties.Property;
 
 import javax.swing.*;
@@ -19,9 +19,9 @@ public abstract class MovableField extends MovableComponent
 
     private final int FIELD_MIN_WIDTH = 80;
 
-    public MovableField(ArrayList<MovableComponent> components, ArrayList<Property> properties, boolean addingFromSave)
+    public MovableField(ArrayList<Property> properties, boolean addingFromSave)
     {
-        super(components, properties, addingFromSave);
+        super(properties, addingFromSave);
 
         setLayout(new BoxLayout(this, 0));
 

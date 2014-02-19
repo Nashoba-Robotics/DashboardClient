@@ -1,6 +1,6 @@
 package edu.nr.Components;
 
-import edu.nr.Main;
+import edu.nr.Components.extras.WidgetInfo;
 import edu.nr.properties.Property;
 
 import java.awt.*;
@@ -15,9 +15,9 @@ public class NBooleanField extends MovableField
 {
     private Boolean currentValue = null;
 
-    public NBooleanField(ArrayList<MovableComponent> components, ArrayList<Property> properties, boolean addingFromSave)
+    public NBooleanField(ArrayList<Property> properties, boolean addingFromSave)
     {
-        super(components, properties, addingFromSave);
+        super(properties, addingFromSave);
     }
 
     @Override

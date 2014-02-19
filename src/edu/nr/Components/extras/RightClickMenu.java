@@ -1,4 +1,4 @@
-package edu.nr.Components.mouse_listeners;
+package edu.nr.Components.extras;
 
 import edu.nr.Components.MovableComponent;
 import edu.nr.Main;
@@ -6,7 +6,6 @@ import edu.nr.util.ComponentChanger;
 import edu.nr.util.Printer;
 
 import javax.swing.*;
-import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 

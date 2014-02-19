@@ -1,4 +1,4 @@
-package edu.nr.Components;
+package edu.nr.Components.extras;
 
 import edu.nr.util.Printer;
 

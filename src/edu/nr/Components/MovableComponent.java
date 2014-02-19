@@ -1,6 +1,6 @@
 package edu.nr.Components;
 
-import edu.nr.Components.mouse_listeners.MyMouseListener;
+import edu.nr.Components.extras.MyMouseListener;
 import edu.nr.Main;
 import edu.nr.properties.PropertiesManager;
 import edu.nr.properties.Property;
@@ -12,7 +12,7 @@ import java.util.ArrayList;
 
 public abstract class MovableComponent extends JPanel
 {
-    public MovableComponent(ArrayList<MovableComponent> components, ArrayList<Property> properties, boolean addingFromSave)
+    public MovableComponent(ArrayList<Property> properties, boolean addingFromSave)
     {
         this.main = Main.mainVar;
 		this.addingFromSave = addingFromSave;

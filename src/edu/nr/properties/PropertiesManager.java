@@ -1,6 +1,7 @@
 package edu.nr.properties;
 
 import edu.nr.Components.*;
+import edu.nr.Components.extras.WidgetInfo;
 import edu.nr.Main;
 import edu.nr.util.Printer;
 import edu.nr.util.SettingsManager;
@@ -119,27 +120,27 @@ public class PropertiesManager
                     String name = element.getTagName();
                     if(name.equals(WidgetInfo.BUTTON_NAME))
                     {
-                        addingClass = new NButton(components, properties, true);
+                        addingClass = new NButton(null, properties, true);
                     }
                     else if (name.equals(WidgetInfo.STRING_NAME))
                     {
-                        addingClass =  new NTextField(components, properties, true);
+                        addingClass =  new NTextField(properties, true);
                     }
                     else if(name.equals(WidgetInfo.NUMBER_NAME))
                     {
 						switch (type)
 						{
 							case 1:
-								addingClass = new NNumberField(components, properties, true);
+								addingClass = new NNumberField(properties, true);
 								break;
 							case 2:
-								addingClass = new NGraph(components, properties, true);
+								addingClass = new NGraph(properties, true);
 								break;
 						}
                     }
                     else if(name.equals(WidgetInfo.BOOLEAN_NAME))
                     {
-                        addingClass = new NBooleanField(components, properties, true);
+                        addingClass = new NBooleanField(properties, true);
                     }
                     else
                     {

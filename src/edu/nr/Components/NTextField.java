@@ -1,7 +1,6 @@
 package edu.nr.Components;
 
-import edu.nr.Main;
-import edu.nr.properties.PropertiesManager;
+import edu.nr.Components.extras.WidgetInfo;
 import edu.nr.properties.Property;
 
 import java.awt.*;
@@ -14,20 +13,15 @@ import java.util.ArrayList;
  */
 public class NTextField extends MovableField
 {
-    public NTextField(ArrayList<MovableComponent> components, ArrayList<Property> loadedProperties, boolean addingFromSave)
+    public NTextField(ArrayList<Property> loadedProperties, boolean addingFromSave)
     {
-        super(components, loadedProperties, addingFromSave);
+        super(loadedProperties, addingFromSave);
     }
 
     @Override
     protected void onTab()
     {
         NTextField.this.main.network.putString(getTitle(), field.getText());
-    }
-
-    private void loadProperties(ArrayList<Property> loaded)
-    {
-        PropertiesManager.loadPropertiesIntoArray(properties, loaded);
     }
 
     protected ArrayList<Property> getDefaultProperties()

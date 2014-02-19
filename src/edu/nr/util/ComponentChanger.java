@@ -3,8 +3,7 @@ package edu.nr.util;
 import edu.nr.Components.MovableComponent;
 import edu.nr.Components.NGraph;
 import edu.nr.Components.NNumberField;
-import edu.nr.Components.WidgetInfo;
-import edu.nr.Main;
+import edu.nr.Components.extras.WidgetInfo;
 import edu.nr.properties.Property;
 
 import java.awt.*;
@@ -23,7 +22,7 @@ public class ComponentChanger
 		{
 			if(index == 1)
 			{
-				comp = new NNumberField(Main.mainVar.getComponentsList(), from.getProperties(), false);
+				comp = new NNumberField(from.getProperties(), false);
 			}
 			else if(index == 2)
 			{
@@ -35,7 +34,7 @@ public class ComponentChanger
 				if(dimens.width < 300)
 					dimens.width = 300;
 				Property.getPropertyFromType(Property.Type.SIZE, from.getProperties()).setData(dimens);
-				comp = new NGraph(Main.mainVar.getComponentsList(), from.getProperties(), false);
+				comp = new NGraph(from.getProperties(), false);
 			}
 		}
 
