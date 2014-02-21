@@ -1,5 +1,7 @@
 package edu.nr.properties;
 
+import com.sun.corba.se.impl.encoding.TypeCodeOutputStream;
+
 import java.awt.*;
 import java.util.ArrayList;
 
@@ -27,7 +29,7 @@ public class Property
 		/**The time interval that the graph should refresh at*/ GRAPH_REFRESH_RATE,
 		/**Whether the graph should refresh itself or only refresh when new data is sent*/ AUTOREFRESH}
 
-    public static Class[] typeClasses = {String.class, Dimension.class, Point.class, Color.class, Color.class, Integer.class, Object.class, Integer.class};
+    public static Class[] typeClasses = {String.class, Dimension.class, Point.class, Color.class, Color.class, Integer.class, Integer.class, String.class, Integer.class, Boolean.class};
 
     public Property(Type propertyType, Object propertyData)
     {
@@ -66,4 +68,16 @@ public class Property
         }
         return null;
     }
+
+	public static Class getClassFromType(Type t)
+	{
+		for(int i = 0; i < Type.values().length; i++)
+		{
+			if(Type.values()[i] == t)
+			{
+				return typeClasses[i];
+			}
+		}
+		throw new IllegalArgumentException("Error: Unknown Type passed as argument");
+	}
 }

@@ -23,7 +23,7 @@ public class Network implements ITableListener
     public Network(String ip)
     {
         NetworkTable.setClientMode();
-        NetworkTable.setIPAddress("10.17.68.2");
+        NetworkTable.setIPAddress("localhost");
         //TODO Change above line to use team number
     }
 

@@ -228,6 +228,7 @@ public class PropertiesManager
                 p = Property.getPropertyFromType(Property.Type.BACKGROUND, properties);
 				if(p != null)
 				{
+					//LEFT OFF Changing saving mechanism so it is streamlined
 					Element background = doc.createElement(Property.Type.BACKGROUND.name());
 					color = (Color)p.getData();
 					background.setAttribute("red", String.valueOf(color.getRed()));
@@ -290,6 +291,14 @@ public class PropertiesManager
             return false;
         }
     }
+
+	private void saveColor(Property p, Element e)
+	{
+		Color color = (Color)p.getData();
+		e.setAttribute("red", String.valueOf(color.getRed()));
+		e.setAttribute("green", String.valueOf(color.getGreen()));
+		e.setAttribute("blue", String.valueOf(color.getBlue()));
+	}
 
     public static void loadPropertiesIntoArray(ArrayList<Property> defaultProperties, ArrayList<Property> loadingProperties)
     {

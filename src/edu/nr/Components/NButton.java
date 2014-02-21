@@ -137,7 +137,7 @@ public class NButton extends MovableComponent implements ITableListener
 
     public String getWidgetName()
     {
-        return WidgetInfo.NUMBER_NAME;
+        return WidgetInfo.BUTTON_NAME;
     }
 
 	@Override
