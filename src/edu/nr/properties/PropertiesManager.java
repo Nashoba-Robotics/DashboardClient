@@ -17,6 +17,7 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import java.awt.*;
+import java.awt.datatransfer.StringSelection;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -32,7 +33,7 @@ import java.awt.Point;
 
 public class PropertiesManager
 {
-    public static void loadElementsFromFile(String path, ArrayList<MovableComponent> components, Main main)
+    public static void loadElementsFromFile(String path, ArrayList<MovableComponent> components)
     {
         try
         {
@@ -52,7 +53,13 @@ public class PropertiesManager
                 if(node.getNodeType() == Node.ELEMENT_NODE)
                 {
                     Element element = (Element)node;
-                    String widgetClassName = element.getTagName();
+					for(int p = 0; p < element.getChildNodes().getLength(); p++)
+					{
+						Node n = element.getChildNodes().item(p);
+						if(n.getNodeType() == Node.ELEMENT_NODE)
+							properties.add(elementToProperty((Element)n));
+					}
+                    /*String widgetClassName = element.getTagName();
 
                     properties.add(new Property(Property.Type.NAME, element.getAttribute(Property.Type.NAME.name())));
 
@@ -104,6 +111,7 @@ public class PropertiesManager
 						properties.add(new Property(Property.Type.AUTOREFRESH, Boolean.parseBoolean(((Element) element.getElementsByTagName(Property.Type.AUTOREFRESH.name()).item(0)).getAttribute("value"))));
 					}
 
+					*/
                     Element typeElement = ((Element)element.getElementsByTagName(Property.Type.WIDGET_TYPE.name()).item(0));
 					int type = -1;
                     try
@@ -140,19 +148,26 @@ public class PropertiesManager
                     }
                     else if(name.equals(WidgetInfo.BOOLEAN_NAME))
                     {
-                        addingClass = new NBooleanField(properties, true);
+						switch(type)
+						{
+							case 1:
+								addingClass = new NBooleanField(properties, true);
+								break;
+							case 2:
+								addingClass = new BooleanBox(properties, true);
+						}
                     }
                     else
                     {
                         Printer.println("ERROR: Adding class was null");
                     }
 
-                    addingClass.setMovable(main.isEditable());
+                    addingClass.setMovable(Main.mainVar.isEditable());
 
                     components.add(addingClass);
                 }
             }
-            main.repaint();
+            Main.mainVar.repaint();
         }
         catch (ParserConfigurationException e)
         {
@@ -173,7 +188,7 @@ public class PropertiesManager
         }
     }
 
-    public static boolean writeAllPropertiesToFile(String path, ArrayList<MovableComponent> components, Main main)
+    public static boolean writeAllPropertiesToFile(String path, ArrayList<MovableComponent> components)
     {
         try
         {
@@ -191,14 +206,19 @@ public class PropertiesManager
                 rootElement.appendChild(widget);
                 ArrayList<Property> properties = movableComponent.getProperties();
 
-                //Write Name
-                Property p = Property.getPropertyFromType(Property.Type.NAME, properties);
-				assert p != null;
-                Attr attr = doc.createAttribute(Property.Type.NAME.name());
-                attr.setValue(String.valueOf(p.getData()));
-                widget.setAttributeNode(attr);
+				for(Property p : properties)
+				{
+					Element e = doc.createElement(p.getType().name());
+					propertyToElement(p, e);
+					widget.appendChild(e);
+				}
 
-                //Add the location
+				//Add the type of widget
+				Element type = doc.createElement(Property.Type.WIDGET_TYPE.name());
+				type.setAttribute("value", String.valueOf(movableComponent.getWidgetType()));
+				widget.appendChild(type);
+
+                /*Add the location
                 p = Property.getPropertyFromType(Property.Type.LOCATION, properties);
 				if(p != null)
 				{
@@ -261,7 +281,7 @@ public class PropertiesManager
 					Element fontSize = doc.createElement(Property.Type.FONT_SIZE.name());
 					fontSize.setAttribute(Property.Type.SIZE.name(), String.valueOf(p.getData()));
 					widget.appendChild(fontSize);
-				}
+				}*/
             }
 
             // write the content into xml file
@@ -292,12 +312,87 @@ public class PropertiesManager
         }
     }
 
-	private void saveColor(Property p, Element e)
+	/**
+	 * Takes a property and converts it into an element for saving
+	 * @param p The property to save
+	 * @param e The new element to be modified
+	 */
+	private static void propertyToElement(Property p, Element e)
 	{
-		Color color = (Color)p.getData();
-		e.setAttribute("red", String.valueOf(color.getRed()));
-		e.setAttribute("green", String.valueOf(color.getGreen()));
-		e.setAttribute("blue", String.valueOf(color.getBlue()));
+		Class c = Property.getClassFromType(p.getType());
+		if(c == Color.class)
+		{
+			Color color = (Color)p.getData();
+			e.setAttribute("red", String.valueOf(color.getRed()));
+			e.setAttribute("green", String.valueOf(color.getGreen()));
+			e.setAttribute("blue", String.valueOf(color.getBlue()));
+		}
+		else if(c == Dimension.class)
+		{
+			Dimension d = (Dimension)p.getData();
+			e.setAttribute("width", String.valueOf(d.width));
+			e.setAttribute("height", String.valueOf(d.height));
+		}
+		else if(c == Integer.class)
+		{
+			Integer i = (Integer)p.getData();
+			e.setAttribute("value", String.valueOf(i));
+		}
+		else if(c == String.class)
+		{
+			String s = (String)p.getData();
+			e.setAttribute("value", s);
+		}
+		else if(c == Point.class)
+		{
+			Point point = (Point)p.getData();
+			e.setAttribute("x", String.valueOf(point.x));
+			e.setAttribute("y", String.valueOf(point.y));
+		}
+		else if(c == Boolean.class)
+		{
+			Boolean b = (Boolean)p.getData();
+			e.setAttribute("value", String.valueOf(b));
+		}
+	}
+
+	private static Property elementToProperty(Element e)
+	{
+		Property.Type t = Property.getTypeFromName(e.getTagName());
+		Class c = Property.getClassFromType(t);
+		Object propertyObject = null;
+		if(c == Color.class)
+		{
+			int r = Integer.parseInt(e.getAttribute("red"));
+			int g = Integer.parseInt(e.getAttribute("green"));
+			int b = Integer.parseInt(e.getAttribute("blue"));
+			propertyObject = new Color(r,g,b);
+		}
+		else if(c == Dimension.class)
+		{
+			int w = Integer.parseInt(e.getAttribute("width"));
+			int h = Integer.parseInt(e.getAttribute("height"));
+			propertyObject = new Dimension(w, h);
+		}
+		else if(c == Integer.class)
+		{
+			propertyObject = new Integer(e.getAttribute("value"));
+		}
+		else if(c == String.class)
+		{
+			propertyObject = new String(e.getAttribute("value"));
+		}
+		else if(c == Point.class)
+		{
+			int x = Integer.parseInt(e.getAttribute("x"));
+			int y = Integer.parseInt(e.getAttribute("y"));
+			propertyObject = new Point(x, y);
+		}
+		else if(c == Boolean.class)
+		{
+			propertyObject = new Boolean(e.getAttribute("value"));
+		}
+		return new Property(t, propertyObject);
 	}
 
     public static void loadPropertiesIntoArray(ArrayList<Property> defaultProperties, ArrayList<Property> loadingProperties)

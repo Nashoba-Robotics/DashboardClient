@@ -57,11 +57,11 @@ public class Property
         return new Property(type, data);
     }
 
-    public static Property getPropertyFromType(Type Object, ArrayList<Property> properties)
+    public static Property getPropertyFromType(Type object, ArrayList<Property> properties)
     {
         for(Property p : properties)
         {
-            if(p.getType() == Object)
+            if(p.getType() == object)
             {
                 return p;
             }
@@ -79,5 +79,15 @@ public class Property
 			}
 		}
 		throw new IllegalArgumentException("Error: Unknown Type passed as argument");
+	}
+
+	public static Type getTypeFromName(String name)
+	{
+		for(Type t : Type.values())
+		{
+			if(t.name().equals(name))
+				return t;
+		}
+		return null;
 	}
 }

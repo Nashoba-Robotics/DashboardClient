@@ -42,6 +42,8 @@ public class Main extends JFrame
 
     private Network.OnMessageReceivedListener messageListener;
 
+	public static Color backgroundColor = new Color(30,30,30);
+
     public Main()
     {
         super("NRDashboard - Loading");
@@ -50,7 +52,7 @@ public class Main extends JFrame
         //This is done because NetworkTables is printing debug output to the standard output (which a good library should not be doing)
         //As a result, we take the standard input, hand it to our own static class (Printer), set systems output stream to a dummy outputstream, and use Printer for printing instead.
         //This essentially suppresses all output from NetworkTables
-		saveManager = new SaveManager(components, this);
+		saveManager = new SaveManager(components);
         PrintStream dummyStream    = new PrintStream(new OutputStream(){
             public void write(int b) {
                 //NO-OP
@@ -60,7 +62,7 @@ public class Main extends JFrame
         System.setOut(dummyStream);
 
         panel = new JPanel();
-        panel.setBackground(new Color(100,100,100));
+        panel.setBackground(backgroundColor);
         setSize(1000, 700);
 		setExtendedState(Frame.MAXIMIZED_BOTH);
 
@@ -89,7 +91,7 @@ public class Main extends JFrame
                 {
                     if(SettingsManager.getLastSavePath() != null)
                     {
-                        PropertiesManager.writeAllPropertiesToFile(SettingsManager.getLastSavePath(), components, mainVar);
+                        PropertiesManager.writeAllPropertiesToFile(SettingsManager.getLastSavePath(), components);
                         System.exit(0);
                     }
                     else
@@ -105,7 +107,7 @@ public class Main extends JFrame
 	{
 		if(SettingsManager.getLastSavePath() != null)
 		{
-			PropertiesManager.loadElementsFromFile(SettingsManager.getLastSavePath(), components, this);
+			PropertiesManager.loadElementsFromFile(SettingsManager.getLastSavePath(), components);
 			for(MovableComponent m : components)
 			{
 				panel.add(m);
@@ -285,7 +287,7 @@ public class Main extends JFrame
             {
                 if(SettingsManager.getLastSavePath() != null)
                 {
-                    PropertiesManager.writeAllPropertiesToFile(SettingsManager.getLastSavePath(), components, mainVar);
+                    PropertiesManager.writeAllPropertiesToFile(SettingsManager.getLastSavePath(), components);
                 }
                 else
                 {
@@ -397,7 +399,7 @@ public class Main extends JFrame
             }
             if(s.length() != 4)
             {
-                Printer.println("Error: team number must be 4 letters long");
+                Printer.println("Error: team number must be 4 numbers long");
                 return;
             }
             setIpAddress(s);

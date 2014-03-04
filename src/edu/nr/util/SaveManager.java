@@ -19,9 +19,8 @@ public class SaveManager
     JFileChooser saveChooser, openChooser;
     private ArrayList<MovableComponent> components;
     FileNameExtensionFilter xmlfilter;
-    private Main main;
 
-    public SaveManager(ArrayList<MovableComponent> components, Main main)
+    public SaveManager(ArrayList<MovableComponent> components)
     {
         this.components = components;
 
@@ -37,13 +36,13 @@ public class SaveManager
 
     public void showSaveDialog(boolean exitAfterSave)
     {
-        int returnValue = saveChooser.showSaveDialog(main);
+        int returnValue = saveChooser.showSaveDialog(Main.mainVar);
         if(returnValue == JFileChooser.APPROVE_OPTION)
         {
             String finalSavePath = saveChooser.getSelectedFile().getPath();
             if(!finalSavePath.endsWith(".xml"))
                 finalSavePath += ".xml";
-            PropertiesManager.writeAllPropertiesToFile(finalSavePath, components, main);
+            PropertiesManager.writeAllPropertiesToFile(finalSavePath, components);
             SettingsManager.writeSavePath(finalSavePath);
             if(exitAfterSave)
                 System.exit(0);
@@ -59,24 +58,23 @@ public class SaveManager
     public void showOpenDialog()
     {
 
-        int returnValue = openChooser.showOpenDialog(main);
+        int returnValue = openChooser.showOpenDialog(Main.mainVar);
         if(returnValue == JFileChooser.APPROVE_OPTION)
         {
             components.clear();
-            main.panel.removeAll();
-            PropertiesManager.loadElementsFromFile(openChooser.getSelectedFile().getPath(), components, main);
+            Main.mainVar.panel.removeAll();
+            PropertiesManager.loadElementsFromFile(openChooser.getSelectedFile().getPath(), components);
 
             for(MovableComponent m : components)
             {
-                main.panel.add(m);
+                Main.mainVar.panel.add(m);
             }
-            main.panel.repaint();
-            main.panel.revalidate();
+            Main.mainVar.panel.repaint();
+            Main.mainVar.panel.revalidate();
         }
         else
         {
             Printer.println("Open aborted");
         }
-
     }
 }

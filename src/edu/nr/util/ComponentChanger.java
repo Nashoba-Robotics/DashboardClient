@@ -1,8 +1,6 @@
 package edu.nr.util;
 
-import edu.nr.Components.MovableComponent;
-import edu.nr.Components.NGraph;
-import edu.nr.Components.NNumberField;
+import edu.nr.Components.*;
 import edu.nr.Components.extras.WidgetInfo;
 import edu.nr.properties.Property;
 
@@ -35,6 +33,17 @@ public class ComponentChanger
 					dimens.width = 300;
 				Property.getPropertyFromType(Property.Type.SIZE, from.getProperties()).setData(dimens);
 				comp = new NGraph(from.getProperties(), false);
+			}
+		}
+		else if(from.getWidgetName().equals(WidgetInfo.BOOLEAN_NAME))
+		{
+			switch (index)
+			{
+				case 1:
+					comp = new NBooleanField(from.getProperties(), false);
+					break;
+				case 2:
+					comp = new BooleanBox(from.getProperties(), false);
 			}
 		}
 

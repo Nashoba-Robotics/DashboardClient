@@ -124,9 +124,11 @@ public abstract class MovableComponent extends JPanel
     {
         super.paint(g);
 
-        g.setColor(Color.green);
         if(isMovable())
-            g.drawRect(0, 0, getWidth()-1, getHeight()-1);
+			g.setColor(Color.green);
+		else
+			g.setColor(Main.backgroundColor);
+		g.drawRect(0, 0, getWidth()-1, getHeight()-1);
     }
 
 	public abstract String[] getWidgetChoices();

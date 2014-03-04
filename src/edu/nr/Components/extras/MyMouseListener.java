@@ -23,6 +23,10 @@ public class MyMouseListener extends MouseInputAdapter
 
     private MovableComponent caller;
     private Main main;
+
+	private boolean overlapCheckingEnabled = true;
+	private boolean resizingEnabled = true;
+
 	public RightClickMenu rightClickMenu;
     public MyMouseListener(MovableComponent caller)
     {
@@ -33,6 +37,16 @@ public class MyMouseListener extends MouseInputAdapter
 
     private boolean isPressed = false;
     private boolean mouseIsIn = false;
+
+	public void setOverlapCheckingEnabled(boolean enabled)
+	{
+		this.overlapCheckingEnabled = enabled;
+	}
+
+	public void setResizingEnabled(boolean enabled)
+	{
+		this.resizingEnabled = enabled;
+	}
 
     @Override
     public void mousePressed(MouseEvent e)
@@ -131,7 +145,7 @@ public class MyMouseListener extends MouseInputAdapter
                 switch (cursor)
                 {
                     case Cursor.N_RESIZE_CURSOR:
-                        if (!(h - dy < MIN_WIDTH))
+                        if ((!(h - dy < MIN_WIDTH)) && (resizingEnabled))
                         {
                             caller.setBounds(x, y + dy, w, h - dy);
                             resize();
@@ -139,7 +153,7 @@ public class MyMouseListener extends MouseInputAdapter
                         break;
 
                     case Cursor.S_RESIZE_CURSOR:
-                        if (!(h + dy < MIN_WIDTH))
+                        if ((!(h + dy < MIN_WIDTH))  && (resizingEnabled))
                         {
                             caller.setBounds(x, y, w, h + dy);
                             startPos = (Point)delta.clone();
@@ -148,7 +162,7 @@ public class MyMouseListener extends MouseInputAdapter
                         break;
 
                     case Cursor.W_RESIZE_CURSOR:
-                        if (!(w - dx < MIN_WIDTH))
+                        if ((!(w - dx < MIN_WIDTH)) && (resizingEnabled))
                         {
                             caller.setBounds(x + dx, y, w - dx, h);
                             resize();
@@ -156,7 +170,7 @@ public class MyMouseListener extends MouseInputAdapter
                         break;
 
                     case Cursor.E_RESIZE_CURSOR:
-                        if (!(w + dx < MIN_WIDTH))
+                        if ((!(w + dx < MIN_WIDTH))  && (resizingEnabled))
                         {
                             caller.setBounds(x, y, w + dx, h);
                             startPos = (Point)delta.clone();
@@ -165,7 +179,7 @@ public class MyMouseListener extends MouseInputAdapter
                         break;
 
                     case Cursor.NW_RESIZE_CURSOR:
-                        if (!(w - dx < MIN_WIDTH) && !(h - dy < MIN_WIDTH))
+                        if ((!(w - dx < MIN_WIDTH) && !(h - dy < MIN_WIDTH))  && (resizingEnabled))
                         {
                             caller.setBounds(x + dx, y + dy, w - dx, h - dy);
                             resize();
@@ -173,7 +187,7 @@ public class MyMouseListener extends MouseInputAdapter
                         break;
 
                     case Cursor.NE_RESIZE_CURSOR:
-                        if (!(w + dx < MIN_WIDTH) && !(h - dy < MIN_WIDTH))
+                        if ((!(w + dx < MIN_WIDTH) && !(h - dy < MIN_WIDTH))  && (resizingEnabled))
                         {
                             caller.setBounds(x, y + dy, w + dx, h - dy);
                             startPos = new Point(delta.x, startPos.y);
@@ -182,7 +196,7 @@ public class MyMouseListener extends MouseInputAdapter
                         break;
 
                     case Cursor.SW_RESIZE_CURSOR:
-                        if (!(w - dx < MIN_WIDTH) && !(h + dy < MIN_WIDTH))
+                        if ((!(w - dx < MIN_WIDTH) && !(h + dy < MIN_WIDTH))  && (resizingEnabled))
                         {
                             caller.setBounds(x + dx, y, w - dx, h + dy);
                             startPos = new Point(startPos.x, delta.y);
@@ -191,7 +205,8 @@ public class MyMouseListener extends MouseInputAdapter
                         break;
 
                     case Cursor.SE_RESIZE_CURSOR:
-                        if (!(w + dx < MIN_WIDTH) && !(h + dy < MIN_WIDTH)) {
+                        if ((!(w + dx < MIN_WIDTH) && !(h + dy < MIN_WIDTH))  && (resizingEnabled))
+						{
                             caller.setBounds(x, y, w + dx, h + dy);
                             startPos = (Point)delta.clone();
                             resize();
@@ -206,7 +221,10 @@ public class MyMouseListener extends MouseInputAdapter
 						Point newLocation = new Point();
 						newLocation.x = callerPoint.x + dx;
 						newLocation.y = callerPoint.y + dy;
-						OverlapChecker.checkForCollision(caller, main.getComponentsList(), newLocation, callerPoint);
+						if(overlapCheckingEnabled)
+							OverlapChecker.checkForCollision(caller, main.getComponentsList(), newLocation, callerPoint);
+						else
+							caller.setLocation(newLocation);
                         resize();
 						Property.getPropertyFromType(Property.Type.LOCATION, (caller).getProperties()).setData(caller.getLocation());
                 }
