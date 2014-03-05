@@ -34,6 +34,7 @@ import java.awt.event.ActionEvent;
 public class Main extends JFrame
 {
     public JPanel panel;
+	public static FieldView fieldCentric;
     private ArrayList<MovableComponent> components = new ArrayList<MovableComponent>();
 
     public static boolean somethingIsBeingPressed = false;
@@ -65,6 +66,11 @@ public class Main extends JFrame
         panel.setBackground(backgroundColor);
         setSize(1000, 700);
 		setExtendedState(Frame.MAXIMIZED_BOTH);
+
+		ArrayList<Property> fieldProperties = new ArrayList<Property>();
+		fieldCentric = new FieldView(fieldProperties);
+		components.add(fieldCentric);
+		panel.add(fieldCentric);
 
         addMenuBar();
 
@@ -429,7 +435,7 @@ public class Main extends JFrame
 
     private void restart()
     {
-
+		System.exit(0);
     }
 
     private void addComponent(MovableComponent temp, boolean checkForOverlaps, Object value)

@@ -33,7 +33,7 @@ public class NTextField extends MovableField
         tempProperties.add(new Property(Property.Type.BACKGROUND, Color.WHITE));
         tempProperties.add(new Property(Property.Type.NAME, "Text Name"));
         tempProperties.add(new Property(Property.Type.WIDGET_TYPE, 1));
-        tempProperties.add(new Property(Property.Type.FONT_SIZE, 14));
+        tempProperties.add(new Property(Property.Type.FONT_SIZE, 12));
 
         return tempProperties;
     }

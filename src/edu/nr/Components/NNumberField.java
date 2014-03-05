@@ -36,7 +36,7 @@ public class NNumberField extends MovableField
         tempProperties.add(new Property(Property.Type.FOREGROUND, Color.BLACK));
         tempProperties.add(new Property(Property.Type.BACKGROUND, Color.WHITE));
         tempProperties.add(new Property(Property.Type.NAME, "Number"));
-        tempProperties.add(new Property(Property.Type.FONT_SIZE, 14));
+        tempProperties.add(new Property(Property.Type.FONT_SIZE, 12));
 
         return tempProperties;
     }

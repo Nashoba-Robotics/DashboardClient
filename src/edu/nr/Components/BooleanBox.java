@@ -47,7 +47,7 @@ public class BooleanBox extends MovableComponent
 		tempProperties.add(new Property(Property.Type.BACKGROUND, Color.WHITE));
 		tempProperties.add(new Property(Property.Type.NAME, "Boolean Name"));
 		tempProperties.add(new Property(Property.Type.WIDGET_TYPE, 2));
-		tempProperties.add(new Property(Property.Type.FONT_SIZE, 14));
+		tempProperties.add(new Property(Property.Type.FONT_SIZE, 12));
 
 		return tempProperties;
 	}

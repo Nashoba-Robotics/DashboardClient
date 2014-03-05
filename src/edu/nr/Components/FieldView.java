@@ -1,9 +1,13 @@
 package edu.nr.Components;
+import edu.nr.Main;
 import edu.nr.properties.Property;
 import edu.wpi.first.wpilibj.networktables.NetworkTable;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -24,12 +28,17 @@ public class FieldView extends MovableComponent
 	private NetworkTable table;
 
 	BufferedImage field, robot;
-	public FieldView(ArrayList<Property> properties, boolean addingFromSave, NetworkTable table)
+	public FieldView(ArrayList<Property> properties)
 	{
-		super(properties, addingFromSave);
-		mouseListener.setOverlapCheckingEnabled(false);
-		mouseListener.setResizingEnabled(false);
-		this.table = table;
+		super(properties, true);
+		removeMouseListener(mouseListener);
+		removeMouseMotionListener(mouseListener);
+		/*mouseListener.setOverlapCheckingEnabled(false);
+		mouseListener.setResizingEnabled(false);*/
+
+		FieldListener listener = new FieldListener();
+		addMouseMotionListener(listener);
+		addMouseListener(listener);
 
 		setPreferredSize(new Dimension(Math.round(WIDTH), Math.round(HEIGHT)));
 		setSize(new Dimension(Math.round(WIDTH), Math.round(HEIGHT)));
@@ -42,14 +51,16 @@ public class FieldView extends MovableComponent
 		{
 			e.printStackTrace();
 		}
+
+		applyProperties(addingFromSave);
 	}
 
 	int x = 0, y = 0, angle = 0;
 
 	@Override
-	public void paintComponent(Graphics g)
+	public void paint(Graphics g)
 	{
-		super.paintComponent(g);
+		super.paint(g);
 		Graphics2D g2d = (Graphics2D)g;
 
 		g.drawImage(field, 0, 0, Math.round(WIDTH), Math.round(HEIGHT), this);
@@ -66,16 +77,16 @@ public class FieldView extends MovableComponent
 			y = Math.round(HEIGHT);
 
 
-		AffineTransform rotation = new AffineTransform();
+		AffineTransform rotation = g2d.getTransform();
 
-		rotation.setToScale(ROBOT_SCALE_FACTOR, ROBOT_SCALE_FACTOR);
 		rotation.rotate(Math.toRadians(angle), x + (robot.getWidth() / 2), y + (robot.getHeight() / 2));
 		rotation.translate(x, y);
+		rotation.scale(ROBOT_SCALE_FACTOR, ROBOT_SCALE_FACTOR);
 
 
 		g2d.setTransform(rotation);
 
-		g.drawImage(robot, 0, 0, this);
+		g2d.drawImage(robot, 0, 0, this);
 	}
 
 	@Override
@@ -90,19 +101,29 @@ public class FieldView extends MovableComponent
 		ArrayList<Property> tempProperties = new ArrayList<Property>();
 		tempProperties.add(new Property(Property.Type.LOCATION, new Point(0,0)));
 		//LEFT OFF just finished adding this method, keep on comparing the rest of these methods to make sure they are implemented properly
+		//Need to implement the subtable for this object
 		return tempProperties;
 	}
 
 	@Override
 	public void applyProperties(boolean setSize)
 	{
-
+		setLocation((Point)Property.getPropertyFromType(Property.Type.LOCATION, properties).getData());
 	}
 
 	@Override
 	public String getWidgetName()
 	{
 		return null;
+	}
+
+	@Override
+	public void setValue(Object value)
+	{
+		super.setValue(value);
+		Point p = (Point)value;
+		setLocation(p);
+		Property.getPropertyFromType(Property.Type.LOCATION, properties).setData(p.clone());
 	}
 
 	@Override
@@ -133,5 +154,70 @@ public class FieldView extends MovableComponent
 	public String[] getWidgetChoices()
 	{
 		return new String[0];
+	}
+
+	private class FieldListener implements MouseListener, MouseMotionListener
+	{
+		int screenX, screenY, myX, myY;
+		@Override
+		public void mouseClicked(MouseEvent e)
+		{
+
+		}
+
+		@Override
+		public void mousePressed(MouseEvent e)
+		{
+			if(isMovable())
+			{
+				screenX = e.getXOnScreen();
+				screenY = e.getYOnScreen();
+
+				myX = getX();
+				myY = getY();
+			}
+		}
+
+		@Override
+		public void mouseReleased(MouseEvent e)
+		{
+
+		}
+
+		@Override
+		public void mouseEntered(MouseEvent e)
+		{
+
+		}
+
+		@Override
+		public void mouseExited(MouseEvent e)
+		{
+
+		}
+
+		@Override
+		public void mouseDragged(MouseEvent e)
+		{
+			if(isMovable())
+			{
+				int deltaX = e.getXOnScreen() - screenX;
+				int deltaY = e.getYOnScreen() - screenY;
+
+				Point myNewLocation = new Point(myX + deltaX, myY + deltaY);
+
+				//Check to see if we were dragged
+				setLocation(myNewLocation);
+				Main.mainVar.repaint();
+				Main.mainVar.invalidate();
+				Property.getPropertyFromType(Property.Type.LOCATION, properties).setData(myNewLocation);
+			}
+		}
+
+		@Override
+		public void mouseMoved(MouseEvent e)
+		{
+
+		}
 	}
 }

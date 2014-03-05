@@ -13,7 +13,7 @@ import java.net.UnknownHostException;
  */
 public class Network implements ITableListener
 {
-    private NetworkTable table;
+    private NetworkTable table, fieldTable;
     private final String DASHBOARD_NAME = "SmartDashboard";
 
     private OnMessageReceivedListener listener = null;
@@ -23,13 +23,16 @@ public class Network implements ITableListener
     public Network(String ip)
     {
         NetworkTable.setClientMode();
-        NetworkTable.setIPAddress("localhost");
+        NetworkTable.setIPAddress("10.17.68.2");
         //TODO Change above line to use team number
     }
 
     public void connect()
     {
-        table = NetworkTable.getTable(DASHBOARD_NAME);
+		fieldTable = NetworkTable.getTable("FieldCentric");
+		fieldTable.addTableListener(this);
+
+		table = NetworkTable.getTable(DASHBOARD_NAME);
         table.addTableListener(this);
 		table.addSubTableListener(this);
     }
@@ -58,10 +61,17 @@ public class Network implements ITableListener
     public void valueChanged(ITable iTable, String s, Object o, boolean b)
     {
         //Printer.println("MESSAGE: " + s + ": " + o);
-        if(listener != null)
-        {
-            listener.onMessageReceived(s, o);
-        }
+        if(iTable == table)
+		{
+			if(listener != null)
+			{
+				listener.onMessageReceived(s, o);
+			}
+		}
+		else if(iTable == fieldTable)
+		{
+
+		}
     }
 
     public interface OnMessageReceivedListener

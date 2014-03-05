@@ -19,10 +19,9 @@ public class MyMouseListener extends MouseInputAdapter
 {
     private int cursor;
     private Point startPos = null;
-    private final int MIN_WIDTH = 30;
+    private final int MIN_WIDTH = 10;
 
     private MovableComponent caller;
-    private Main main;
 
 	private boolean overlapCheckingEnabled = true;
 	private boolean resizingEnabled = true;
@@ -30,7 +29,6 @@ public class MyMouseListener extends MouseInputAdapter
 	public RightClickMenu rightClickMenu;
     public MyMouseListener(MovableComponent caller)
     {
-        this.main = Main.mainVar;
         this.caller = caller;
 		rightClickMenu = new RightClickMenu(caller);
     }
@@ -67,7 +65,7 @@ public class MyMouseListener extends MouseInputAdapter
                 caller.repaint();
             }
         }
-        main.somethingIsBeingPressed = true;
+        Main.mainVar.somethingIsBeingPressed = true;
         isPressed = true;
     }
 
@@ -104,9 +102,9 @@ public class MyMouseListener extends MouseInputAdapter
     @Override
     public void mouseReleased(MouseEvent e)
     {
-        main.repaint();
+        Main.mainVar.repaint();
         isPressed = false;
-        main.somethingIsBeingPressed = false;
+        Main.mainVar.somethingIsBeingPressed = false;
     }
 
     @Override
@@ -222,22 +220,29 @@ public class MyMouseListener extends MouseInputAdapter
 						newLocation.x = callerPoint.x + dx;
 						newLocation.y = callerPoint.y + dy;
 						if(overlapCheckingEnabled)
-							OverlapChecker.checkForCollision(caller, main.getComponentsList(), newLocation, callerPoint);
+							OverlapChecker.checkForCollision(caller, Main.mainVar.getComponentsList(), newLocation, callerPoint);
 						else
 							caller.setLocation(newLocation);
                         resize();
 						Property.getPropertyFromType(Property.Type.LOCATION, (caller).getProperties()).setData(caller.getLocation());
                 }
                 caller.setCursor(Cursor.getPredefinedCursor(cursor));
-				Property.getPropertyFromType(Property.Type.SIZE, (caller).getProperties()).setData(caller.getSize());
+				try
+				{
+					Property.getPropertyFromType(Property.Type.SIZE, (caller).getProperties()).setData(caller.getSize());
+				}
+				catch (NullPointerException e)
+				{
+					//Ignore this for widgets without size property (fieldCentric)
+				}
             }
         }
     }
 
     private void resize()
     {
-        main.revalidate();
-		main.repaint();
+        Main.mainVar.revalidate();
+		Main.mainVar.repaint();
     }
 
     @Override
