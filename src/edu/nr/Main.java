@@ -96,7 +96,9 @@ public class Main extends JFrame
                         saveManager.showSaveDialog(true);
                 }
                 else
-                    System.exit(0);
+				{
+					System.exit(0);
+				}
             }
         });
 
@@ -362,6 +364,16 @@ public class Main extends JFrame
 			}
 		});
 
+		JMenuItem csvItem = new JMenuItem("Record to CSV");
+		csvItem.addActionListener(new ActionListener()
+		{
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				SettingsManager.startCSV();
+			}
+		});
+
         viewMenu.add(movableComponents);
         viewMenu.add(removeUnused);
 		viewMenu.add(fieldCentric);
@@ -369,6 +381,7 @@ public class Main extends JFrame
         menu.add(openFile);
         menu.add(saveFile);
         menu.add(saveAsFile);
+		menu.add(csvItem);
         //menu.add(addButtonItem);
         menu.add(setIp);
         setJMenuBar(menuBar);

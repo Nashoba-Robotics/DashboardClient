@@ -3,6 +3,7 @@ package edu.nr.Network;
 import edu.nr.Components.MovableComponent;
 import edu.nr.Main;
 import edu.nr.util.Printer;
+import edu.nr.util.SettingsManager;
 import edu.wpi.first.wpilibj.networktables.NetworkTable;
 import edu.wpi.first.wpilibj.tables.*;
 
@@ -15,7 +16,7 @@ import java.net.UnknownHostException;
  */
 public class Network implements ITableListener
 {
-    private NetworkTable table, fieldTable;
+    private NetworkTable table;
     private final String DASHBOARD_NAME = "SmartDashboard";
 
     private OnMessageReceivedListener listener = null;
@@ -25,7 +26,7 @@ public class Network implements ITableListener
     public Network(String ip)
     {
 		NetworkTable.setClientMode();
-		NetworkTable.setIPAddress("10.17.68.2");
+		NetworkTable.setIPAddress("localhost");
         //TODO Change above line to use team number
     }
 
@@ -36,9 +37,6 @@ public class Network implements ITableListener
 			@Override
 			public void run()
 			{
-				fieldTable = NetworkTable.getTable("FieldCentric");
-				fieldTable.addTableListener(Network.this);
-
 				table = NetworkTable.getTable(DASHBOARD_NAME);
 				table.addTableListener(Network.this);
 				table.addSubTableListener(Network.this);
@@ -91,14 +89,12 @@ public class Network implements ITableListener
         //Printer.println("MESSAGE: " + s + ": " + o);
         if(iTable == table)
 		{
+			if(SettingsManager.csvStarted())
+				SettingsManager.writeCSV(s, o);
 			if(listener != null)
 			{
 				listener.onMessageReceived(s, o);
 			}
-		}
-		else if(iTable == fieldTable)
-		{
-
 		}
     }
 

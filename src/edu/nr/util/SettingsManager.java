@@ -7,6 +7,65 @@ import java.io.*;
  */
 public class SettingsManager
 {
+	static File csv = new File(folderPath() + File.separator + "csv.txt");
+	static PrintWriter csvWriter = null;
+	static long startTime = 0;
+
+	public static void startCSV()
+	{
+		if(!csv.exists())
+		{
+			try
+			{
+				new File(folderPath()).mkdirs();
+				csv.createNewFile();
+			}
+			catch (IOException e)
+			{
+				e.printStackTrace();
+			}
+		}
+
+		try
+		{
+			if(csvWriter != null)
+				csvWriter.close();
+
+			csvWriter = new PrintWriter(new FileWriter(csv));
+			csvWriter.println("Time(s), Name, Value");
+			csvWriter.flush();
+			startTime = System.currentTimeMillis();
+		} catch (IOException e)
+		{
+			e.printStackTrace();
+		}
+	}
+
+	public static boolean csvStarted()
+	{
+		return csvWriter != null;
+	}
+
+	public void closeCSV()
+	{
+		if(csvStarted())
+			csvWriter.close();
+	}
+
+	public static void writeCSV(String name, Object value)
+	{
+		if(value instanceof Double || value instanceof String || value instanceof Boolean)
+		{
+			long currentTime = (System.currentTimeMillis()) - startTime;
+			currentTime *= 100f;
+			int temp = ((int)currentTime);
+			int curr = Math.round(((float)temp)/100f);
+			int finalCurr = Math.round((float)curr / 1000f);
+			csvWriter.println(finalCurr + ", \"" + name + "\", \"" + String.valueOf(value) + "\"");
+			csvWriter.flush();
+		}
+	}
+
     public static void writeTeamNumber(String number)
     {
         File f = new File(teamFilePath());
