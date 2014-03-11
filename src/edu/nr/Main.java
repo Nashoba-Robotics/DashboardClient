@@ -57,7 +57,7 @@ public class Main extends JFrame
             }
         });
         Printer.setOutputStream(System.out);
-        System.setOut(dummyStream);
+        //System.setOut(dummyStream);
 
         panel = new JPanel();
         panel.setBackground(backgroundColor);
@@ -104,6 +104,7 @@ public class Main extends JFrame
 		fieldCentric = new FieldView(fieldProperties);
 		components.add(fieldCentric);
 		panel.add(fieldCentric);
+		repaint();
     }
 
 	public void initSettings()
@@ -123,24 +124,6 @@ public class Main extends JFrame
 		//Initiate the networkTables connection
 		network.connect();
 		//Update the title of the window to inform user if we are connected or not
-		network.getTable().addConnectionListener(new IRemoteConnectionListener()
-		{
-			@Override
-			public void connected(IRemote iRemote)
-			{
-				setTitle("NRDashboard - Connected");
-			}
-
-			@Override
-			public void disconnected(IRemote iRemote)
-			{
-				setTitle("NRDashboard - Disconnected");
-			}
-		}, true);
-
-		//Try and get values for any blank components loaded from the save file
-		for(MovableComponent comp : components)
-			comp.attemptValueFetch();
 	}
 
 	public ArrayList<MovableComponent> getComponentsList()

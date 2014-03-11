@@ -1,5 +1,7 @@
 package edu.nr.Network;
 
+import edu.nr.Components.MovableComponent;
+import edu.nr.Main;
 import edu.nr.util.Printer;
 import edu.wpi.first.wpilibj.networktables.NetworkTable;
 import edu.wpi.first.wpilibj.tables.*;
@@ -22,19 +24,45 @@ public class Network implements ITableListener
 
     public Network(String ip)
     {
-        NetworkTable.setClientMode();
-        NetworkTable.setIPAddress("10.17.68.2");
+		NetworkTable.setClientMode();
+		NetworkTable.setIPAddress("10.17.68.2");
         //TODO Change above line to use team number
     }
 
     public void connect()
     {
-		fieldTable = NetworkTable.getTable("FieldCentric");
-		fieldTable.addTableListener(this);
+		new Thread(new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				fieldTable = NetworkTable.getTable("FieldCentric");
+				fieldTable.addTableListener(Network.this);
 
-		table = NetworkTable.getTable(DASHBOARD_NAME);
-        table.addTableListener(this);
-		table.addSubTableListener(this);
+				table = NetworkTable.getTable(DASHBOARD_NAME);
+				table.addTableListener(Network.this);
+				table.addSubTableListener(Network.this);
+
+				getTable().addConnectionListener(new IRemoteConnectionListener()
+				{
+					@Override
+					public void connected(IRemote iRemote)
+					{
+						Main.mainVar.setTitle("NRDashboard - Connected");
+					}
+
+					@Override
+					public void disconnected(IRemote iRemote)
+					{
+						Main.mainVar.setTitle("NRDashboard - Disconnected");
+					}
+				}, true);
+
+				//Try and get values for any blank components loaded from the save file
+				for(MovableComponent comp : Main.mainVar.getComponentsList())
+					comp.attemptValueFetch();
+			}
+		}).start();
     }
 
     public void putString(String key, String value)

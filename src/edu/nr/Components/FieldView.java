@@ -26,8 +26,9 @@ import java.util.ArrayList;
  */
 public class FieldView extends MovableComponent implements ITableListener
 {
+	//Field is 24.6 x 54
 	private final float HEIGHT = 700; //Just a height in pixels that looks like a good size
-	private final float WIDTH = (200f / 439f) * HEIGHT; //Multiply the ratio of width to height by our height to get calculated width
+	private final float WIDTH = (24.6f / 54f) * HEIGHT; //Multiply the ratio of width to height by our height to get calculated width
 	private final double SCALE_FACTOR = 54d / (double)HEIGHT; //A scale factor in feet/px
 	private final double ROBOT_SIZE = (2.3d/SCALE_FACTOR) / 50d; //Robot is 2.3ft in real life, and divide by the scale factor to get calculated robot px. Then divide by 50 because our starting value of px is 50 for our png file.
 
@@ -44,8 +45,15 @@ public class FieldView extends MovableComponent implements ITableListener
 		removeMouseListener(mouseListener);
 		removeMouseMotionListener(mouseListener);
 
-		table = NetworkTable.getTable("FieldCentric");
-		table.addTableListener(this, true);
+		new Thread(new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				table = NetworkTable.getTable("FieldCentric");
+				table.addTableListener(FieldView.this, true);
+			}
+		}).start();
 
 		/*mouseListener.setOverlapCheckingEnabled(false);
 		mouseListener.setResizingEnabled(false);*/
@@ -60,7 +68,7 @@ public class FieldView extends MovableComponent implements ITableListener
 		try
 		{
 			field = ImageIO.read(new File("field_rough.png"));
-			robot = ImageIO.read(new File("robot_rough_2.png"));
+			robot = ImageIO.read(new File("robot_rough_3.png"));
 		} catch (IOException e)
 		{
 			e.printStackTrace();
@@ -98,11 +106,12 @@ public class FieldView extends MovableComponent implements ITableListener
 
 		AffineTransform rotation = g2d.getTransform();
 
+		double transx = newx - (ROBOT_SIZE*25), transy = newy - (ROBOT_SIZE*25);
+		rotation.translate(transx,transy );
+
+
+		rotation.rotate(Math.toRadians(angle + startAngle), ROBOT_SIZE*25, ROBOT_SIZE*25);
 		rotation.scale(ROBOT_SIZE, ROBOT_SIZE);
-		rotation.rotate(Math.toRadians(angle + startAngle), newx + (robot.getWidth() / 2), newy + (robot.getHeight() / 2));
-		rotation.translate(newx, newy);
-
-
 
 		g2d.setTransform(rotation);
 
