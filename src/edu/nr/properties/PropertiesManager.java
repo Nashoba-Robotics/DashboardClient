@@ -157,6 +157,13 @@ public class PropertiesManager
 								addingClass = new BooleanBox(properties, true);
 						}
                     }
+					else if(name.equals(WidgetInfo.FIELD_NAME))
+					{
+						Main.mainVar.repaint();
+						Main.fieldCentric.setProperties(properties);
+						Main.fieldCentric.applyProperties(false);
+						continue;
+					}
                     else
                     {
                         Printer.println("ERROR: Adding class was null");

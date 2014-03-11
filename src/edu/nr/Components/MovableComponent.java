@@ -45,7 +45,7 @@ public abstract class MovableComponent extends JPanel
     {
         return properties;
     }
-    protected final void setProperties(ArrayList<Property> properties)
+    public final void setProperties(ArrayList<Property> properties)
     {
         this.properties = properties;
     }

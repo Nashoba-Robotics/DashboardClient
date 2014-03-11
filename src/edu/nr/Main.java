@@ -4,10 +4,7 @@ import edu.nr.Components.*;
 import edu.nr.Network.Network;
 import edu.nr.properties.PropertiesManager;
 import edu.nr.properties.Property;
-import edu.nr.util.OverlapChecker;
-import edu.nr.util.Printer;
-import edu.nr.util.SaveManager;
-import edu.nr.util.SettingsManager;
+import edu.nr.util.*;
 import edu.wpi.first.wpilibj.networktables.NetworkTable;
 import edu.wpi.first.wpilibj.tables.*;
 
@@ -67,11 +64,6 @@ public class Main extends JFrame
         setSize(1000, 700);
 		setExtendedState(Frame.MAXIMIZED_BOTH);
 
-		ArrayList<Property> fieldProperties = new ArrayList<Property>();
-		fieldCentric = new FieldView(fieldProperties);
-		components.add(fieldCentric);
-		panel.add(fieldCentric);
-
         addMenuBar();
 
         panel.setLayout(null);
@@ -107,6 +99,11 @@ public class Main extends JFrame
                     System.exit(0);
             }
         });
+
+		ArrayList<Property> fieldProperties = new ArrayList<Property>();
+		fieldCentric = new FieldView(fieldProperties);
+		components.add(fieldCentric);
+		panel.add(fieldCentric);
     }
 
 	public void initSettings()
@@ -372,8 +369,19 @@ public class Main extends JFrame
             }
         });
 
+		JMenuItem fieldCentric = new JMenuItem("FieldCentric Params");
+		fieldCentric.addActionListener(new ActionListener()
+		{
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				new FieldFrame();
+			}
+		});
+
         viewMenu.add(movableComponents);
         viewMenu.add(removeUnused);
+		viewMenu.add(fieldCentric);
 
         menu.add(openFile);
         menu.add(saveFile);

@@ -1,9 +1,14 @@
 package edu.nr.Components;
+import edu.nr.Components.extras.WidgetInfo;
 import edu.nr.Main;
 import edu.nr.properties.Property;
+import edu.nr.util.Printer;
 import edu.wpi.first.wpilibj.networktables.NetworkTable;
+import edu.wpi.first.wpilibj.tables.ITable;
+import edu.wpi.first.wpilibj.tables.ITableListener;
 
 import javax.imageio.ImageIO;
+import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -19,20 +24,29 @@ import java.util.ArrayList;
  *         Date: 3/3/14
  *         Time: 3:01 PM
  */
-public class FieldView extends MovableComponent
+public class FieldView extends MovableComponent implements ITableListener
 {
-	private final float HEIGHT=700;
-	private final float WIDTH = (200f / 439f) * HEIGHT;
-	private final double SCALE_FACTOR = 54d / (double)HEIGHT;
-	private final double ROBOT_SCALE_FACTOR = (2.3d/SCALE_FACTOR) / 50d;
+	private final float HEIGHT = 700; //Just a height in pixels that looks like a good size
+	private final float WIDTH = (200f / 439f) * HEIGHT; //Multiply the ratio of width to height by our height to get calculated width
+	private final double SCALE_FACTOR = 54d / (double)HEIGHT; //A scale factor in feet/px
+	private final double ROBOT_SIZE = (2.3d/SCALE_FACTOR) / 50d; //Robot is 2.3ft in real life, and divide by the scale factor to get calculated robot px. Then divide by 50 because our starting value of px is 50 for our png file.
+
 	private NetworkTable table;
 
+	private int startx = 0, starty = 0, startAngle;
+
 	BufferedImage field, robot;
+	JButton b;
 	public FieldView(ArrayList<Property> properties)
 	{
 		super(properties, true);
+		//setLayout(null);
 		removeMouseListener(mouseListener);
 		removeMouseMotionListener(mouseListener);
+
+		table = NetworkTable.getTable("FieldCentric");
+		table.addTableListener(this, true);
+
 		/*mouseListener.setOverlapCheckingEnabled(false);
 		mouseListener.setResizingEnabled(false);*/
 
@@ -61,27 +75,33 @@ public class FieldView extends MovableComponent
 	public void paint(Graphics g)
 	{
 		super.paint(g);
+
 		Graphics2D g2d = (Graphics2D)g;
 
 		g.drawImage(field, 0, 0, Math.round(WIDTH), Math.round(HEIGHT), this);
 
-		//Get the values here
+		//Apply the transformation to get x in feet to x in pixels (and same for y)
+		int newx = (int)Math.round((1/SCALE_FACTOR) * (x + startx));
+		int newy = (int)Math.round((1/SCALE_FACTOR) * (y + starty));
 
-		if(x < 0)
-			x = 0;
-		else if(x > WIDTH)
-			x = Math.round(WIDTH);
-		if(y < 0)
-			y = 0;
-		else if(y > HEIGHT)
-			y = Math.round(HEIGHT);
+		//Printer.println("x: " + x + "\ty: " + y + "\tangle: " + angle);
+
+		if(newx < 0)
+			newx = 0;
+		else if(newx > WIDTH)
+			newx = Math.round(WIDTH);
+		if(newy < 0)
+			newy = 0;
+		else if(newy > HEIGHT)
+			newy = Math.round(HEIGHT);
 
 
 		AffineTransform rotation = g2d.getTransform();
 
-		rotation.rotate(Math.toRadians(angle), x + (robot.getWidth() / 2), y + (robot.getHeight() / 2));
-		rotation.translate(x, y);
-		rotation.scale(ROBOT_SCALE_FACTOR, ROBOT_SCALE_FACTOR);
+		rotation.scale(ROBOT_SIZE, ROBOT_SIZE);
+		rotation.rotate(Math.toRadians(angle + startAngle), newx + (robot.getWidth() / 2), newy + (robot.getHeight() / 2));
+		rotation.translate(newx, newy);
+
 
 
 		g2d.setTransform(rotation);
@@ -114,7 +134,7 @@ public class FieldView extends MovableComponent
 	@Override
 	public String getWidgetName()
 	{
-		return null;
+		return WidgetInfo.FIELD_NAME;
 	}
 
 	@Override
@@ -122,14 +142,15 @@ public class FieldView extends MovableComponent
 	{
 		super.setValue(value);
 		Point p = (Point)value;
-		setLocation(p);
-		Property.getPropertyFromType(Property.Type.LOCATION, properties).setData(p.clone());
+		System.out.println("Don't think I was using this!");
+
+		//Property.getPropertyFromType(Property.Type.LOCATION, properties).setData(p.clone());
 	}
 
 	@Override
 	public Object getValue()
 	{
-		return null;
+		return new Point(x, y);
 	}
 
 	@Override
@@ -154,6 +175,28 @@ public class FieldView extends MovableComponent
 	public String[] getWidgetChoices()
 	{
 		return new String[0];
+	}
+
+	@Override
+	public void valueChanged(ITable iTable, String name, Object value, boolean b)
+	{
+		if(value instanceof Double || value instanceof Integer)
+		{
+			if(name.equals("x"))
+			{
+				x = (int)Math.round((Double)value);
+			}
+			else if(name.equals("y"))
+			{
+				y =(int) Math.round((Double)value);
+			}
+			else if(name.equals("angle"))
+			{
+				angle = (int)Math.round((Double)value);
+			}
+		}
+
+		repaint();
 	}
 
 	private class FieldListener implements MouseListener, MouseMotionListener
@@ -219,5 +262,24 @@ public class FieldView extends MovableComponent
 		{
 
 		}
+	}
+
+	public Point getStart()
+	{
+		return new Point(startx, starty);
+	}
+
+	public int getStartAngle()
+	{
+		return startAngle;
+	}
+
+	public void setStart(Point start, int angle)
+	{
+		this.startx = start.x;
+		this.starty = start.y;
+		this.angle = angle;
+
+		repaint();
 	}
 }
