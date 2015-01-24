@@ -34,7 +34,7 @@ public class FieldView extends MovableComponent implements ITableListener
 
 	private NetworkTable table;
 
-	private int startx = 0, starty = 0, startAngle;
+	private double startx = 0, starty = 0, startAngle;
 
 	BufferedImage field, robot;
 	JButton b;
@@ -77,7 +77,7 @@ public class FieldView extends MovableComponent implements ITableListener
 		applyProperties(addingFromSave);
 	}
 
-	int x = 0, y = 0, angle = 0;
+	double x = 0, y = 0, angle = 0;
 
 	@Override
 	public void paint(Graphics g)
@@ -89,8 +89,8 @@ public class FieldView extends MovableComponent implements ITableListener
 		g.drawImage(field, 0, 0, Math.round(WIDTH), Math.round(HEIGHT), this);
 
 		//Apply the transformation to get x in feet to x in pixels (and same for y)
-		int newx = (int)Math.round((1/SCALE_FACTOR) * (x + startx));
-		int newy = (int)Math.round((1/SCALE_FACTOR) * (y + starty));
+		int newx = (int)Math.round((1/SCALE_FACTOR * (x + startx)));
+		int newy = (int)Math.round((1/SCALE_FACTOR * (y + starty)));
 
 		//Printer.println("x: " + x + "\ty: " + y + "\tangle: " + angle);
 
@@ -159,7 +159,7 @@ public class FieldView extends MovableComponent implements ITableListener
 	@Override
 	public Object getValue()
 	{
-		return new Point(x, y);
+		return null;//new Point(x, y);
 	}
 
 	@Override
@@ -193,15 +193,15 @@ public class FieldView extends MovableComponent implements ITableListener
 		{
 			if(name.equals("x"))
 			{
-				x = (int)Math.round((Double)value);
+				y = -(Double)value;
 			}
 			else if(name.equals("y"))
 			{
-				y =(int) Math.round((Double)value);
+				x = -(Double)value;
 			}
 			else if(name.equals("angle"))
 			{
-				angle = (int)Math.round((Double)value);
+				angle = (Double)value * 180 / Math.PI;
 			}
 		}
 
@@ -275,18 +275,19 @@ public class FieldView extends MovableComponent implements ITableListener
 
 	public Point getStart()
 	{
-		return new Point(startx, starty);
+		return null;
+		//return new Point(startx, starty);
 	}
 
-	public int getStartAngle()
+	public double getStartAngle()
 	{
 		return startAngle;
 	}
 
-	public void setStart(Point start, int angle)
+	public void setStart(double x, double y, int angle)
 	{
-		this.startx = start.x;
-		this.starty = start.y;
+		this.startx = x;
+		this.starty = y;
 		this.angle = angle;
 
 		repaint();
